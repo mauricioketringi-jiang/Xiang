@@ -1,4 +1,4 @@
-name: Mobile audio browser smoke test
+name: Offline system voice browser smoke test
 
 on:
   push:
@@ -15,86 +15,78 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build online English audio tokens
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq espeak-ng ffmpeg
-          python3 scripts/build_audio.py
       - name: Install Chromium automation
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: Verify streaming audio and answer flow
+      - name: Verify offline usage and native voice answer flow
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 &
           node <<'JS'
           const { chromium } = require('playwright');
           (async () => {
-            const browser = await chromium.launch({ headless: true, args: ['--no-sandbox','--autoplay-policy=no-user-gesture-required'] });
-            const page = await browser.newPage({ viewport: {width:390,height:844},isMobile:true,hasTouch:true });
-            const errors = [];
-            page.on('pageerror', err => { errors.push(err.message); console.log('PAGE ERROR:',err.message); });
-            page.on('console', msg => { if(msg.type()==='error') console.log('CONSOLE ERROR:',msg.text()); });
-            await page.goto('http://127.0.0.1:8765/', {waitUntil:'domcontentloaded'});
-            await page.locator('[data-tab="lab"]').first().click();
-            const options = await page.locator('#freeCount option').evaluateAll(nodes => nodes.map(x => x.value));
-            if(JSON.stringify(options)!==JSON.stringify(['10','30','50'])) throw new Error('Incorrect training counts: '+JSON.stringify(options));
-            await page.locator('#freeCount').selectOption('50');
-            await page.locator('#freeStart').click();
-            if(await page.locator('#questionCount').textContent()!=='1 / 50') throw new Error('50-question training was not generated');
-            await page.locator('#backPractice').click();
-            await page.locator('[data-tab="home"]').first().click();
-            await page.locator('[data-lesson="num:1"]').first().click();
-            if(await page.locator('#questionCount').textContent()!=='1 / 10') throw new Error('Standard lesson should contain 10 questions');
-            if(await page.locator('[data-audio-action="enable-media"]').count())throw new Error('Heavy voice download prompt is still visible');
-            await page.waitForFunction(
-              () => {
-                const s = document.getElementById('playStatus')?.textContent || '';
-                if(/初始化失败|无法播放|下载失败/.test(s)) throw new Error(s);
-                return s.includes('声音播放结束') || (document.getElementById('timerText')?.textContent || '').endsWith('s');
-              },
-              null,
-              {timeout:240000}
-            );
-            const coverage=await page.evaluate(()=>{
-              const wanted=new Set();
-              const pattern=/[A-Za-z]+(?:'[A-Za-z]+)*/g;
-              const collect=text=>{
-                for(const word of (String(text).match(pattern)||[]))wanted.add(word.toLowerCase().replace(/[^a-z]/g,''));
+            const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+            const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+            await context.addInitScript(()=>{
+              const voices=[
+                {name:'Local English US',lang:'en-US',localService:true},
+                {name:'Local English UK',lang:'en-GB',localService:true},
+                {name:'Remote English',lang:'en-US',localService:false}
+              ];
+              let speechTimer=null;
+              const synth={
+                paused:false,
+                getVoices:()=>voices,
+                resume(){},
+                cancel(){clearTimeout(speechTimer);},
+                speak(utterance){
+                  window.__nativeSpeechCalls=(window.__nativeSpeechCalls||[]);
+                  window.__nativeSpeechCalls.push({text:utterance.text,voice:utterance.voice.name,local:utterance.voice.localService});
+                  clearTimeout(speechTimer);
+                  speechTimer=setTimeout(()=>{
+                    utterance.onstart?.();
+                    speechTimer=setTimeout(()=>utterance.onend?.(),120);
+                  },20);
+                }
               };
-              for(let id=1;id<=16;id++){
-                for(let k=0;k<100;k++)collect(generateNumber(id,'en-US').audioText);
-                for(let k=0;k<40;k++)collect(generateNumber(id,'en-GB').audioText);
-              }
-              for(const w of examples)collect(w.audioText);
-              return [...wanted].sort();
+              Object.defineProperty(window,'speechSynthesis',{configurable:true,value:synth});
+              Object.defineProperty(window,'SpeechSynthesisUtterance',{
+                configurable:true,value:class {constructor(text){this.text=text;}}
+              });
+              window.fetch=(...args)=>{
+                window.__unexpectedFetches=(window.__unexpectedFetches||[]);
+                window.__unexpectedFetches.push(String(args[0]));
+                throw new Error('App tried an unexpected network fetch');
+              };
             });
-            const manifest=await (await page.request.get('http://127.0.0.1:8765/audio/manifest.json')).json();
-            if(manifest.version!==2 || !Array.isArray(manifest.phrases) || manifest.phrases.length<90)
-              throw new Error('Complete-phrase audio assets are missing');
-            const phraseCheck=await page.evaluate(async()=>{
-              const units=audioUnits('The time is twenty three, thirty four.',await getOnlinePhrases());
-              const files=await Promise.all(units.map(x=>getOnlineToken('en-US',x.key)));
-              const wav=combineOnlinePcm(files,units);
-              const bytes=await wav.arrayBuffer();
-              const view=new DataView(bytes);
-              return {keys:units.map(x=>x.key),rate:view.getUint32(24,true),wavBytes:bytes.byteLength,duration:(bytes.byteLength-44)/(view.getUint32(24,true)*2)};
-            });
-            if(JSON.stringify(phraseCheck.keys)!==JSON.stringify(['the_time_is','twenty_three','thirty_four']))
-              throw new Error('Phrase segmentation failed: '+JSON.stringify(phraseCheck.keys));
-            if(phraseCheck.rate!==16000 || phraseCheck.duration<0.8 || phraseCheck.duration>12)
-              throw new Error('Invalid continuous phrase audio: '+JSON.stringify(phraseCheck));
-            console.log('CONTINUOUS PHRASE AUDIO:',JSON.stringify(phraseCheck));
-            const missing=coverage.filter(word=>!manifest.tokens.includes(word));
-            if(missing.length)throw new Error('Missing online audio tokens: '+missing.join(', '));
-            console.log('ONLINE AUDIO COVERAGE:',coverage.length,'tokens');
-            const status = await page.locator('#playStatus').textContent();
-            console.log('AUDIO PLAYBACK STATUS:',status);
-            const key = await page.locator('[data-key]').filter({hasText:/^[0-9]$/}).first();
-            await key.click();
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(e.message));
+            await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
+            await page.locator('[data-tab="lab"]').first().click();
+            const counts=await page.locator('#freeCount option').evaluateAll(items=>items.map(x=>x.value));
+            if(JSON.stringify(counts)!==JSON.stringify(['10','30','50']))throw new Error('Wrong lesson counts: '+counts);
+            await page.locator('[data-lesson]').first().count();
+            await page.waitForFunction(()=>navigator.serviceWorker?.controller!==null,null,{timeout:20000});
+            console.log('PASS: Offline app shell service worker activated');
+            await context.setOffline(true);
+            await page.reload({waitUntil:'domcontentloaded'});
+            await page.locator('[data-lesson="num:1"]').first().click();
+            if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')
+              throw new Error('Standard lesson not 10 questions');
+            await page.waitForFunction(
+              ()=>(document.getElementById('playStatus')?.textContent||'').includes('朗读结束'),
+              null,{timeout:10000}
+            );
+            const voiceUse=await page.evaluate(()=>({calls:window.__nativeSpeechCalls||[],fetches:window.__unexpectedFetches||[]}));
+            if(!voiceUse.calls.length||!voiceUse.calls.every(x=>x.local))
+              throw new Error('The app used a nonlocal voice');
+            if(voiceUse.fetches.length)throw new Error('Voice still fetched online resources: '+voiceUse.fetches);
+            if(await page.locator('audio').count())throw new Error('Audio asset player still exists');
+            await page.locator('[data-key="0"]').click();
             await page.locator('.feedback-card').waitFor({timeout:5000});
-            if(errors.length)throw new Error('Browser JS errors: '+errors.join(' | '));
-            console.log('PASS: Online token audio completed and automatic answer feedback rendered.');
+            if(errors.length)throw new Error('Uncaught browser errors: '+errors.join(' | '));
+            console.log('PASS: Offline reload, local voice selection, replay timing and automatic answer submission');
             await browser.close();
-          })().catch(e=>{console.error(e);process.exitCode=1});
+          })().catch(error=>{console.error(error);process.exitCode=1});
           JS
