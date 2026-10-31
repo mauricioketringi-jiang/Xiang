@@ -39,6 +39,7 @@ jobs:
                 if(/初始化失败|无法播放|下载失败/.test(s)) throw new Error(s);
                 return s.includes('声音播放结束') || (document.getElementById('timerText')?.textContent || '').endsWith('s');
               },
+              null,
               {timeout:240000}
             );
             const status = await page.locator('#playStatus').textContent();
