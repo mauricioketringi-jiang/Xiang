@@ -427,7 +427,7 @@ function loadState(){
 }
 let state = loadState();
 let session = null;
-let runtime = {input:'',selected:-1,letter:false,feedback:false,speaking:false,readyAt:null,early:false,token:0,animation:0,autoSubmitTimer:null,autoNextTimer:null,recognition:null,recognitionActive:false,speechText:'',audioContext:null,noiseNodes:[],noiseBuffer:null};
+let runtime = {input:'',selected:-1,letter:false,feedback:false,speaking:false,readyAt:null,early:false,token:0,animation:0,autoSubmitTimer:null,autoNextTimer:null,recognition:null,recognitionActive:false,speechText:'',audioContext:null,noiseNodes:[],noiseBuffer:null,audioPhase:'idle',timingEstimated:false,firstKeyAt:null,replayCount:0};
 let toastTimer = null;
 let dbPromise=null;
 let dbWriteQueue=Promise.resolve();
@@ -725,7 +725,7 @@ const stages=[
 ];
 
 
-const examples=[{"id":"industrial-21-01","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"voltage","answer":"voltage","meaning":"电压","phonetic":"","example":""},{"id":"industrial-21-02","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"current","answer":"current","meaning":"电流","phonetic":"","example":""},{"id":"industrial-21-03","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"resistance","answer":"resistance","meaning":"电阻","phonetic":"","example":""},{"id":"industrial-21-04","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"circuit breaker","answer":"circuit breaker","meaning":"断路器","phonetic":"","example":""},{"id":"industrial-21-05","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"contactor","answer":"contactor","meaning":"接触器","phonetic":"","example":""},{"id":"industrial-21-06","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"relay","answer":"relay","meaning":"继电器","phonetic":"","example":""},{"id":"industrial-21-07","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"inverter","answer":"inverter","meaning":"变频器","phonetic":"","example":""},{"id":"industrial-21-08","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"variable frequency drive","answer":"variable frequency drive","meaning":"变频驱动器 VFD","phonetic":"","example":""},{"id":"industrial-21-09","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"transformer","answer":"transformer","meaning":"变压器","phonetic":"","example":""},{"id":"industrial-21-10","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"grounding","answer":"grounding","meaning":"接地","phonetic":"","example":""},{"id":"industrial-21-11","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"earthing","answer":"earthing","meaning":"保护接地","phonetic":"","example":""},{"id":"industrial-21-12","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"short circuit","answer":"short circuit","meaning":"短路","phonetic":"","example":""},{"id":"industrial-21-13","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"overload","answer":"overload","meaning":"过载","phonetic":"","example":""},{"id":"industrial-21-14","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"three-phase","answer":"three-phase","meaning":"三相","phonetic":"","example":""},{"id":"industrial-21-15","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"power supply","answer":"power supply","meaning":"电源","phonetic":"","example":""},{"id":"industrial-21-16","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"terminal","answer":"terminal","meaning":"接线端子","phonetic":"","example":""},{"id":"industrial-21-17","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"wiring","answer":"wiring","meaning":"电气接线","phonetic":"","example":""},{"id":"industrial-21-18","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"solenoid valve","answer":"solenoid valve","meaning":"电磁阀","phonetic":"","example":""},{"id":"industrial-21-19","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"fuse","answer":"fuse","meaning":"熔断器","phonetic":"","example":""},{"id":"industrial-21-20","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"circuit","answer":"circuit","meaning":"电路","phonetic":"","example":""},{"id":"industrial-21-21","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"voltage drop","answer":"voltage drop","meaning":"电压降","phonetic":"","example":""},{"id":"industrial-21-22","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"rated current","answer":"rated current","meaning":"额定电流","phonetic":"","example":""},{"id":"industrial-21-23","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"insulation","answer":"insulation","meaning":"绝缘","phonetic":"","example":""},{"id":"industrial-21-24","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"ground fault","answer":"ground fault","meaning":"接地故障","phonetic":"","example":""},{"id":"industrial-21-25","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"power factor","answer":"power factor","meaning":"功率因数","phonetic":"","example":""},{"id":"industrial-21-26","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"alternating current","answer":"alternating current","meaning":"交流电","phonetic":"","example":""},{"id":"industrial-21-27","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"direct current","answer":"direct current","meaning":"直流电","phonetic":"","example":""},{"id":"industrial-21-28","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"motor starter","answer":"motor starter","meaning":"电机起动器","phonetic":"","example":""},{"id":"industrial-21-29","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"thermal overload relay","answer":"thermal overload relay","meaning":"热过载继电器","phonetic":"","example":""},{"id":"industrial-21-30","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"terminal block","answer":"terminal block","meaning":"端子排","phonetic":"","example":""},{"id":"industrial-21-31","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"control cabinet","answer":"control cabinet","meaning":"控制柜","phonetic":"","example":""},{"id":"industrial-21-32","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"electrical schematic","answer":"electrical schematic","meaning":"电气原理图","phonetic":"","example":""},{"id":"industrial-21-33","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"shielded cable","answer":"shielded cable","meaning":"屏蔽电缆","phonetic":"","example":""},{"id":"industrial-21-34","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"protection earth","answer":"protection earth","meaning":"保护接地线","phonetic":"","example":""},{"id":"industrial-21-35","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"input voltage","answer":"input voltage","meaning":"输入电压","phonetic":"","example":""},{"id":"industrial-21-36","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"output voltage","answer":"output voltage","meaning":"输出电压","phonetic":"","example":""},{"id":"industrial-21-37","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"emergency stop circuit","answer":"emergency stop circuit","meaning":"急停回路","phonetic":"","example":""},{"id":"industrial-21-38","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"safety relay","answer":"safety relay","meaning":"安全继电器","phonetic":"","example":""},{"id":"industrial-22-01","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"servo motor","answer":"servo motor","meaning":"伺服电机","phonetic":"","example":""},{"id":"industrial-22-02","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"encoder","answer":"encoder","meaning":"编码器","phonetic":"","example":""},{"id":"industrial-22-03","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"sensor","answer":"sensor","meaning":"传感器","phonetic":"","example":""},{"id":"industrial-22-04","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"photoelectric sensor","answer":"photoelectric sensor","meaning":"光电传感器","phonetic":"","example":""},{"id":"industrial-22-05","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"proximity switch","answer":"proximity switch","meaning":"接近开关","phonetic":"","example":""},{"id":"industrial-22-06","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"torque","answer":"torque","meaning":"扭矩","phonetic":"","example":""},{"id":"industrial-22-07","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"homing","answer":"homing","meaning":"回零","phonetic":"","example":""},{"id":"industrial-22-08","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"jogging","answer":"jogging","meaning":"点动","phonetic":"","example":""},{"id":"industrial-22-09","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"axis","answer":"axis","meaning":"运动轴","phonetic":"","example":""},{"id":"industrial-22-10","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"electronic cam","answer":"electronic cam","meaning":"电子凸轮","phonetic":"","example":""},{"id":"industrial-22-11","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"debugging","answer":"debugging","meaning":"程序调试","phonetic":"","example":""},{"id":"industrial-22-12","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"commissioning","answer":"commissioning","meaning":"设备调试","phonetic":"","example":""},{"id":"industrial-22-13","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"fault alarm","answer":"fault alarm","meaning":"故障报警","phonetic":"","example":""},{"id":"industrial-22-14","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"emergency stop","answer":"emergency stop","meaning":"急停","phonetic":"","example":""},{"id":"industrial-22-15","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"parameter","answer":"parameter","meaning":"参数","phonetic":"","example":""},{"id":"industrial-22-16","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"synchronization","answer":"synchronization","meaning":"同步","phonetic":"","example":""},{"id":"industrial-22-17","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"packaging machine","answer":"packaging machine","meaning":"包装机","phonetic":"","example":""},{"id":"industrial-22-18","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"conveyor","answer":"conveyor","meaning":"输送带","phonetic":"","example":""},{"id":"industrial-22-19","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"cylinder","answer":"cylinder","meaning":"气缸","phonetic":"","example":""},{"id":"industrial-22-20","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"programmable logic controller","answer":"programmable logic controller","meaning":"可编程逻辑控制器","phonetic":"","example":""},{"id":"industrial-22-21","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"human machine interface","answer":"human machine interface","meaning":"人机界面","phonetic":"","example":""},{"id":"industrial-22-22","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"motion control","answer":"motion control","meaning":"运动控制","phonetic":"","example":""},{"id":"industrial-22-23","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"positioning","answer":"positioning","meaning":"定位","phonetic":"","example":""},{"id":"industrial-22-24","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"acceleration","answer":"acceleration","meaning":"加速度","phonetic":"","example":""},{"id":"industrial-22-25","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"deceleration","answer":"deceleration","meaning":"减速度","phonetic":"","example":""},{"id":"industrial-22-26","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"limit switch","answer":"limit switch","meaning":"限位开关","phonetic":"","example":""},{"id":"industrial-22-27","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"home position","answer":"home position","meaning":"原点位置","phonetic":"","example":""},{"id":"industrial-22-28","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"feedback signal","answer":"feedback signal","meaning":"反馈信号","phonetic":"","example":""},{"id":"industrial-22-29","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"cycle time","answer":"cycle time","meaning":"循环周期","phonetic":"","example":""},{"id":"industrial-22-30","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"interlock","answer":"interlock","meaning":"互锁","phonetic":"","example":""},{"id":"industrial-22-31","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"proximity sensor","answer":"proximity sensor","meaning":"接近传感器","phonetic":"","example":""},{"id":"industrial-22-32","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"vacuum generator","answer":"vacuum generator","meaning":"真空发生器","phonetic":"","example":""},{"id":"industrial-22-33","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"pneumatic valve","answer":"pneumatic valve","meaning":"气动阀","phonetic":"","example":""},{"id":"industrial-22-34","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"servo drive","answer":"servo drive","meaning":"伺服驱动器","phonetic":"","example":""},{"id":"industrial-22-35","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"pulse train","answer":"pulse train","meaning":"脉冲列","phonetic":"","example":""},{"id":"industrial-22-36","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"communication protocol","answer":"communication protocol","meaning":"通信协议","phonetic":"","example":""},{"id":"industrial-22-37","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"fieldbus","answer":"fieldbus","meaning":"现场总线","phonetic":"","example":""},{"id":"industrial-22-38","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"encoder resolution","answer":"encoder resolution","meaning":"编码器分辨率","phonetic":"","example":""},{"id":"industrial-23-01","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the servo parameter","answer":"Check the servo parameter","meaning":"检查伺服参数","phonetic":"","example":""},{"id":"industrial-23-02","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Reset the fault alarm","answer":"Reset the fault alarm","meaning":"复位故障报警","phonetic":"","example":""},{"id":"industrial-23-03","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The motor is overheating","answer":"The motor is overheating","meaning":"电机过热","phonetic":"","example":""},{"id":"industrial-23-04","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Switch to manual mode","answer":"Switch to manual mode","meaning":"切换到手动模式","phonetic":"","example":""},{"id":"industrial-23-05","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Adjust the belt tension","answer":"Adjust the belt tension","meaning":"调节皮带张力","phonetic":"","example":""},{"id":"industrial-23-06","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Press the emergency stop","answer":"Press the emergency stop","meaning":"按下急停","phonetic":"","example":""},{"id":"industrial-23-07","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Out of tolerance","answer":"Out of tolerance","meaning":"超出公差","phonetic":"","example":""},{"id":"industrial-23-08","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Waiting for homing complete","answer":"Waiting for homing complete","meaning":"等待回零完成","phonetic":"","example":""},{"id":"industrial-23-09","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"What is the current speed?","answer":"What is the current speed?","meaning":"当前速度是多少？","phonetic":"","example":""},{"id":"industrial-23-10","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Let's test the cycle time","answer":"Let's test the cycle time","meaning":"我们测试一下循环周期","phonetic":"","example":""},{"id":"industrial-23-11","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the sensor alignment","answer":"Check the sensor alignment","meaning":"检查传感器对准位置","phonetic":"","example":""},{"id":"industrial-23-12","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The conveyor is not running","answer":"The conveyor is not running","meaning":"输送带没有运行","phonetic":"","example":""},{"id":"industrial-23-13","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The servo is not enabled","answer":"The servo is not enabled","meaning":"伺服尚未使能","phonetic":"","example":""},{"id":"industrial-23-14","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please reset the machine","answer":"Please reset the machine","meaning":"请复位设备","phonetic":"","example":""},{"id":"industrial-23-15","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Start the automatic cycle","answer":"Start the automatic cycle","meaning":"启动自动循环","phonetic":"","example":""},{"id":"industrial-23-16","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Stop the conveyor belt","answer":"Stop the conveyor belt","meaning":"停止输送带","phonetic":"","example":""},{"id":"industrial-23-17","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The cylinder is not extended","answer":"The cylinder is not extended","meaning":"气缸没有伸出","phonetic":"","example":""},{"id":"industrial-23-18","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the air pressure","answer":"Check the air pressure","meaning":"检查气压","phonetic":"","example":""},{"id":"industrial-23-19","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The safety door is open","answer":"The safety door is open","meaning":"安全门打开了","phonetic":"","example":""},{"id":"industrial-23-20","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The machine is in alarm state","answer":"The machine is in alarm state","meaning":"设备处于报警状态","phonetic":"","example":""},{"id":"industrial-23-21","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please check the wiring","answer":"Please check the wiring","meaning":"请检查接线","phonetic":"","example":""},{"id":"industrial-23-22","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The encoder feedback is missing","answer":"The encoder feedback is missing","meaning":"编码器反馈丢失","phonetic":"","example":""},{"id":"industrial-23-23","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Increase the motor speed","answer":"Increase the motor speed","meaning":"提高电机速度","phonetic":"","example":""},{"id":"industrial-23-24","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Decrease the feed rate","answer":"Decrease the feed rate","meaning":"降低进料速度","phonetic":"","example":""},{"id":"industrial-23-25","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The product is jammed","answer":"The product is jammed","meaning":"物料卡住了","phonetic":"","example":""},{"id":"industrial-23-26","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The vacuum pressure is too low","answer":"The vacuum pressure is too low","meaning":"真空压力过低","phonetic":"","example":""},{"id":"industrial-23-27","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the emergency stop circuit","answer":"Check the emergency stop circuit","meaning":"检查急停回路","phonetic":"","example":""},{"id":"industrial-23-28","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The axis is out of position","answer":"The axis is out of position","meaning":"运动轴位置异常","phonetic":"","example":""},{"id":"industrial-23-29","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Turn off the main power","answer":"Turn off the main power","meaning":"关闭总电源","phonetic":"","example":""},{"id":"industrial-23-30","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Turn on the control power","answer":"Turn on the control power","meaning":"打开控制电源","phonetic":"","example":""},{"id":"industrial-23-31","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please confirm the sensor signal","answer":"Please confirm the sensor signal","meaning":"请确认传感器信号","phonetic":"","example":""},{"id":"industrial-23-32","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The machine is ready to run","answer":"The machine is ready to run","meaning":"设备已准备运行","phonetic":"","example":""},{"id":"industrial-23-33","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The positioning is complete","answer":"The positioning is complete","meaning":"定位完成","phonetic":"","example":""},{"id":"industrial-23-34","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"We need to adjust the timing","answer":"We need to adjust the timing","meaning":"我们需要调整动作时序","phonetic":"","example":""},{"id":"industrial-23-35","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Let's check the input signal","answer":"Let's check the input signal","meaning":"我们检查一下输入信号","phonetic":"","example":""},{"id":"industrial-23-36","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Can you repeat the alarm code?","answer":"Can you repeat the alarm code?","meaning":"你能重复一下报警代码吗？","phonetic":"","example":""},{"id":"industrial-23-37","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please run the machine at low speed","answer":"Please run the machine at low speed","meaning":"请让设备低速运行","phonetic":"","example":""},{"id":"industrial-23-38","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The part is missing","answer":"The part is missing","meaning":"零件缺失","phonetic":"","example":""},{"id":"industrial-23-39","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The output signal is active","answer":"The output signal is active","meaning":"输出信号已激活","phonetic":"","example":""},{"id":"industrial-23-40","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The motor is running in reverse","answer":"The motor is running in reverse","meaning":"电机正在反转","phonetic":"","example":""}];
+const examples=[{"id":"industrial-21-01","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"voltage","answer":"voltage","meaning":"电压","phonetic":"/vˈoʊltʌdʒ/","example":""},{"id":"industrial-21-02","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"current","answer":"current","meaning":"电流","phonetic":"/kˈɜrʌnt/","example":""},{"id":"industrial-21-03","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"resistance","answer":"resistance","meaning":"电阻","phonetic":"/rɪzˈɪstʌns/","example":""},{"id":"industrial-21-04","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"circuit breaker","answer":"circuit breaker","meaning":"断路器","phonetic":"/sˈɜrkʌt brˈeɪkɜr/","example":""},{"id":"industrial-21-05","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"contactor","answer":"contactor","meaning":"接触器","phonetic":"/kənˈtæktər/","example":""},{"id":"industrial-21-06","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"relay","answer":"relay","meaning":"继电器","phonetic":"/rˈilˌeɪ/","example":""},{"id":"industrial-21-07","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"inverter","answer":"inverter","meaning":"变频器","phonetic":"/ɪnˈvɜrtər/","example":""},{"id":"industrial-21-08","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"variable frequency drive","answer":"variable frequency drive","meaning":"变频驱动器 VFD","phonetic":"/vˈɛriʌbʌl frˈikwʌnsi drˈaɪv/","example":""},{"id":"industrial-21-09","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"transformer","answer":"transformer","meaning":"变压器","phonetic":"/trænsfˈɔrmɜr/","example":""},{"id":"industrial-21-10","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"grounding","answer":"grounding","meaning":"接地","phonetic":"/ɡrˈaʊndɪŋ/","example":""},{"id":"industrial-21-11","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"earthing","answer":"earthing","meaning":"保护接地","phonetic":"/ˈɜrθɪŋ/","example":""},{"id":"industrial-21-12","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"short circuit","answer":"short circuit","meaning":"短路","phonetic":"/ʃˈɔrt sˈɜrkʌt/","example":""},{"id":"industrial-21-13","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"overload","answer":"overload","meaning":"过载","phonetic":"/ˈoʊvɜrlˌoʊd/","example":""},{"id":"industrial-21-14","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"three-phase","answer":"three-phase","meaning":"三相","phonetic":"/θrˈi fˈeɪz/","example":""},{"id":"industrial-21-15","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"power supply","answer":"power supply","meaning":"电源","phonetic":"/pˈaʊɜr sʌplˈaɪ/","example":""},{"id":"industrial-21-16","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"terminal","answer":"terminal","meaning":"接线端子","phonetic":"/tˈɜrmʌnʌl/","example":""},{"id":"industrial-21-17","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"wiring","answer":"wiring","meaning":"电气接线","phonetic":"/wˈaɪrɪŋ/","example":""},{"id":"industrial-21-18","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"solenoid valve","answer":"solenoid valve","meaning":"电磁阀","phonetic":"/ˈsoʊlənɔɪd vˈælv/","example":""},{"id":"industrial-21-19","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"fuse","answer":"fuse","meaning":"熔断器","phonetic":"/fjˈuz/","example":""},{"id":"industrial-21-20","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"circuit","answer":"circuit","meaning":"电路","phonetic":"/sˈɜrkʌt/","example":""},{"id":"industrial-21-21","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"voltage drop","answer":"voltage drop","meaning":"电压降","phonetic":"/vˈoʊltʌdʒ drˈɑp/","example":""},{"id":"industrial-21-22","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"rated current","answer":"rated current","meaning":"额定电流","phonetic":"/rˈeɪtɪd kˈɜrʌnt/","example":""},{"id":"industrial-21-23","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"insulation","answer":"insulation","meaning":"绝缘","phonetic":"/ˌɪnsʌlˈeɪʃʌn/","example":""},{"id":"industrial-21-24","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"ground fault","answer":"ground fault","meaning":"接地故障","phonetic":"/ɡrˈaʊnd fˈɔlt/","example":""},{"id":"industrial-21-25","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"power factor","answer":"power factor","meaning":"功率因数","phonetic":"/pˈaʊɜr fˈæktɜr/","example":""},{"id":"industrial-21-26","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"alternating current","answer":"alternating current","meaning":"交流电","phonetic":"/ˈɔltɜrnˌeɪtɪŋ kˈɜrʌnt/","example":""},{"id":"industrial-21-27","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"direct current","answer":"direct current","meaning":"直流电","phonetic":"/dɜrˈɛkt kˈɜrʌnt/","example":""},{"id":"industrial-21-28","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"motor starter","answer":"motor starter","meaning":"电机起动器","phonetic":"/mˈoʊtɜr stˈɑrtɜr/","example":""},{"id":"industrial-21-29","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"thermal overload relay","answer":"thermal overload relay","meaning":"热过载继电器","phonetic":"/θˈɜrmʌl ˈoʊvɜrlˌoʊd rˈilˌeɪ/","example":""},{"id":"industrial-21-30","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"terminal block","answer":"terminal block","meaning":"端子排","phonetic":"/tˈɜrmʌnʌl blˈɑk/","example":""},{"id":"industrial-21-31","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"control cabinet","answer":"control cabinet","meaning":"控制柜","phonetic":"/kʌntrˈoʊl kˈæbʌnʌt/","example":""},{"id":"industrial-21-32","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"electrical schematic","answer":"electrical schematic","meaning":"电气原理图","phonetic":"/ɪlˈɛktrɪkʌl skɪmˈætɪk/","example":""},{"id":"industrial-21-33","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"shielded cable","answer":"shielded cable","meaning":"屏蔽电缆","phonetic":"/ʃˈildɪd kˈeɪbʌl/","example":""},{"id":"industrial-21-34","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"protection earth","answer":"protection earth","meaning":"保护接地线","phonetic":"/prʌtˈɛkʃʌn ˈɜrθ/","example":""},{"id":"industrial-21-35","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"input voltage","answer":"input voltage","meaning":"输入电压","phonetic":"/ˈɪnpˌʊt vˈoʊltʌdʒ/","example":""},{"id":"industrial-21-36","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"output voltage","answer":"output voltage","meaning":"输出电压","phonetic":"/ˈaʊtpˌʊt vˈoʊltʌdʒ/","example":""},{"id":"industrial-21-37","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"emergency stop circuit","answer":"emergency stop circuit","meaning":"急停回路","phonetic":"/ɪmˈɜrdʒʌnsi stˈɑp sˈɜrkʌt/","example":""},{"id":"industrial-21-38","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"safety relay","answer":"safety relay","meaning":"安全继电器","phonetic":"/sˈeɪfti rˈilˌeɪ/","example":""},{"id":"industrial-22-01","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"servo motor","answer":"servo motor","meaning":"伺服电机","phonetic":"/sˈɜrvoʊ mˈoʊtɜr/","example":""},{"id":"industrial-22-02","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"encoder","answer":"encoder","meaning":"编码器","phonetic":"/ɪnˈkoʊdər/","example":""},{"id":"industrial-22-03","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"sensor","answer":"sensor","meaning":"传感器","phonetic":"/sˈɛnsɜr/","example":""},{"id":"industrial-22-04","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"photoelectric sensor","answer":"photoelectric sensor","meaning":"光电传感器","phonetic":"/fˌoʊtoʊɪlˈɛktrɪk sˈɛnsɜr/","example":""},{"id":"industrial-22-05","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"proximity switch","answer":"proximity switch","meaning":"接近开关","phonetic":"/prɑksˈɪmʌti swˈɪtʃ/","example":""},{"id":"industrial-22-06","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"torque","answer":"torque","meaning":"扭矩","phonetic":"/tˈɔrk/","example":""},{"id":"industrial-22-07","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"homing","answer":"homing","meaning":"回零","phonetic":"/hˈoʊmɪŋ/","example":""},{"id":"industrial-22-08","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"jogging","answer":"jogging","meaning":"点动","phonetic":"/dʒˈɑɡɪŋ/","example":""},{"id":"industrial-22-09","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"axis","answer":"axis","meaning":"运动轴","phonetic":"/ˈæksʌs/","example":""},{"id":"industrial-22-10","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"electronic cam","answer":"electronic cam","meaning":"电子凸轮","phonetic":"/ˌɪlˌɛktrˈɑnɪk kˈæm/","example":""},{"id":"industrial-22-11","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"debugging","answer":"debugging","meaning":"程序调试","phonetic":"/dibˈʌɡɪŋ/","example":""},{"id":"industrial-22-12","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"commissioning","answer":"commissioning","meaning":"设备调试","phonetic":"/kʌmˈɪʃʌnɪŋ/","example":""},{"id":"industrial-22-13","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"fault alarm","answer":"fault alarm","meaning":"故障报警","phonetic":"/fˈɔlt ʌlˈɑrm/","example":""},{"id":"industrial-22-14","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"emergency stop","answer":"emergency stop","meaning":"急停","phonetic":"/ɪmˈɜrdʒʌnsi stˈɑp/","example":""},{"id":"industrial-22-15","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"parameter","answer":"parameter","meaning":"参数","phonetic":"/pɜrˈæmʌtɜr/","example":""},{"id":"industrial-22-16","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"synchronization","answer":"synchronization","meaning":"同步","phonetic":"/sˌɪŋkrʌnʌzˈeɪʃʌn/","example":""},{"id":"industrial-22-17","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"packaging machine","answer":"packaging machine","meaning":"包装机","phonetic":"/pˈækɪdʒɪŋ mʌʃˈin/","example":""},{"id":"industrial-22-18","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"conveyor","answer":"conveyor","meaning":"输送带","phonetic":"/kʌnvˈeɪɜr/","example":""},{"id":"industrial-22-19","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"cylinder","answer":"cylinder","meaning":"气缸","phonetic":"/sˈɪlʌndɜr/","example":""},{"id":"industrial-22-20","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"programmable logic controller","answer":"programmable logic controller","meaning":"可编程逻辑控制器","phonetic":"/prˈoʊɡrˌæmʌbʌl lˈɑdʒɪk kʌntrˈoʊlɜr/","example":""},{"id":"industrial-22-21","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"human machine interface","answer":"human machine interface","meaning":"人机界面","phonetic":"/hjˈumʌn mʌʃˈin ˈɪntɜrfˌeɪs/","example":""},{"id":"industrial-22-22","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"motion control","answer":"motion control","meaning":"运动控制","phonetic":"/mˈoʊʃʌn kʌntrˈoʊl/","example":""},{"id":"industrial-22-23","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"positioning","answer":"positioning","meaning":"定位","phonetic":"/pʌzˈɪʃʌnɪŋ/","example":""},{"id":"industrial-22-24","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"acceleration","answer":"acceleration","meaning":"加速度","phonetic":"/ˌæksˌɛlɜrˈeɪʃʌn/","example":""},{"id":"industrial-22-25","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"deceleration","answer":"deceleration","meaning":"减速度","phonetic":"/dɪsˌɛlɜrˈeɪʃʌn/","example":""},{"id":"industrial-22-26","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"limit switch","answer":"limit switch","meaning":"限位开关","phonetic":"/lˈɪmʌt swˈɪtʃ/","example":""},{"id":"industrial-22-27","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"home position","answer":"home position","meaning":"原点位置","phonetic":"/hˈoʊm pʌzˈɪʃʌn/","example":""},{"id":"industrial-22-28","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"feedback signal","answer":"feedback signal","meaning":"反馈信号","phonetic":"/fˈidbˌæk sˈɪɡnʌl/","example":""},{"id":"industrial-22-29","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"cycle time","answer":"cycle time","meaning":"循环周期","phonetic":"/sˈaɪkʌl tˈaɪm/","example":""},{"id":"industrial-22-30","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"interlock","answer":"interlock","meaning":"互锁","phonetic":"/ˌɪntɜrlˈɑk/","example":""},{"id":"industrial-22-31","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"proximity sensor","answer":"proximity sensor","meaning":"接近传感器","phonetic":"/prɑksˈɪmʌti sˈɛnsɜr/","example":""},{"id":"industrial-22-32","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"vacuum generator","answer":"vacuum generator","meaning":"真空发生器","phonetic":"/vˈækjum dʒˈɛnɜrˌeɪtɜr/","example":""},{"id":"industrial-22-33","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"pneumatic valve","answer":"pneumatic valve","meaning":"气动阀","phonetic":"/numˈætɪk vˈælv/","example":""},{"id":"industrial-22-34","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"servo drive","answer":"servo drive","meaning":"伺服驱动器","phonetic":"/sˈɜrvoʊ drˈaɪv/","example":""},{"id":"industrial-22-35","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"pulse train","answer":"pulse train","meaning":"脉冲列","phonetic":"/pˈʌls trˈeɪn/","example":""},{"id":"industrial-22-36","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"communication protocol","answer":"communication protocol","meaning":"通信协议","phonetic":"/kʌmjˌunʌkˈeɪʃʌn prˈoʊtʌkˌɑl/","example":""},{"id":"industrial-22-37","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"fieldbus","answer":"fieldbus","meaning":"现场总线","phonetic":"/ˈfiːldbʌs/","example":""},{"id":"industrial-22-38","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"encoder resolution","answer":"encoder resolution","meaning":"编码器分辨率","phonetic":"/ɪnˈkoʊdər rˌɛzʌlˈuʃʌn/","example":""},{"id":"industrial-23-01","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the servo parameter","answer":"Check the servo parameter","meaning":"检查伺服参数","phonetic":"/tʃˈɛk ðʌ sˈɜrvoʊ pɜrˈæmʌtɜr/","example":""},{"id":"industrial-23-02","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Reset the fault alarm","answer":"Reset the fault alarm","meaning":"复位故障报警","phonetic":"/risˈɛt ðʌ fˈɔlt ʌlˈɑrm/","example":""},{"id":"industrial-23-03","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The motor is overheating","answer":"The motor is overheating","meaning":"电机过热","phonetic":"/ðʌ mˈoʊtɜr ˈɪz ˈoʊvɜrhˌitɪŋ/","example":""},{"id":"industrial-23-04","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Switch to manual mode","answer":"Switch to manual mode","meaning":"切换到手动模式","phonetic":"/swˈɪtʃ tˈu mˈænjuʌl mˈoʊd/","example":""},{"id":"industrial-23-05","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Adjust the belt tension","answer":"Adjust the belt tension","meaning":"调节皮带张力","phonetic":"/ʌdʒˈʌst ðʌ bˈɛlt tˈɛnʃʌn/","example":""},{"id":"industrial-23-06","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Press the emergency stop","answer":"Press the emergency stop","meaning":"按下急停","phonetic":"/prˈɛs ðʌ ɪmˈɜrdʒʌnsi stˈɑp/","example":""},{"id":"industrial-23-07","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Out of tolerance","answer":"Out of tolerance","meaning":"超出公差","phonetic":"/ˈaʊt ˈʌv tˈɑlɜrʌns/","example":""},{"id":"industrial-23-08","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Waiting for homing complete","answer":"Waiting for homing complete","meaning":"等待回零完成","phonetic":"/wˈeɪtɪŋ fˈɔr hˈoʊmɪŋ kʌmplˈit/","example":""},{"id":"industrial-23-09","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"What is the current speed?","answer":"What is the current speed?","meaning":"当前速度是多少？","phonetic":"/wˈʌt ˈɪz ðʌ kˈɜrʌnt spˈid/","example":""},{"id":"industrial-23-10","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Let's test the cycle time","answer":"Let's test the cycle time","meaning":"我们测试一下循环周期","phonetic":"/lˈɛt ˈɛs tˈɛst ðʌ sˈaɪkʌl tˈaɪm/","example":""},{"id":"industrial-23-11","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the sensor alignment","answer":"Check the sensor alignment","meaning":"检查传感器对准位置","phonetic":"/tʃˈɛk ðʌ sˈɛnsɜr ʌlˈaɪnmʌnt/","example":""},{"id":"industrial-23-12","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The conveyor is not running","answer":"The conveyor is not running","meaning":"输送带没有运行","phonetic":"/ðʌ kʌnvˈeɪɜr ˈɪz nˈɑt rˈʌnɪŋ/","example":""},{"id":"industrial-23-13","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The servo is not enabled","answer":"The servo is not enabled","meaning":"伺服尚未使能","phonetic":"/ðʌ sˈɜrvoʊ ˈɪz nˈɑt ɛnˈeɪbʌld/","example":""},{"id":"industrial-23-14","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please reset the machine","answer":"Please reset the machine","meaning":"请复位设备","phonetic":"/plˈiz risˈɛt ðʌ mʌʃˈin/","example":""},{"id":"industrial-23-15","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Start the automatic cycle","answer":"Start the automatic cycle","meaning":"启动自动循环","phonetic":"/stˈɑrt ðʌ ˌɔtʌmˈætɪk sˈaɪkʌl/","example":""},{"id":"industrial-23-16","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Stop the conveyor belt","answer":"Stop the conveyor belt","meaning":"停止输送带","phonetic":"/stˈɑp ðʌ kʌnvˈeɪɜr bˈɛlt/","example":""},{"id":"industrial-23-17","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The cylinder is not extended","answer":"The cylinder is not extended","meaning":"气缸没有伸出","phonetic":"/ðʌ sˈɪlʌndɜr ˈɪz nˈɑt ɪkstˈɛndʌd/","example":""},{"id":"industrial-23-18","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the air pressure","answer":"Check the air pressure","meaning":"检查气压","phonetic":"/tʃˈɛk ðʌ ˈɛr prˈɛʃɜr/","example":""},{"id":"industrial-23-19","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The safety door is open","answer":"The safety door is open","meaning":"安全门打开了","phonetic":"/ðʌ sˈeɪfti dˈɔr ˈɪz ˈoʊpʌn/","example":""},{"id":"industrial-23-20","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The machine is in alarm state","answer":"The machine is in alarm state","meaning":"设备处于报警状态","phonetic":"/ðʌ mʌʃˈin ˈɪz ɪn ʌlˈɑrm stˈeɪt/","example":""},{"id":"industrial-23-21","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please check the wiring","answer":"Please check the wiring","meaning":"请检查接线","phonetic":"/plˈiz tʃˈɛk ðʌ wˈaɪrɪŋ/","example":""},{"id":"industrial-23-22","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The encoder feedback is missing","answer":"The encoder feedback is missing","meaning":"编码器反馈丢失","phonetic":"/ðʌ ɪnˈkoʊdər fˈidbˌæk ˈɪz mˈɪsɪŋ/","example":""},{"id":"industrial-23-23","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Increase the motor speed","answer":"Increase the motor speed","meaning":"提高电机速度","phonetic":"/ˌɪnkrˈis ðʌ mˈoʊtɜr spˈid/","example":""},{"id":"industrial-23-24","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Decrease the feed rate","answer":"Decrease the feed rate","meaning":"降低进料速度","phonetic":"/dɪkrˈis ðʌ fˈid rˈeɪt/","example":""},{"id":"industrial-23-25","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The product is jammed","answer":"The product is jammed","meaning":"物料卡住了","phonetic":"/ðʌ prˈɑdʌkt ˈɪz dʒˈæmd/","example":""},{"id":"industrial-23-26","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The vacuum pressure is too low","answer":"The vacuum pressure is too low","meaning":"真空压力过低","phonetic":"/ðʌ vˈækjum prˈɛʃɜr ˈɪz tˈu lˈoʊ/","example":""},{"id":"industrial-23-27","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the emergency stop circuit","answer":"Check the emergency stop circuit","meaning":"检查急停回路","phonetic":"/tʃˈɛk ðʌ ɪmˈɜrdʒʌnsi stˈɑp sˈɜrkʌt/","example":""},{"id":"industrial-23-28","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The axis is out of position","answer":"The axis is out of position","meaning":"运动轴位置异常","phonetic":"/ðʌ ˈæksʌs ˈɪz ˈaʊt ˈʌv pʌzˈɪʃʌn/","example":""},{"id":"industrial-23-29","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Turn off the main power","answer":"Turn off the main power","meaning":"关闭总电源","phonetic":"/tˈɜrn ˈɔf ðʌ mˈeɪn pˈaʊɜr/","example":""},{"id":"industrial-23-30","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Turn on the control power","answer":"Turn on the control power","meaning":"打开控制电源","phonetic":"/tˈɜrn ˈɑn ðʌ kʌntrˈoʊl pˈaʊɜr/","example":""},{"id":"industrial-23-31","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please confirm the sensor signal","answer":"Please confirm the sensor signal","meaning":"请确认传感器信号","phonetic":"/plˈiz kʌnfˈɜrm ðʌ sˈɛnsɜr sˈɪɡnʌl/","example":""},{"id":"industrial-23-32","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The machine is ready to run","answer":"The machine is ready to run","meaning":"设备已准备运行","phonetic":"/ðʌ mʌʃˈin ˈɪz rˈɛdi tˈu rˈʌn/","example":""},{"id":"industrial-23-33","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The positioning is complete","answer":"The positioning is complete","meaning":"定位完成","phonetic":"/ðʌ pʌzˈɪʃʌnɪŋ ˈɪz kʌmplˈit/","example":""},{"id":"industrial-23-34","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"We need to adjust the timing","answer":"We need to adjust the timing","meaning":"我们需要调整动作时序","phonetic":"/wˈi nˈid tˈu ʌdʒˈʌst ðʌ tˈaɪmɪŋ/","example":""},{"id":"industrial-23-35","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Let's check the input signal","answer":"Let's check the input signal","meaning":"我们检查一下输入信号","phonetic":"/lˈɛt ˈɛs tʃˈɛk ðʌ ˈɪnpˌʊt sˈɪɡnʌl/","example":""},{"id":"industrial-23-36","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Can you repeat the alarm code?","answer":"Can you repeat the alarm code?","meaning":"你能重复一下报警代码吗？","phonetic":"/kˈæn jˈu rɪpˈit ðʌ ʌlˈɑrm kˈoʊd/","example":""},{"id":"industrial-23-37","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please run the machine at low speed","answer":"Please run the machine at low speed","meaning":"请让设备低速运行","phonetic":"/plˈiz rˈʌn ðʌ mʌʃˈin ˈæt lˈoʊ spˈid/","example":""},{"id":"industrial-23-38","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The part is missing","answer":"The part is missing","meaning":"零件缺失","phonetic":"/ðʌ pˈɑrt ˈɪz mˈɪsɪŋ/","example":""},{"id":"industrial-23-39","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The output signal is active","answer":"The output signal is active","meaning":"输出信号已激活","phonetic":"/ðʌ ˈaʊtpˌʊt sˈɪɡnʌl ˈɪz ˈæktɪv/","example":""},{"id":"industrial-23-40","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The motor is running in reverse","answer":"The motor is running in reverse","meaning":"电机正在反转","phonetic":"/ðʌ mˈoʊtɜr ˈɪz rˈʌnɪŋ ɪn rɪvˈɜrs/","example":""}];
 function allWords(){return examples;}
 function wordGroups(){
   const groups=new Map();
@@ -998,7 +998,7 @@ function startNoise(){
   }
 }
 function speechStartForQuestion(){
-  runtime.readyAt=performance.now();runtime.early=false;startTimer();
+  runtime.readyAt=performance.now();runtime.early=false;runtime.audioPhase='ready';runtime.timingEstimated=false;startTimer();
 }
 function finishSpeechRecognition(){
   const recognition=runtime.recognition;runtime.recognition=null;runtime.recognitionActive=false;
@@ -1008,17 +1008,162 @@ function normalizeSpoken(text){
   return String(text||'').toLowerCase().replace(/[^a-z0-9.%: ]+/g,' ').split(/\s+/).filter(Boolean)
   .map(w=>spokenNumberAliases[w]??w).join(' ').replace(/\s+/g,' ').trim();
 }
+
+const WORD_UNITS={zero:0,oh:0,o:0,one:1,won:1,two:2,to:2,too:2,three:3,four:4,for:4,five:5,six:6,seven:7,eight:8,ate:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fourty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+const WORD_ORDINALS={first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8,ninth:9,tenth:10,eleventh:11,twelfth:12,thirteenth:13,fourteenth:14,fifteenth:15,sixteenth:16,seventeenth:17,eighteenth:18,nineteenth:19,twentieth:20,thirtieth:30,thirtyfirst:31};
+const SPOKEN_MONTHS=['january','february','march','april','may','june','july','august','september','october','november','december'];
+const NUMBER_SCALES={hundred:100,thousand:1000,million:1000000,billion:1000000000};
+function speechTokens(text){
+  return String(text||'').toLowerCase().replace(/[‐‑‒–—-]/g,' ').replace(/[^a-z0-9.:%, ]+/g,' ').trim().split(/\s+/).filter(Boolean);
+}
+function numericWordsToValue(text){
+  let tokens=speechTokens(text),input=tokens.join(' ');
+  if(!tokens.length)return null;
+  const numberMatch=input.match(/^-?\d+(?:\.\d+)?%?$/);
+  if(numberMatch)return numberMatch[0];
+  // Fractions are a first-class numeric category in Level 15.
+  const fractionRe=/(?:^|\s)(?:(\w+)\s+and\s+)?(?:(a|one|two|three)\s+)?(half|halves|quarter|quarters|eighth|eighths)(?:\s|$)/;
+  const frac=input.match(fractionRe);
+  if(frac){
+    const whole=frac[1]?WORD_UNITS[frac[1]]:0;
+    const numerator=frac[2]?(WORD_UNITS[frac[2]]??1):1;
+    const divisor=frac[3].startsWith('half')?2:frac[3].startsWith('quarter')?4:8;
+    if(whole!==undefined)return String(Number((whole+numerator/divisor).toFixed(6)));
+  }
+  // Recognition can return digit-by-digit phrases such as 'zero one two' for phone numbers.
+  if(tokens.every(x=>Object.hasOwn(WORD_UNITS,x)&&WORD_UNITS[x]<=9)){
+    return tokens.map(x=>WORD_UNITS[x]).join('');
+  }
+  let total=0,group=0,used=false,decimal=null;
+  for(let i=0;i<tokens.length;i++){
+    const x=tokens[i].replace(/[,]/g,'');
+    if(x==='and'||x==='a'||x==='an'||x==='the')continue;
+    if(x==='point'||x==='dot'){
+      let digits='';
+      for(let j=i+1;j<tokens.length;j++){
+        const w=tokens[j];
+        if(Object.hasOwn(WORD_UNITS,w)&&WORD_UNITS[w]<=9)digits+=WORD_UNITS[w];
+        else if(/^\d$/.test(w))digits+=w;
+        else break;
+      }
+      if(!digits)return null;
+      decimal=digits;used=true;break;
+    }
+    if(Object.hasOwn(WORD_UNITS,x)){
+      group+=WORD_UNITS[x];used=true;continue;
+    }
+    if(Object.hasOwn(WORD_ORDINALS,x)){
+      group+=WORD_ORDINALS[x];used=true;continue;
+    }
+    if(x==='hundred'){group=Math.max(1,group)*100;used=true;continue;}
+    if(Object.hasOwn(NUMBER_SCALES,x)){
+      total+=Math.max(1,group)*NUMBER_SCALES[x];group=0;used=true;continue;
+    }
+    if(/^\d+$/.test(x)){group+=Number(x);used=true;continue;}
+    if(used)break;
+    return null;
+  }
+  if(!used)return null;
+  const base=String(total+group);
+  return decimal===null?base:base+'.'+decimal;
+}
+function spokenTimeToValue(text){
+  const raw=speechTokens(text).filter(x=>!['the','time','is','at','it','s'].includes(x));
+  const joined=raw.join(' ');
+  const numeric=joined.match(/(?:^|\s)(\d{1,2}):(\d{1,2})(?:\s|$)/);
+  if(numeric)return String(+numeric[1]).padStart(2,'0')+':'+String(+numeric[2]).padStart(2,'0');
+  const pastTo=joined.match(/(?:a\s+)?(quarter|half|[\w]+)\s+(past|to)\s+(\w+)/);
+  if(pastTo){
+    let mins=pastTo[1]==='quarter'?15:pastTo[1]==='half'?30:WORD_UNITS[pastTo[1]];
+    let hour=WORD_UNITS[pastTo[3]];
+    if(Number.isInteger(mins)&&Number.isInteger(hour)&&hour>=1&&hour<=12&&mins<60){
+      if(pastTo[2]==='to'){hour=hour===1?12:hour-1;mins=60-mins;}
+      return String(hour).padStart(2,'0')+':'+String(mins).padStart(2,'0');
+    }
+  }
+  const words=raw.filter(x=>Object.hasOwn(WORD_UNITS,x)||/^\d+$/.test(x));
+  if(!words.length)return null;
+  const get=w=>/^\d+$/.test(w)?Number(w):WORD_UNITS[w];
+  const h=get(words[0]);
+  if(!Number.isInteger(h)||h<1||h>12)return null;
+  let minutes=0;
+  if(words.length>=2){
+    if(words[1]==='oh'||words[1]==='o'||words[1]==='zero') minutes=words.length>=3?get(words[2]):0;
+    else minutes=get(words[1]);
+    if(words.length>=3&&minutes>=20&&minutes%10===0)minutes+=get(words[2]);
+  }
+  if(!Number.isInteger(minutes)||minutes<0||minutes>=60)return null;
+  return String(h).padStart(2,'0')+':'+String(minutes).padStart(2,'0');
+}
+function spokenDateToValue(text){
+  const tokens=speechTokens(text);
+  const monthIndex=tokens.findIndex(x=>SPOKEN_MONTHS.includes(x));
+  if(monthIndex<0)return null;
+  const month=SPOKEN_MONTHS.indexOf(tokens[monthIndex])+1;
+  const remainder=tokens.slice(monthIndex+1).filter(x=>!['the','of'].includes(x));
+  if(!remainder.length)return null;
+  const day=numericWordsToValue(remainder.join(' '));
+  const n=Number(day);
+  if(!Number.isInteger(n)||n<1||n>31)return null;
+  return month+'.'+String(n).padStart(2,'0');
+}
+function spokenDigitsToValue(text){
+  const tokens=speechTokens(text);
+  let out='';
+  for(let i=0;i<tokens.length;i++){
+    const token=tokens[i];
+    if(token==='double'||token==='triple'){
+      const n=WORD_UNITS[tokens[++i]],times=token==='double'?2:3;
+      if(!Number.isInteger(n)||n>9)return null;
+      out+=String(n).repeat(times);
+    }else if(Object.hasOwn(WORD_UNITS,token)&&WORD_UNITS[token]<=9)out+=WORD_UNITS[token];
+    else if(/^\d+$/.test(token))out+=token;
+    else return null;
+  }
+  return out||null;
+}
+function spokenYearToValue(text){
+  const tokens=speechTokens(text);
+  if(tokens.length<2)return null;
+  const century=WORD_UNITS[tokens[0]];
+  if(century!==19&&century!==20)return null;
+  const remainder=numericWordsToValue(tokens.slice(1).join(' '));
+  const n=Number(remainder);
+  if(!Number.isInteger(n)||n<0||n>=100)return null;
+  return String(century*100+n);
+}
+function spokenCodeToValue(text){
+  const tokens=speechTokens(text).filter(w=>!['flight','postcode','code','number','the','is'].includes(w));
+  let result='';
+  for(const token of tokens){
+    if(/^[a-z]$/.test(token))result+=token.toUpperCase();
+    else if(Object.hasOwn(WORD_UNITS,token)&&WORD_UNITS[token]<=9)result+=WORD_UNITS[token];
+    else if(/^\d+$/.test(token))result+=token;
+    else return null;
+  }
+  return result||null;
+}
 function spokenAnswerMatches(q,spoken){
-  const actual=normalizeSpoken(spoken),target=normalizeSpoken(q.audioText),answer=normalizeSpoken(q.kind==='word'?q.word||q.audioText:q.answer);
-  if(!actual)return false;
+  const raw=String(spoken||'').trim();
+  if(!raw)return false;
+  const actual=normalizeSpoken(raw),target=normalizeSpoken(q.audioText),answer=normalizeSpoken(q.kind==='word'?q.word||q.audioText:q.answer);
   if(actual===target||actual===answer)return true;
-  if(/^[0-9]$/.test(answer)&&actual===answer)return true;
-  const flat=s=>s.replace(/[^a-z0-9]/g,'');
-  if(flat(actual)===flat(target)||flat(actual)===flat(answer))return true;
-  const numberLike=actual.replace(/[,\s]/g,'');
-  if(/^\d+(?:[.:]\d+)?%?$/.test(numberLike)&&numberLike===flat(answer))return true;
+  if(q.kind==='word')return normalizeSpelling(raw)===normalizeSpelling(q.word||q.audioText);
+  const expected=normalizeAnswer(q,q.answer);
+  const matches=value=>value!=null&&normalizeAnswer(q,value)===expected;
+  if(matches(raw))return true;
+  if(expected.includes(':'))return matches(spokenTimeToValue(raw));
+  if(effectiveLevel(q)===16&&expected.includes('.'))return matches(spokenDateToValue(raw));
+  // Flight numbers and postcodes: do not accidentally treat a numeric fragment as the entire code.
+  if(effectiveLevel(q)===14)return matches(spokenCodeToValue(raw));
+  if(effectiveLevel(q)===13)return matches(spokenDigitsToValue(raw));
+  if(effectiveLevel(q)===10&&matches(spokenYearToValue(raw)))return true;
+  const value=numericWordsToValue(raw);
+  if(matches(value))return true;
+  // 'zero one' spoken as digits is not the same answer as 'one' when leading zero matters.
   return false;
 }
+
 function startSpeechRecognition(){
   if(!session||!session.isStarted||runtime.feedback||$('reflectionMode').value!=='speak')return;
   finishSpeechRecognition();
@@ -1171,11 +1316,12 @@ function stopSpeech(){
   if('speechSynthesis' in window){try{window.speechSynthesis.cancel();}catch(e){}}
   runtime.speaking=false;cancelAnimationFrame(runtime.animation);
 }
-function speechFallback(token){
+function speechFallback(token,reason='语音播放失败'){
   if(token!==runtime.token||!session||runtime.feedback)return;
-  clearSpeechTimers();stopNoise();runtime.speaking=false;
-  runtime.readyAt=performance.now();updateListeningStatus();startTimer();
-  console.warn('语音引擎未返回完成事件；启用保底计时。');
+  clearSpeechTimers();stopNoise();runtime.speaking=false;runtime.audioPhase='failed';
+  runtime.readyAt=null;runtime.timingEstimated=false;
+  cancelAnimationFrame(runtime.animation);updateListeningStatus();
+  const status=$('playStatus');if(status)status.textContent=reason+' · 点击“重听”重试（本题不计时）';
 }
 function speakCurrent(){
   if(!session||!session.isStarted||runtime.feedback||$('reflectionMode').value==='speak')return;
@@ -1183,42 +1329,40 @@ function speakCurrent(){
   const q=currentQuestion(),token=runtime.token,synth=window.speechSynthesis;
   const accent=questionAccent();
   $('currentAccent').textContent=session.levelId==='num:19'?accentLabel(accent):session.levelId==='num:20'?noiseLabel(q.practiceNoise):'美音 · US';
-  runtime.speaking=true;runtime.readyAt=null;runtime.early=false;updateListeningStatus();
+  runtime.speaking=true;runtime.audioPhase='starting';runtime.readyAt=null;runtime.timingEstimated=false;
+  runtime.early=false;updateListeningStatus();
   if(!synth||typeof SpeechSynthesisUtterance!=='function'){
-    speechFallback(token);return;
+    speechFallback(token,'当前设备不支持系统英语语音');return;
   }
   const voiceMatch=voiceForAccent(accent);
-  if(!voiceMatch){
-    runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
-    if($('playStatus'))$('playStatus').textContent='请检查手机系统英语语音并点击重听';
-    return;
-  }
-  // Only punctuation and a short queue gap; Safari does not guarantee media-routing.
+  if(!voiceMatch){speechFallback(token,'没有找到可用的英语语音');return;}
   const utterance=new SpeechSynthesisUtterance('. '+String(q.audioText||''));
   q.actualVoice=voiceMatch.actualLocale;q.approximateAccent=voiceMatch.approximate;
-  utterance.lang=voiceMatch.actualLocale;utterance.rate=clamp((Number(state.settings.rate)||1)*(voiceMatch.approximate?({ 'en-IN':.95,'en-IE':1.03,'en-ZA':.97,'en-NZ':1.02,'en-CA':1.01 }[accent]||1):1),.8,1.5);
-  utterance.pitch=voiceMatch.approximate?({'en-IN':1.07,'en-IE':1.04,'en-ZA':.97,'en-NZ':1.03}[accent]||1):1;utterance.volume=1;
-  utterance.voice=voiceMatch.voice;
-  let completed=false;
-  const settle=()=>{
+  utterance.lang=voiceMatch.actualLocale;
+  utterance.rate=clamp((Number(state.settings.rate)||1)*(voiceMatch.approximate?({ 'en-IN':.95,'en-IE':1.03,'en-ZA':.97,'en-NZ':1.02,'en-CA':1.01 }[accent]||1):1),.8,1.5);
+  utterance.pitch=voiceMatch.approximate?({'en-IN':1.07,'en-IE':1.04,'en-ZA':.97,'en-NZ':1.03}[accent]||1):1;
+  utterance.volume=1;utterance.voice=voiceMatch.voice;
+  let completed=false,hasStarted=false;
+  const settle=(estimated=false)=>{
     if(completed||token!==runtime.token||!session||runtime.feedback)return;
     completed=true;clearSpeechTimers();stopNoise();runtime.speaking=false;
+    runtime.audioPhase='ready';runtime.timingEstimated=estimated;
     runtime.readyAt=performance.now();updateListeningStatus();startTimer();
   };
   utterance.onstart=()=>{
-    if(token!==runtime.token)return;
-    speechStartedAt=performance.now();runtime.speaking=true;updateListeningStatus();startNoise();
-    // Long-number sentences may need more time. Safari sometimes skips onend.
+    if(token!==runtime.token||completed)return;
+    hasStarted=true;speechStartedAt=performance.now();runtime.audioPhase='playing';
+    runtime.speaking=true;updateListeningStatus();startNoise();
     const estimated=Math.min(60000,Math.max(4500,String(q.audioText||'').length*170/utterance.rate+1800));
     if(speechWatchdog!==null)clearTimeout(speechWatchdog);
-    speechWatchdog=setTimeout(settle,estimated);
+    // A watchdog ending is not a verified audio end. Mark timing as estimated.
+    speechWatchdog=setTimeout(()=>settle(true),estimated);
   };
-  utterance.onend=settle;
+  utterance.onend=()=>settle(false);
   utterance.onerror=e=>{
-    if(token!==runtime.token)return;
+    if(token!==runtime.token||completed)return;
     if(e?.error==='interrupted'||e?.error==='canceled')return;
-    console.warn('TTS 失败',e?.error);
-    settle();
+    completed=true;speechFallback(token,'语音播报中断'+(e?.error?' ('+e.error+')':''));
   };
   speechWakeTimer=setTimeout(()=>{
     speechWakeTimer=null;
@@ -1226,12 +1370,13 @@ function speakCurrent(){
     try{
       if(synth.paused)synth.resume();
       synth.speak(utterance);
-      // If onstart never arrives, recover rather than freezing on 'playing'.
-      speechWatchdog=setTimeout(settle,Math.min(65000,Math.max(6000,String(q.audioText||'').length*190/utterance.rate+3000)));
-    }catch(e){settle();}
+      // onstart never fires on some iOS versions; treat this as failure, not successful playback.
+      speechWatchdog=setTimeout(()=>{
+        if(!hasStarted&&!completed){completed=true;speechFallback(token,'语音未能启动');}
+      },Math.min(12000,Math.max(5500,String(q.audioText||'').length*95/utterance.rate+2800)));
+    }catch(e){completed=true;speechFallback(token,'语音播报异常');}
   },80);
 }
-
 function speakPlain(text){
   if(!('speechSynthesis' in window)||typeof window.SpeechSynthesisUtterance!=='function'){
     toast('当前浏览器不支持系统语音。');return;
@@ -1259,8 +1404,8 @@ function startTimer(){
 }
 function updateListeningStatus(){
   const timer=$('timerText'),status=$('playStatus'),wave=$('wave');
-  if(timer)timer.textContent=runtime.readyAt!==null?'0.00s':runtime.speaking?'播放中':'—';
-  if(status)status.textContent=runtime.speaking?'请认真盲听':'朗读结束后开始计时';
+  if(timer)timer.textContent=runtime.readyAt!==null?'0.00s':runtime.audioPhase==='failed'?'播报失败':runtime.speaking?'播放中':'—';
+  if(status)status.textContent=runtime.audioPhase==='failed'?'语音未播出，请点击“重听”重试':runtime.speaking?'请认真盲听':runtime.timingEstimated?'播报结束时间为估算值，不计入速度成绩':'朗读结束后开始计时';
   if(wave)wave.classList.toggle('paused',!runtime.speaking);
   const playButton=$('playAudio');
   if(playButton)playButton.textContent=runtime.speaking?'正在播放 · 点击可重播':'▶ 播放 / 重听';
@@ -1276,7 +1421,7 @@ function beginQuestion(){
   }
   const q=currentQuestion();
   runtime.input='';runtime.selected=-1;runtime.letter=false;
-  runtime.feedback=false;runtime.readyAt=null;runtime.lastZeroTapAt=0;
+  runtime.feedback=false;runtime.readyAt=null;runtime.lastZeroTapAt=0;runtime.audioPhase='idle';runtime.timingEstimated=false;runtime.firstKeyAt=null;runtime.replayCount=0;
   showPage('practice');
   $('practiceTitle').textContent=session.title;
   $('voiceRate').value=String(state.settings.rate);
@@ -1320,6 +1465,9 @@ function renderInput(){
     if(mark){
       el.classList.add('has-inline-separator');
       el.innerHTML='<span class="answer-value">'+esc(value||'用下方数字键盘作答')+'</span><button type="button" class="inline-separator" data-action="insert-separator">输入 '+esc(mark)+'</button>';
+    }else if(q.kind==='numeric' && /^\d{7,}$/.test(String(q.answer))){
+      el.classList.add('has-inline-separator');
+      el.innerHTML='<span class="answer-value">'+esc(value||'输入完整数字后自动判断')+'</span><button type="button" class="inline-separator" data-action="confirm-number">确认 ✓</button>';
     }else el.textContent=value||'用下方数字键盘作答';
   }
 }
@@ -1390,12 +1538,12 @@ function inputLooksComplete(q,typed){
 function scheduleAutoSubmit(){
   clearAutoSubmitTimer();
   if(!session||!session.isStarted||runtime.feedback||!runtime.input.trim()||$('reflectionMode').value==='spell')return;
+  if(runtime.audioPhase==='failed')return;
   const q=currentQuestion();
   if(inputLooksComplete(q,runtime.input)){submitAnswer();return;}
-  runtime.autoSubmitTimer=setTimeout(()=>{
-    runtime.autoSubmitTimer=null;
-    if(session&&!runtime.feedback&&runtime.input.trim())submitAnswer();
-  },1800);
+  // Incomplete numbers must NEVER be auto-marked wrong after a pause.
+  // Users can explicitly confirm a partial/long answer using the inline confirmation control.
+  if(q.kind==='numeric')return;
 }
 function pressKey(key){
   if(!session||!session.isStarted||runtime.feedback||$('reflectionMode').value==='speak')return;
@@ -1416,16 +1564,18 @@ function pressKey(key){
     runtime.input+=key;
     runtime.lastZeroTapAt=key==='0'&&mark?time:0;
   }
+  if(runtime.firstKeyAt===null)runtime.firstKeyAt=performance.now();
   renderInput();
   if(mode!=='spell')scheduleAutoSubmit();
 }
 function keyboardAction(action){
   if(!session||!session.isStarted)return;
   if(action==='replay'||action==='play'||action==='replay-feedback'){
-    if(action==='replay-feedback')speakPlain(currentQuestion().audioText);else speakCurrent();return;
+    if(action==='replay-feedback')speakPlain(currentQuestion().audioText);else {runtime.replayCount++;runtime.input='';runtime.selected=-1;runtime.firstKeyAt=null;renderInput();speakCurrent();}return;
   }
   if(runtime.feedback){if(action==='next')nextQuestion();return;}
   if(action==='confirm-spelling'){if($('reflectionMode').value==='spell')submitAnswer();return;}
+  if(action==='confirm-number'){if($('reflectionMode').value==='listen'&&currentQuestion()?.kind==='numeric')submitAnswer();return;}
   if(action==='mic-start'){startSpeechRecognition();return;}
   if(action==='self-pass'){submitAnswer(false,'自检通过');return;}
   if(action==='self-fail'){submitAnswer(true,'自检未通过');return;}
@@ -1471,13 +1621,13 @@ function normalizeAnswer(q,value){
 function questionKey(q){return q.kind==='word'?'word:'+q.levelId+':'+q.wordId:'num:'+q.levelId+':'+q.answer;}
 function captureWeak(q,correct,elapsed){
   const key=questionKey(q),item=state.errorPool[key];
-  if(!correct || elapsed>1800){
+  if(!correct || (elapsed!==null&&elapsed>1800)){
     const entry=item||{key,errors:0,slow:0,recovered:0};
     const clone={...q};delete clone.choices;
     entry.question=clone;entry.updatedAt=Date.now();entry.recovered=0;
     if(!correct)entry.errors++;else entry.slow++;
     state.errorPool[key]=entry;
-  }else if(item){
+  }else if(item&&elapsed!==null){
     item.recovered=(item.recovered||0)+1;
     if(item.recovered>=2)delete state.errorPool[key];
     else item.updatedAt=Date.now();
@@ -1486,27 +1636,38 @@ function captureWeak(q,correct,elapsed){
 function submitAnswer(forceUnknown=false,spokenResult){
   if(!session||!session.isStarted||runtime.feedback||session.awaitingNext)return;
   const q=currentQuestion(),mode=$('reflectionMode').value,speaking=mode==='speak',spelling=mode==='spell';
+  if(!speaking&&runtime.audioPhase==='failed'){
+    toast('音频没有成功播放，本题不会计分。请先点击“重听”。');return;
+  }
   let given=speaking?String((spokenResult??runtime.speechText)||''):spelling?runtime.input:q.kind==='word'?(runtime.selected<0?'未选择':q.choices[runtime.selected]):runtime.input;
   if(!speaking&&(spelling||q.kind==='numeric')&&!String(given).trim()){toast('请先输入答案');return;}
   const correct=spelling?!forceUnknown&&normalizeSpelling(spellingTarget(q))===normalizeSpelling(given):speaking?!forceUnknown&&((spokenResult==='自检通过')||spokenAnswerMatches(q,given)):!forceUnknown&&normalizeAnswer(q,q.answer)===normalizeAnswer(q,given);
-  const early=runtime.readyAt===null;
-  const elapsed=early?0:Math.max(0,Math.round(performance.now()-runtime.readyAt));
+  const early=!speaking&&runtime.readyAt===null;
+  const estimated=!speaking&&runtime.timingEstimated;
+  const eligible=!early&&!estimated&&runtime.readyAt!==null;
+  const elapsed=eligible?Math.max(0,Math.round(performance.now()-runtime.readyAt)):null;
+  const firstMs=eligible&&runtime.firstKeyAt!==null?Math.max(0,Math.round(runtime.firstKeyAt-runtime.readyAt)):null;
   runtime.early=early;
   stopSpeech();finishSpeechRecognition();clearAutoSubmitTimer();clearFlowTimer();
   runtime.feedback=true;runtime.speaking=false;
-  session.correct+=Number(correct);session.sumMs+=elapsed;
-  if(correct)session.fastestMs=session.fastestMs===null?elapsed:Math.min(session.fastestMs,elapsed);
+  session.correct+=Number(correct);
+  if(eligible){session.sumMs=(Number(session.sumMs)||0)+elapsed;session.validLatencyCount=(session.validLatencyCount||0)+1;}
+  else{session.unmeasuredCount=(session.unmeasuredCount||0)+1;if(early)session.earlyCount=(session.earlyCount||0)+1;}
+  if(firstMs!==null){session.firstResponseTotal=(session.firstResponseTotal||0)+firstMs;session.firstResponseCount=(session.firstResponseCount||0)+1;}
+  if(runtime.replayCount){session.replayedQuestions=(session.replayedQuestions||0)+1;}
+  if(correct&&eligible)session.fastestMs=session.fastestMs===null?elapsed:Math.min(session.fastestMs,elapsed);
   state.totalAnswered=(Number(state.totalAnswered)||0)+1;
   state.totalQuestions=state.totalAnswered;
   state.totalCorrect=(Number(state.totalCorrect)||0)+Number(correct);
   captureWeak(q,correct,elapsed);
-  session.awaitingNext=true;session.lastFeedback={correct,given,elapsed,early,mode};
+  session.awaitingNext=true;session.lastFeedback={correct,given,elapsed,early,estimated,mode};
   state.activeSession=session;persist();
   $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
   renderLab();
   if(correct){
     correctTone();
-    $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+(early?'提前完成':msText(elapsed))+'</div>'+
+    const speedText=early?'提前作答 · 不计反应时':estimated?'时间估算 · 不计速度':msText(elapsed);
+    $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+speedText+'</div>'+
       (session.levelId==='num:19'?'<div class="micro" style="text-align:center;margin:8px">'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?'（近似播报）':'')+'</div>':'');
     $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
     const nextDelay=spelling?SPELL_NEXT_DELAY_MS:FLOW_NEXT_DELAY_MS;
@@ -1528,13 +1689,13 @@ function phoneticBreakdown(text){
 }
 function renderFeedback(q,correct,given,elapsed,early){
   const verdict=correct?'回答正确':'需要巩固';
-  const speed=early?'提前提交 · 记为 <0.5s':elapsed<500?'极速反射':elapsed>2500?'反应偏慢 · 已加入特训':'反应正常';
+  const speed=early?'提前作答 · 不计入速度成绩':elapsed===null?'播报完成时间不确定 · 不计入速度成绩':elapsed<500?'极速反射':elapsed>2500?'反应偏慢 · 已加入特训':'反应正常';
   const spelling=$('reflectionMode').value==='spell'||session?.lastFeedback?.mode==='spell';
   const answerShown=spelling?spellingTarget(q):(q.displayAnswer || (q.kind==='numeric'&&/^\d{4,}$/.test(q.answer)&&Number(q.levelId)!==13&&Number(q.levelId)!==14?integerString(q.answer):q.answer));
   const reading=q.kind==='word'?(q.word||q.audioText):q.audioText;
   const ipa=q.kind==='word'?(q.phonetic||'音标未提供'):phoneticBreakdown(reading);
   const optional=q.kind==='word'?'<div class="feedback-line"><span class="k">中文释义</span>'+esc(q.meaning||q.answer)+'</div>':'';
-  const timerLabel=early?'&lt;0.5s':msText(elapsed);
+  const timerLabel=elapsed===null?'未计时':msText(elapsed);
   const twin=session?.mode==='weak'&&q.kind==='numeric'?(q.confusableBase||getConfusableTwin(q.answer)):null;
   const comparison=twin?'<div class="feedback-line"><span class="k">⚡ 易混对比提示</span>'+esc('本题 '+q.answer+'（'+q.audioText+'），注意与 '+(q.confusableBase||twin)+' 区分；留意重音和数量级。')+'</div>':'';
   const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题目标口音</span>'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?' · 使用设备 '+esc(q.actualVoice||'英语语音')+' 近似播报':'')+'</div>':'';
@@ -1553,9 +1714,11 @@ function finishSession(){
   stopSpeech();clearFlowTimer();finishSpeechRecognition();
   const completed=session;
   const accuracy=Math.round(completed.correct/completed.queue.length*100);
-  const avg=Math.round(completed.sumMs/completed.queue.length);
+  const validCount=Number.isFinite(completed.validLatencyCount)?completed.validLatencyCount:
+    (Number(completed.sumMs)>0?completed.queue.length:0);
+  const avg=validCount?Math.round(completed.sumMs/validCount):null;
   const passed=accuracy>=80;
-  const stars=!passed?0:accuracy===100 && avg<=1500?3:accuracy>=90 && avg<=2500?2:1;
+  const stars=!passed?0:accuracy===100 && avg!==null && avg<=1500?3:accuracy>=90 && avg!==null && avg<=2500?2:1;
   if(completed.mode==='lesson'){
     const current=state.levels[completed.levelId]||{attempts:0,stars:0,passed:false};
     current.attempts=(current.attempts||0)+1;
@@ -1568,7 +1731,7 @@ function finishSession(){
   }
   state.activeSession=null;persist();
   session=null;
-  $('summaryPanel').innerHTML=`<div class="summary-title">${passed||completed.mode!=='lesson'?'练习完成':'本关尚未通关'}</div><div class="summary-stars">${completed.mode==='lesson'?('★'.repeat(stars)+'☆'.repeat(3-stars)):'✓'}</div><div class="micro">${completed.mode==='lesson'?(passed?'已达通关标准':'通关需要准确率至少 80%'):'自由/弱项练习不改变关卡通关状态'}</div><div class="summary-grid"><div><strong>${accuracy}%</strong><span>准确率</span></div><div><strong>${msText(avg)}</strong><span>平均反应</span></div><div><strong>${completed.correct}/${completed.queue.length}</strong><span>答对题数</span></div></div><p class="hint" style="text-align:left">三星：全对且均速 ≤1.5s；二星：准确率 ≥90% 且均速 ≤2.5s；一星：准确率 ≥80%。</p><div class="summary-actions"><button class="btn outline" id="summaryHome">返回课程</button><button class="btn primary" id="summaryAgain">再练一次</button></div>`;
+  $('summaryPanel').innerHTML=`<div class="summary-title">${passed||completed.mode!=='lesson'?'练习完成':'本关尚未通关'}</div><div class="summary-stars">${completed.mode==='lesson'?('★'.repeat(stars)+'☆'.repeat(3-stars)):'✓'}</div><div class="micro">${completed.mode==='lesson'?(passed?'已达通关标准':'通关需要准确率至少 80%'):'自由/弱项练习不改变关卡通关状态'}</div><div class="summary-grid"><div><strong>${accuracy}%</strong><span>准确率</span></div><div><strong>${avg===null?'—':msText(avg)}</strong><span>有效平均反应</span></div><div><strong>${completed.correct}/${completed.queue.length}</strong><span>答对题数</span></div></div><div class="micro" style="margin-bottom:8px">有效计时 ${validCount}/${completed.queue.length} 题 · 提前作答 ${completed.earlyCount||0} 题 · 重听 ${completed.replayedQuestions||0} 题</div><p class="hint" style="text-align:left">三星：全对且均速 ≤1.5s；二星：准确率 ≥90% 且均速 ≤2.5s；一星：准确率 ≥80%。</p><div class="summary-actions"><button class="btn outline" id="summaryHome">返回课程</button><button class="btn primary" id="summaryAgain">再练一次</button></div>`;
   $('summaryMask').classList.add('visible');
   $('summaryHome').onclick=()=>{$('summaryMask').classList.remove('visible');refresh();showPage('home');};
   $('summaryAgain').onclick=()=>{$('summaryMask').classList.remove('visible');if(completed.mode==='weak')startWeak(completed.queue.length);else startSession(completed.levelId,completed.mode,completed.queue.length);};

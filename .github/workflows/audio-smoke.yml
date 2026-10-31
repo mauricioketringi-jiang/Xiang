@@ -107,8 +107,30 @@ jobs:
             if((await page.locator('.fast-feedback').count())!==0)throw Error('Spelling auto-submit was not disabled');
             await page.locator('.spell-confirm').click();
             if((await page.locator('.fast-feedback').count())!==1)throw Error('Manual spelling confirmation failed');
+            // V10 semantic speech, IPA and audio-error timing regression cases.
+            const semantic=await page.evaluate(()=>({
+              time:spokenAnswerMatches({kind:'numeric',levelId:11,answer:'04:15',audioText:'time question'},'four fifteen'),
+              math:spokenAnswerMatches({kind:'numeric',levelId:17,answer:'50',audioText:'not fifteen, fifty'},'fifty'),
+              confusion:spokenAnswerMatches({kind:'numeric',levelId:17,answer:'50',audioText:'not fifteen, fifty'},'fifteen'),
+              fraction:spokenAnswerMatches({kind:'numeric',levelId:15,answer:'0.25',audioText:'a quarter'},'a quarter'),
+              year:spokenAnswerMatches({kind:'numeric',levelId:10,answer:'1998',audioText:'nineteen ninety eight'},'nineteen ninety eight'),
+              ipa:allWords().every(w=>w.phonetic && w.phonetic.startsWith('/'))
+            }));
+            if(!semantic.time||!semantic.math||semantic.confusion||!semantic.fraction||!semantic.year||!semantic.ipa)
+              throw Error('V10 numeric semantics or industrial IPA failed: '+JSON.stringify(semantic));
+            await page.evaluate(()=>{
+              window.speechSynthesis.speak=(u)=>setTimeout(()=>u.onerror?.({error:'audio-busy'}),10);
+              startSession('num:1');
+            });
+            await page.locator('.ready-start').click();
+            await page.waitForTimeout(175);
+            const failed=await page.evaluate(()=>({phase:runtime.audioPhase,rt:runtime.readyAt,answered:state.totalAnswered}));
+            if(failed.phase!=='failed'||failed.rt!==null)throw Error('V10 TTS failure must not start timing: '+JSON.stringify(failed));
+            await page.evaluate(()=>pressKey(session.queue[0].answer));
+            const after=await page.evaluate(()=>state.totalAnswered);
+            if(after!==failed.answered)throw Error('V10 failed audio must not count an answer');
             if(errors.length)throw Error('Page errors: '+errors.join(' | '));
-            console.log('PASS: V9 23 lessons, 10/20/30 select, standby, mid-training reset, spelling manual confirmation');
+            console.log('PASS: V10 23 lessons, TTS error timing guard, 116 IPA entries, semantic speech parser and V9 regressions');
             await b.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           JS
