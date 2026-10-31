@@ -40,17 +40,25 @@ jobs:
             });
             await page.goto('http://127.0.0.1:8765/',{waitUntil:'load'});
             const course=await page.evaluate(()=>allLessons().map(x=>x.id));
-            if(course.length!==22||course.filter(x=>x.startsWith('num:')).length!==20)
-              throw Error('All 18 original course categories must be preserved');
+            if(course.length!==23||course.filter(x=>x.startsWith('num:')).length!==20)
+              throw Error('Expected 20 numeric and 3 industrial English lessons');
             const options=await page.locator('#freeCount option').evaluateAll(xs=>xs.map(x=>x.value));
             if(JSON.stringify(options)!=='["10","30","50"]')throw Error('Wrong practice counts');
-            if(!(await page.locator('#flowMode').isChecked()))throw Error('Rapid-fire default off');
-            if((await page.locator('#accentMode').inputValue())!=='mixed')throw Error('US accent not default');
+            if((await page.locator('#flowMode').count())!==0)throw Error('Rapid-fire switch should be removed');
+            if((await page.locator('#keypadShell .key').count())!==0)throw Error('Keypad should only render inside practice');
+            const words=await page.evaluate(()=>wordGroups().map(g=>g.words.length));
+            if(words.length!==3||Math.min(...words)<30)throw Error('Industrial vocabulary is incomplete: '+words);
+            if((await page.locator('#accentMode').count())!==0||(await page.locator('#noiseMode').count())!==0)throw Error('Legacy challenge selectors remain');
+            if((await page.locator('#labPage article.card').count())!==3)throw Error('Lab has obsolete modules');
+            const special=await page.evaluate(()=>({accent:ACCENT_COUNTRIES.length,noise:NOISE_ENVIRONMENTS.length}));
+            if(special.accent!==8||special.noise!==4)throw Error('Random accents/noises are incomplete');
             await page.locator('[data-lesson="num:1"]').first().click();
             await page.waitForTimeout(100);
             const calls=await page.evaluate(()=>window.__calls.length);
             if(!calls)throw Error('No automatic TTS after starting a lesson');
             if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')throw Error('Wrong question count');
+            if((await page.locator('#keypadShell .key').count())!==15)throw Error('Expected 3x5 keypad');
+            if((await page.locator('.training-controls input[type=radio]').count())!==2)throw Error('Mode pills missing');
             await page.evaluate(()=>{runtime.readyAt=performance.now();pressKey(session.queue[0].answer);});
             const stats=await page.evaluate(()=>({answered:state.totalAnswered,correct:state.totalCorrect,saved:JSON.parse(localStorage.getItem(STORE_KEY)).totalAnswered}));
             if(stats.answered!==1||stats.correct!==1||stats.saved!==1)throw Error('Global statistics did not update');
@@ -58,7 +66,7 @@ jobs:
             await page.waitForTimeout(560);
             if(!(await page.evaluate(()=>session.index===1)))throw Error('Rapid-fire did not advance');
             if(errors.length)throw Error('Page errors: '+errors.join(' | '));
-            console.log('PASS: all 18 levels, 10/30/50, US default, immediate TTS, stats and rapid-fire');
+            console.log('PASS: all 23 lessons, 3 industrial banks, 8 accents, 4 noises, 3x5 keypad, stats and rapid-fire');
             await b.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           JS

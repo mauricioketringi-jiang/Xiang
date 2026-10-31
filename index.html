@@ -178,6 +178,23 @@
     .practice-top{padding-bottom:7px;}
     .keypad-extras{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;}
     .letter-actions{grid-template-columns:repeat(3,minmax(0,1fr));}
+
+    .settings-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:center;}
+    .settings-row .select,.settings-row .accent-display,.settings-row .question-count{box-sizing:border-box;min-width:0;width:100%;height:37px;min-height:37px;border-radius:10px;background:#F2F7F4;display:flex;justify-content:center;align-items:center;text-align:center;padding:4px 6px;font-size:12px;border:1px solid #E4EDE7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .settings-row .select{display:block;text-align:center;text-align-last:center;appearance:auto;-webkit-appearance:menulist;color:#27352F;}
+    .settings-row .accent-display{font-size:10px;line-height:1.15;white-space:normal;overflow-wrap:anywhere;}
+    .training-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .mode-pill{min-width:0;display:flex;justify-content:center;align-items:center;gap:7px;min-height:36px;border:1px solid #E3E9E7;background:#F6F8F7;border-radius:10px;color:#6A7771;font-size:12px;font-weight:750;cursor:pointer;}
+    .mode-pill.active{background:#E5F9EE;border:1.5px solid #07C160;color:#078949;}
+    .mode-pill input{width:15px;height:15px;accent-color:#07C160;margin:0;}
+    .training-controls input[type=hidden]{display:none;}
+    .keypad-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+    .keypad-shell{padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));}
+    .key{height:clamp(43px,6.1dvh,54px);min-height:43px;font-size:24px;border-radius:11px;}
+    .key.alt{font-size:15px;font-weight:800;background:#EEF2F1;}
+    .code-entry{width:100%;height:36px;border:0;outline:0;background:transparent;text-align:center;font:700 16px -apple-system,BlinkMacSystemFont,sans-serif;text-transform:uppercase;color:#26392F;}
+    .code-entry::placeholder{font-size:12px;opacity:.7;}
+    @media(max-height:700px){.key{height:40px;min-height:40px;}.listen-card{min-height:88px;}.practice-body{padding-top:6px;}.answer-display{min-height:40px;}}
   </style>
 </head>
 <body>
@@ -191,7 +208,7 @@
       <div id="lessonList"></div>
     </div>
     <nav class="tabbar" aria-label="底部导航">
-      <button class="tab active" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程与词库</button>
+      <button class="tab active" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程闯关</button>
       <button class="tab" data-tab="lab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M8 2v6M16 9v6M8 16v6"/></svg>特训与错题台</button>
     </nav>
   </section>
@@ -217,26 +234,13 @@
         <button class="btn primary full" id="freeStart" style="margin-top:14px">开始自由练习</button>
       </article>
       <article class="card lab-card">
-        <h2 class="lab-title">词库与数据管理</h2>
-        <p class="hint">导入 JSON / CSV 单词表，按 category 自动建立课程。所有学习数据只保存在当前浏览器。</p>
-        <div class="import-actions">
-          <button class="btn ghost" id="importVocab">导入 JSON / CSV</button>
-          <button class="btn outline" id="exportVocab">导出自定义词库</button>
-          <button class="btn outline" id="exportBackup">备份学习记录</button>
-          <button class="btn outline" id="importBackup">恢复学习备份</button>
-        </div>
-        <input class="hidden" id="vocabFile" type="file" accept=".json,.csv,application/json,text/csv">
-        <input class="hidden" id="backupFile" type="file" accept=".json,application/json">
-        <div class="notice">字段：id, category, subCategory, audioText, answer, meaning, phonetic, example。必填 answer、meaning；其余字段可缺省。UTF-8 CSV 支持带引号的逗号和换行。建议定期导出备份；清理浏览器数据会丢失本地记录。</div>
-      </article>
-      <article class="card lab-card">
         <div class="row between"><h2 class="lab-title">学习记录</h2><button class="btn danger" id="clearHistory">重置全部学习数据</button></div>
         <div class="micro" id="statsText"></div>
         <div class="micro" id="storageStatus" aria-live="polite"></div>
       </article>
     </div>
     <nav class="tabbar" aria-label="底部导航">
-      <button class="tab" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程与词库</button>
+      <button class="tab" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程闯关</button>
       <button class="tab active" data-tab="lab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M8 2v6M16 9v6M8 16v6"/></svg>特训与错题台</button>
     </nav>
   </section>
@@ -245,30 +249,14 @@
     <header class="practice-top">
       <div class="practice-topline"><button class="back" id="backPractice" aria-label="返回">‹</button><div class="practice-title" id="practiceTitle">练习</div><span class="combo" id="comboText">COMBO 0</span></div>
       <div class="settings-row">
-        <span class="accent-display" id="currentAccent">美音 · US</span>
+        <span class="accent-display" id="currentAccent" aria-live="polite">美音 · US</span>
         <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
         <span class="question-count" id="questionCount">1 / 10</span>
       </div>
-      <div class="training-controls">
-        <label class="flow-toggle"><input type="checkbox" id="flowMode" checked> ⚡ 极速连击</label>
-        <select class="select compact" id="reflectionMode" aria-label="反射训练方式">
-          <option value="listen">听音按键</option><option value="speak">🎙️ 看数开口</option>
-        </select>
-      </div>
-      <div class="advanced-modes" id="lessonModes" hidden>
-        <select class="select compact" id="accentMode" aria-label="课程口音模式">
-          <option value="mixed">🎲 多国口音盲盒混播</option>
-          <option value="en-US">🇺🇸 美音 · US</option>
-          <option value="en-GB">🇬🇧 英音 · UK</option>
-          <option value="en-AU">🇦🇺 澳音 · AU</option>
-
-        </select>
-        <select class="select compact" id="noiseMode" aria-label="课程底噪模式">
-          <option value="clean">🔇 纯净标准</option>
-          <option value="telephone">📻 电话分机</option>
-          <option value="street">✈️ 嘈杂环境音</option>
-          <option value="random">🎲 随机环境挑战</option>
-        </select>
+      <div class="training-controls" role="radiogroup" aria-label="训练方式">
+        <label class="mode-pill active"><input type="radio" name="reflectionModeChoice" value="listen" checked><span>🎧 听音按键</span></label>
+        <label class="mode-pill"><input type="radio" name="reflectionModeChoice" value="speak"><span>🎙️ 看数开口</span></label>
+        <input type="hidden" id="reflectionMode" value="listen">
       </div>
       <div class="tiny-track"><div class="tiny-fill" id="questionFill"></div></div>
     </header>
@@ -296,7 +284,7 @@ const shuffle = arr => { const a = [...arr]; for(let i = a.length - 1; i > 0; i-
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const msText = ms => (Number(ms) / 1000).toFixed(2) + 's';
 const integerString = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1,flowMode:true},courseRevision:2, levels:{}, errorPool:{}, imports:[], totalQuestions:0, totalAnswered:0, totalCorrect:0, activeSession:null}; }
+function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1},courseRevision:2, levels:{}, errorPool:{}, totalQuestions:0, totalAnswered:0, totalCorrect:0, activeSession:null}; }
 function migrateLegacyCourseIds(raw){
   if(!raw||raw.courseRevision>=2)return raw;
   const mapId=id=>id==='num:15'?'num:17':id==='num:16'?'num:18':id;
@@ -328,7 +316,22 @@ function migrateLegacyCourseIds(raw){
 function normalizeStoredState(raw){
   raw=migrateLegacyCourseIds(raw);
   if(!raw || raw.version !== 1) return emptyState();
-  return {...emptyState(), ...raw, updatedAt:Number(raw.updatedAt)||0, totalAnswered:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),totalQuestions:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),totalCorrect:Math.max(0,Number(raw.totalCorrect)||0),settings:{...emptyState().settings,...raw.settings,locale:'en-US',flowMode:raw.settings?.flowMode!==false}, levels:raw.levels || {}, errorPool:raw.errorPool || {}, imports:Array.isArray(raw.imports)?raw.imports:[]};
+  const availableWordIds=new Set([
+    'word:电工与电气工程核心词','word:自动化与智能控制核心词','word:高频工程短句、词组与句型'
+  ]);
+  const isAvailable=id=>!String(id||'').startsWith('word:')||availableWordIds.has(String(id));
+  const levels=Object.fromEntries(Object.entries(raw.levels||{}).filter(([id])=>isAvailable(id)));
+  const errorPool=Object.fromEntries(Object.entries(raw.errorPool||{}).filter(([,entry])=>
+    entry&&entry.question&&isAvailable(entry.question.levelId)));
+  const activeSession=raw.activeSession&&isAvailable(raw.activeSession.levelId)?raw.activeSession:null;
+  // Removed legacy AI/medical courses and imported-vocabulary data no longer participate in the app.
+  const {imports:deprecatedImports,...saved}=raw;
+  return {...emptyState(),...saved,updatedAt:Number(raw.updatedAt)||0,
+    totalAnswered:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),
+    totalQuestions:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),
+    totalCorrect:Math.max(0,Number(raw.totalCorrect)||0),
+    settings:{...emptyState().settings,...raw.settings,locale:'en-US'},
+    levels,errorPool,activeSession};
 }
 let storageSource='未检测';
 function loadState(){
@@ -647,30 +650,13 @@ const stages=[
 ];
 
 
-const examples=[
-  {id:'ai-1',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'algorithm',answer:'algorithm',meaning:'算法',phonetic:'/ˈælɡərɪðəm/',example:'The algorithm checks every input.'},
-  {id:'ai-2',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'dataset',answer:'dataset',meaning:'数据集',phonetic:'/ˈdeɪtəset/',example:'We need a clean dataset.'},
-  {id:'ai-3',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'inference',answer:'inference',meaning:'推理；推断',phonetic:'/ˈɪnfərəns/',example:'The model performs inference locally.'},
-  {id:'ai-4',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'latency',answer:'latency',meaning:'延迟；时延',phonetic:'/ˈleɪtənsi/',example:'Low latency is important.'},
-  {id:'ai-5',category:'计算机与AI核心词',subCategory:'软件开发',audioText:'compiler',answer:'compiler',meaning:'编译器',phonetic:'/kəmˈpaɪlər/',example:'The compiler reports an error.'},
-  {id:'ai-6',category:'计算机与AI核心词',subCategory:'软件开发',audioText:'variable',answer:'variable',meaning:'变量',phonetic:'/ˈveriəbl/',example:'Set the variable before startup.'},
-  {id:'ai-7',category:'计算机与AI核心词',subCategory:'网络',audioText:'bandwidth',answer:'bandwidth',meaning:'带宽',phonetic:'/ˈbændwɪdθ/',example:'The network needs more bandwidth.'},
-  {id:'ai-8',category:'计算机与AI核心词',subCategory:'网络',audioText:'protocol',answer:'protocol',meaning:'通信协议',phonetic:'/ˈproʊtəkɔːl/',example:'Check the communication protocol.'},
-  {id:'biz-1',category:'医学与商务高频词',subCategory:'医学',audioText:'diagnosis',answer:'diagnosis',meaning:'诊断',phonetic:'/ˌdaɪəɡˈnoʊsɪs/',example:'The doctor explains the diagnosis.'},
-  {id:'biz-2',category:'医学与商务高频词',subCategory:'医学',audioText:'symptom',answer:'symptom',meaning:'症状',phonetic:'/ˈsɪmptəm/',example:'Describe every symptom clearly.'},
-  {id:'biz-3',category:'医学与商务高频词',subCategory:'医学',audioText:'treatment',answer:'treatment',meaning:'治疗',phonetic:'/ˈtriːtmənt/',example:'The treatment takes several days.'},
-  {id:'biz-4',category:'医学与商务高频词',subCategory:'商务',audioText:'quotation',answer:'quotation',meaning:'报价；报价单',phonetic:'/kwoʊˈteɪʃən/',example:'Please send us a quotation.'},
-  {id:'biz-5',category:'医学与商务高频词',subCategory:'商务',audioText:'invoice',answer:'invoice',meaning:'发票',phonetic:'/ˈɪnvɔɪs/',example:'Please issue the invoice.'},
-  {id:'biz-6',category:'医学与商务高频词',subCategory:'商务',audioText:'shipment',answer:'shipment',meaning:'货运；出货',phonetic:'/ˈʃɪpmənt/',example:'The shipment arrives tomorrow.'},
-  {id:'biz-7',category:'医学与商务高频词',subCategory:'商务',audioText:'deadline',answer:'deadline',meaning:'截止期限',phonetic:'/ˈdedlaɪn/',example:'The deadline is next Friday.'},
-  {id:'biz-8',category:'医学与商务高频词',subCategory:'商务',audioText:'negotiation',answer:'negotiation',meaning:'谈判；协商',phonetic:'/nɪˌɡoʊʃiˈeɪʃən/',example:'The negotiation was successful.'}
-];
-function allWords(){return examples.concat(state.imports);}
+const examples=[{"id":"industrial-21-01","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"voltage","answer":"voltage","meaning":"电压","phonetic":"","example":""},{"id":"industrial-21-02","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"current","answer":"current","meaning":"电流","phonetic":"","example":""},{"id":"industrial-21-03","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"resistance","answer":"resistance","meaning":"电阻","phonetic":"","example":""},{"id":"industrial-21-04","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"circuit breaker","answer":"circuit breaker","meaning":"断路器","phonetic":"","example":""},{"id":"industrial-21-05","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"contactor","answer":"contactor","meaning":"接触器","phonetic":"","example":""},{"id":"industrial-21-06","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"relay","answer":"relay","meaning":"继电器","phonetic":"","example":""},{"id":"industrial-21-07","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"inverter","answer":"inverter","meaning":"变频器","phonetic":"","example":""},{"id":"industrial-21-08","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"variable frequency drive","answer":"variable frequency drive","meaning":"变频驱动器 VFD","phonetic":"","example":""},{"id":"industrial-21-09","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"transformer","answer":"transformer","meaning":"变压器","phonetic":"","example":""},{"id":"industrial-21-10","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"grounding","answer":"grounding","meaning":"接地","phonetic":"","example":""},{"id":"industrial-21-11","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"earthing","answer":"earthing","meaning":"保护接地","phonetic":"","example":""},{"id":"industrial-21-12","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"short circuit","answer":"short circuit","meaning":"短路","phonetic":"","example":""},{"id":"industrial-21-13","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"overload","answer":"overload","meaning":"过载","phonetic":"","example":""},{"id":"industrial-21-14","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"three-phase","answer":"three-phase","meaning":"三相","phonetic":"","example":""},{"id":"industrial-21-15","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"power supply","answer":"power supply","meaning":"电源","phonetic":"","example":""},{"id":"industrial-21-16","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"terminal","answer":"terminal","meaning":"接线端子","phonetic":"","example":""},{"id":"industrial-21-17","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"wiring","answer":"wiring","meaning":"电气接线","phonetic":"","example":""},{"id":"industrial-21-18","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"solenoid valve","answer":"solenoid valve","meaning":"电磁阀","phonetic":"","example":""},{"id":"industrial-21-19","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"fuse","answer":"fuse","meaning":"熔断器","phonetic":"","example":""},{"id":"industrial-21-20","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"circuit","answer":"circuit","meaning":"电路","phonetic":"","example":""},{"id":"industrial-21-21","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"voltage drop","answer":"voltage drop","meaning":"电压降","phonetic":"","example":""},{"id":"industrial-21-22","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"rated current","answer":"rated current","meaning":"额定电流","phonetic":"","example":""},{"id":"industrial-21-23","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"insulation","answer":"insulation","meaning":"绝缘","phonetic":"","example":""},{"id":"industrial-21-24","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"ground fault","answer":"ground fault","meaning":"接地故障","phonetic":"","example":""},{"id":"industrial-21-25","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"power factor","answer":"power factor","meaning":"功率因数","phonetic":"","example":""},{"id":"industrial-21-26","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"alternating current","answer":"alternating current","meaning":"交流电","phonetic":"","example":""},{"id":"industrial-21-27","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"direct current","answer":"direct current","meaning":"直流电","phonetic":"","example":""},{"id":"industrial-21-28","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"motor starter","answer":"motor starter","meaning":"电机起动器","phonetic":"","example":""},{"id":"industrial-21-29","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"thermal overload relay","answer":"thermal overload relay","meaning":"热过载继电器","phonetic":"","example":""},{"id":"industrial-21-30","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"terminal block","answer":"terminal block","meaning":"端子排","phonetic":"","example":""},{"id":"industrial-21-31","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"control cabinet","answer":"control cabinet","meaning":"控制柜","phonetic":"","example":""},{"id":"industrial-21-32","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"electrical schematic","answer":"electrical schematic","meaning":"电气原理图","phonetic":"","example":""},{"id":"industrial-21-33","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"shielded cable","answer":"shielded cable","meaning":"屏蔽电缆","phonetic":"","example":""},{"id":"industrial-21-34","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"protection earth","answer":"protection earth","meaning":"保护接地线","phonetic":"","example":""},{"id":"industrial-21-35","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"input voltage","answer":"input voltage","meaning":"输入电压","phonetic":"","example":""},{"id":"industrial-21-36","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"output voltage","answer":"output voltage","meaning":"输出电压","phonetic":"","example":""},{"id":"industrial-21-37","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"emergency stop circuit","answer":"emergency stop circuit","meaning":"急停回路","phonetic":"","example":""},{"id":"industrial-21-38","category":"电工与电气工程核心词","subCategory":"电气工程","audioText":"safety relay","answer":"safety relay","meaning":"安全继电器","phonetic":"","example":""},{"id":"industrial-22-01","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"servo motor","answer":"servo motor","meaning":"伺服电机","phonetic":"","example":""},{"id":"industrial-22-02","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"encoder","answer":"encoder","meaning":"编码器","phonetic":"","example":""},{"id":"industrial-22-03","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"sensor","answer":"sensor","meaning":"传感器","phonetic":"","example":""},{"id":"industrial-22-04","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"photoelectric sensor","answer":"photoelectric sensor","meaning":"光电传感器","phonetic":"","example":""},{"id":"industrial-22-05","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"proximity switch","answer":"proximity switch","meaning":"接近开关","phonetic":"","example":""},{"id":"industrial-22-06","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"torque","answer":"torque","meaning":"扭矩","phonetic":"","example":""},{"id":"industrial-22-07","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"homing","answer":"homing","meaning":"回零","phonetic":"","example":""},{"id":"industrial-22-08","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"jogging","answer":"jogging","meaning":"点动","phonetic":"","example":""},{"id":"industrial-22-09","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"axis","answer":"axis","meaning":"运动轴","phonetic":"","example":""},{"id":"industrial-22-10","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"electronic cam","answer":"electronic cam","meaning":"电子凸轮","phonetic":"","example":""},{"id":"industrial-22-11","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"debugging","answer":"debugging","meaning":"程序调试","phonetic":"","example":""},{"id":"industrial-22-12","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"commissioning","answer":"commissioning","meaning":"设备调试","phonetic":"","example":""},{"id":"industrial-22-13","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"fault alarm","answer":"fault alarm","meaning":"故障报警","phonetic":"","example":""},{"id":"industrial-22-14","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"emergency stop","answer":"emergency stop","meaning":"急停","phonetic":"","example":""},{"id":"industrial-22-15","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"parameter","answer":"parameter","meaning":"参数","phonetic":"","example":""},{"id":"industrial-22-16","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"synchronization","answer":"synchronization","meaning":"同步","phonetic":"","example":""},{"id":"industrial-22-17","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"packaging machine","answer":"packaging machine","meaning":"包装机","phonetic":"","example":""},{"id":"industrial-22-18","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"conveyor","answer":"conveyor","meaning":"输送带","phonetic":"","example":""},{"id":"industrial-22-19","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"cylinder","answer":"cylinder","meaning":"气缸","phonetic":"","example":""},{"id":"industrial-22-20","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"programmable logic controller","answer":"programmable logic controller","meaning":"可编程逻辑控制器","phonetic":"","example":""},{"id":"industrial-22-21","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"human machine interface","answer":"human machine interface","meaning":"人机界面","phonetic":"","example":""},{"id":"industrial-22-22","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"motion control","answer":"motion control","meaning":"运动控制","phonetic":"","example":""},{"id":"industrial-22-23","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"positioning","answer":"positioning","meaning":"定位","phonetic":"","example":""},{"id":"industrial-22-24","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"acceleration","answer":"acceleration","meaning":"加速度","phonetic":"","example":""},{"id":"industrial-22-25","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"deceleration","answer":"deceleration","meaning":"减速度","phonetic":"","example":""},{"id":"industrial-22-26","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"limit switch","answer":"limit switch","meaning":"限位开关","phonetic":"","example":""},{"id":"industrial-22-27","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"home position","answer":"home position","meaning":"原点位置","phonetic":"","example":""},{"id":"industrial-22-28","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"feedback signal","answer":"feedback signal","meaning":"反馈信号","phonetic":"","example":""},{"id":"industrial-22-29","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"cycle time","answer":"cycle time","meaning":"循环周期","phonetic":"","example":""},{"id":"industrial-22-30","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"interlock","answer":"interlock","meaning":"互锁","phonetic":"","example":""},{"id":"industrial-22-31","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"proximity sensor","answer":"proximity sensor","meaning":"接近传感器","phonetic":"","example":""},{"id":"industrial-22-32","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"vacuum generator","answer":"vacuum generator","meaning":"真空发生器","phonetic":"","example":""},{"id":"industrial-22-33","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"pneumatic valve","answer":"pneumatic valve","meaning":"气动阀","phonetic":"","example":""},{"id":"industrial-22-34","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"servo drive","answer":"servo drive","meaning":"伺服驱动器","phonetic":"","example":""},{"id":"industrial-22-35","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"pulse train","answer":"pulse train","meaning":"脉冲列","phonetic":"","example":""},{"id":"industrial-22-36","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"communication protocol","answer":"communication protocol","meaning":"通信协议","phonetic":"","example":""},{"id":"industrial-22-37","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"fieldbus","answer":"fieldbus","meaning":"现场总线","phonetic":"","example":""},{"id":"industrial-22-38","category":"自动化与智能控制核心词","subCategory":"自动化控制","audioText":"encoder resolution","answer":"encoder resolution","meaning":"编码器分辨率","phonetic":"","example":""},{"id":"industrial-23-01","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the servo parameter","answer":"Check the servo parameter","meaning":"检查伺服参数","phonetic":"","example":""},{"id":"industrial-23-02","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Reset the fault alarm","answer":"Reset the fault alarm","meaning":"复位故障报警","phonetic":"","example":""},{"id":"industrial-23-03","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The motor is overheating","answer":"The motor is overheating","meaning":"电机过热","phonetic":"","example":""},{"id":"industrial-23-04","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Switch to manual mode","answer":"Switch to manual mode","meaning":"切换到手动模式","phonetic":"","example":""},{"id":"industrial-23-05","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Adjust the belt tension","answer":"Adjust the belt tension","meaning":"调节皮带张力","phonetic":"","example":""},{"id":"industrial-23-06","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Press the emergency stop","answer":"Press the emergency stop","meaning":"按下急停","phonetic":"","example":""},{"id":"industrial-23-07","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Out of tolerance","answer":"Out of tolerance","meaning":"超出公差","phonetic":"","example":""},{"id":"industrial-23-08","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Waiting for homing complete","answer":"Waiting for homing complete","meaning":"等待回零完成","phonetic":"","example":""},{"id":"industrial-23-09","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"What is the current speed?","answer":"What is the current speed?","meaning":"当前速度是多少？","phonetic":"","example":""},{"id":"industrial-23-10","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Let's test the cycle time","answer":"Let's test the cycle time","meaning":"我们测试一下循环周期","phonetic":"","example":""},{"id":"industrial-23-11","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the sensor alignment","answer":"Check the sensor alignment","meaning":"检查传感器对准位置","phonetic":"","example":""},{"id":"industrial-23-12","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The conveyor is not running","answer":"The conveyor is not running","meaning":"输送带没有运行","phonetic":"","example":""},{"id":"industrial-23-13","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The servo is not enabled","answer":"The servo is not enabled","meaning":"伺服尚未使能","phonetic":"","example":""},{"id":"industrial-23-14","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please reset the machine","answer":"Please reset the machine","meaning":"请复位设备","phonetic":"","example":""},{"id":"industrial-23-15","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Start the automatic cycle","answer":"Start the automatic cycle","meaning":"启动自动循环","phonetic":"","example":""},{"id":"industrial-23-16","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Stop the conveyor belt","answer":"Stop the conveyor belt","meaning":"停止输送带","phonetic":"","example":""},{"id":"industrial-23-17","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The cylinder is not extended","answer":"The cylinder is not extended","meaning":"气缸没有伸出","phonetic":"","example":""},{"id":"industrial-23-18","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the air pressure","answer":"Check the air pressure","meaning":"检查气压","phonetic":"","example":""},{"id":"industrial-23-19","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The safety door is open","answer":"The safety door is open","meaning":"安全门打开了","phonetic":"","example":""},{"id":"industrial-23-20","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The machine is in alarm state","answer":"The machine is in alarm state","meaning":"设备处于报警状态","phonetic":"","example":""},{"id":"industrial-23-21","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please check the wiring","answer":"Please check the wiring","meaning":"请检查接线","phonetic":"","example":""},{"id":"industrial-23-22","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The encoder feedback is missing","answer":"The encoder feedback is missing","meaning":"编码器反馈丢失","phonetic":"","example":""},{"id":"industrial-23-23","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Increase the motor speed","answer":"Increase the motor speed","meaning":"提高电机速度","phonetic":"","example":""},{"id":"industrial-23-24","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Decrease the feed rate","answer":"Decrease the feed rate","meaning":"降低进料速度","phonetic":"","example":""},{"id":"industrial-23-25","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The product is jammed","answer":"The product is jammed","meaning":"物料卡住了","phonetic":"","example":""},{"id":"industrial-23-26","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The vacuum pressure is too low","answer":"The vacuum pressure is too low","meaning":"真空压力过低","phonetic":"","example":""},{"id":"industrial-23-27","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Check the emergency stop circuit","answer":"Check the emergency stop circuit","meaning":"检查急停回路","phonetic":"","example":""},{"id":"industrial-23-28","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The axis is out of position","answer":"The axis is out of position","meaning":"运动轴位置异常","phonetic":"","example":""},{"id":"industrial-23-29","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Turn off the main power","answer":"Turn off the main power","meaning":"关闭总电源","phonetic":"","example":""},{"id":"industrial-23-30","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Turn on the control power","answer":"Turn on the control power","meaning":"打开控制电源","phonetic":"","example":""},{"id":"industrial-23-31","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please confirm the sensor signal","answer":"Please confirm the sensor signal","meaning":"请确认传感器信号","phonetic":"","example":""},{"id":"industrial-23-32","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The machine is ready to run","answer":"The machine is ready to run","meaning":"设备已准备运行","phonetic":"","example":""},{"id":"industrial-23-33","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The positioning is complete","answer":"The positioning is complete","meaning":"定位完成","phonetic":"","example":""},{"id":"industrial-23-34","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"We need to adjust the timing","answer":"We need to adjust the timing","meaning":"我们需要调整动作时序","phonetic":"","example":""},{"id":"industrial-23-35","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Let's check the input signal","answer":"Let's check the input signal","meaning":"我们检查一下输入信号","phonetic":"","example":""},{"id":"industrial-23-36","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Can you repeat the alarm code?","answer":"Can you repeat the alarm code?","meaning":"你能重复一下报警代码吗？","phonetic":"","example":""},{"id":"industrial-23-37","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"Please run the machine at low speed","answer":"Please run the machine at low speed","meaning":"请让设备低速运行","phonetic":"","example":""},{"id":"industrial-23-38","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The part is missing","answer":"The part is missing","meaning":"零件缺失","phonetic":"","example":""},{"id":"industrial-23-39","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The output signal is active","answer":"The output signal is active","meaning":"输出信号已激活","phonetic":"","example":""},{"id":"industrial-23-40","category":"高频工程短句、词组与句型","subCategory":"工程现场沟通","audioText":"The motor is running in reverse","answer":"The motor is running in reverse","meaning":"电机正在反转","phonetic":"","example":""}];
+function allWords(){return examples;}
 function wordGroups(){
   const groups=new Map();
   for(const w of allWords()){
     const key='word:'+w.category;
-    if(!groups.has(key)) groups.set(key,{id:key,title:w.category,desc:'听英语 → 选四个中文释义',kind:'word',words:[]});
+    if(!groups.has(key)) groups.set(key,{id:key,title:w.category,desc:'听发音，选出准确中文含义',kind:'word',number:({'电工与电气工程核心词':21,'自动化与智能控制核心词':22,'高频工程短句、词组与句型':23})[w.category],words:[]});
     groups.get(key).words.push(w);
   }
   return [...groups.values()];
@@ -704,69 +690,6 @@ function assembleQueue(levelId,count){
 }
 
 
-function parseCsv(text){
-  const rows=[];let row=[],value='',quoted=false;
-  text=text.replace(/^\uFEFF/,'');
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(quoted){if(c==='"'&&text[i+1]==='"'){value+='"';i++;}else if(c==='"')quoted=false;else value+=c;}
-    else if(c==='"')quoted=true;
-    else if(c===','){row.push(value);value='';}
-    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(value);if(row.some(x=>x.trim()))rows.push(row);row=[];value='';}
-    else value+=c;
-  }
-  if(quoted)throw Error('CSV 双引号未闭合');
-  row.push(value);if(row.some(x=>x.trim()))rows.push(row);
-  if(rows.length<2)throw Error('CSV 必须包含表头及至少一行词汇');
-  const aliases={分类:'category',子分类:'subCategory',词汇:'answer',单词:'answer',发音文本:'audioText',释义:'meaning',中文:'meaning',音标:'phonetic',例句:'example',编号:'id'};
-  const headers=rows.shift().map(x=>aliases[x.trim()]||x.trim());
-  return rows.map(cells=>Object.fromEntries(headers.map((h,i)=>[h,cells[i]||''])));
-}
-function normalizeWords(items){
-  if(!Array.isArray(items) || !items.length)throw Error('词库内容必须是非空数组');
-  if(items.length>4000)throw Error('一次最多导入 4000 个词');
-  const words=[];
-  for(let i=0;i<items.length;i++){
-    const w=items[i];if(!w||typeof w!=='object'||Array.isArray(w))throw Error('第 '+(i+1)+' 行格式错误');
-    const answer=String(w.answer??'').trim().slice(0,150),meaning=String(w.meaning??'').trim().slice(0,150);
-    if(!answer || !meaning)throw Error('第 '+(i+1)+' 行缺少 answer 或 meaning');
-    words.push({
-      id:String(w.id??'').trim().slice(0,100)||'custom-'+simpleHash([w.category,answer,meaning].join('|')),
-      category:String(w.category??'').trim().slice(0,60)||'我的词库',
-      subCategory:String(w.subCategory??'').trim().slice(0,60),
-      audioText:String(w.audioText??'').trim().slice(0,250)||answer,
-      answer,meaning,phonetic:String(w.phonetic??'').trim().slice(0,150),
-      example:String(w.example??'').trim().slice(0,400)
-    });
-  }
-  return words;
-}
-function simpleHash(value){let h=2166136261;for(const c of value){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36);}
-function decodeVocabJson(json){
-  if(Array.isArray(json))return json;
-  if(json && typeof json==='object'){
-    if(Array.isArray(json.words))return json.words;
-    if(Array.isArray(json.items))return json.items;
-    if(Array.isArray(json.vocabulary))return json.vocabulary;
-  }
-  throw Error('JSON 必须是数组或包含 words/items/vocabulary 数组');
-}
-function updateImports(words){
-  const old=state.imports;
-  const map=new Map(old.map(w=>[w.category+'\u0000'+w.id,w]));
-  for(const w of words)map.set(w.category+'\u0000'+w.id,w);
-  state.imports=[...map.values()];
-  if(!persist()){state.imports=old;return;}
-  refresh();toast(`成功导入 ${words.length} 条词汇，词库已更新`);
-}
-function validateBackup(raw){
-  if(!raw||typeof raw!=='object'||raw.version!==1||!raw.levels||!raw.errorPool||!Array.isArray(raw.imports))throw Error('文件不是有效的 V1 学习备份');
-  const words=raw.imports.length?normalizeWords(raw.imports):[];
-  raw=migrateLegacyCourseIds(raw);
-  return {...emptyState(),...raw,imports:words,totalAnswered:Math.max(Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),totalQuestions:Math.max(Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),totalCorrect:Number(raw.totalCorrect)||0,settings:{locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1,flowMode:raw.settings?.flowMode!==false}, activeSession:null};
-}
-
-
 function showPage(name){
   for(const p of document.querySelectorAll('.page'))p.classList.toggle('active',p.id===name+'Page');
   document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
@@ -777,10 +700,10 @@ function startSession(levelId,mode='lesson',count=10){
     if(!level)throw Error('该关卡不存在');
     stopSpeech();
     const queue=assembleQueue(levelId,count);
-    const accentMode=mode==='lesson'&&levelId==='num:19'?'mixed':'en-US';
-    const noiseMode=mode==='lesson'&&levelId==='num:20'?'random':'clean';
+    const accentMode=levelId==='num:19'?'mixed':'en-US';
+    const noiseMode=levelId==='num:20'?'random':'clean';
     chooseAccents(queue,accentMode);setQuestionEnvironments(queue,noiseMode);
-    if(mode==='lesson'&&levelId==='num:20')initializeAudioContext();
+    if(levelId==='num:20')initializeAudioContext();
     session={mode,levelId,title:mode==='weak'?'智能弱项特训':mode==='free'?'自由练习 · '+level.title:level.title,queue,index:0,correct:0,sumMs:0,combo:0,fastestMs:null,startedAt:Date.now(),accentMode,noiseMode};
     state.activeSession=session;persist();
     beginQuestion();
@@ -890,20 +813,37 @@ const FLOW_NEXT_DELAY_MS=450;
 const spokenNumberAliases={zero:'0',oh:'0',o:'0',one:'1',won:'1',two:'2',to:'2',too:'2',three:'3',four:'4',for:'4',five:'5',six:'6',seven:'7',eight:'8',ate:'8',nine:'9'};
 function currentQuestion(){return session?.queue?.[session.index]||null;}
 function questionAccent(){
-  if(!session||session.mode!=='lesson'||session.levelId!=='num:19')return 'en-US';
+  if(!session||session.levelId!=='num:19')return 'en-US';
   return currentQuestion()?.practiceAccent||'en-US';
 }
+const ACCENT_COUNTRIES=[
+ {locale:'en-US',label:'🇺🇸 美音 · US'}, {locale:'en-GB',label:'🇬🇧 英音 · UK'},
+ {locale:'en-AU',label:'🇦🇺 澳音 · AU'}, {locale:'en-CA',label:'🇨🇦 加拿大音 · CA'},
+ {locale:'en-IN',label:'🇮🇳 印度音 · IN'}, {locale:'en-IE',label:'🇮🇪 爱尔兰音 · IE'},
+ {locale:'en-ZA',label:'🇿🇦 南非音 · ZA'}, {locale:'en-NZ',label:'🇳🇿 新西兰音 · NZ'}
+];
+const NOISE_ENVIRONMENTS=[
+ {id:'telephone',label:'📻 电话分机电流音'},
+ {id:'street',label:'✈️ 候机厅嘈杂底噪'},
+ {id:'cafe',label:'☕ 咖啡厅人声环境'},
+ {id:'factory',label:'🏭 车间低频设备音'}
+];
+const accentLabel=locale=>(ACCENT_COUNTRIES.find(v=>v.locale===locale)||ACCENT_COUNTRIES[0]).label;
+const noiseLabel=id=>(NOISE_ENVIRONMENTS.find(v=>v.id===id)||{label:'纯净标准'}).label;
 function setQuestionEnvironments(queue,mode){
-  for(const q of queue)q.practiceNoise=mode==='random'?pick(['telephone','street']):mode;
+  for(const q of queue)q.practiceNoise=mode==='random'?pick(NOISE_ENVIRONMENTS).id:mode;
 }
 function chooseAccents(queue,mode){
-  const accents=['en-US','en-GB','en-AU'];
-  for(const question of queue)question.practiceAccent=mode==='mixed'?pick(accents):mode;
+  for(const q of queue)q.practiceAccent=mode==='mixed'?pick(ACCENT_COUNTRIES).locale:mode;
 }
 function voiceForAccent(accent){
   if(!('speechSynthesis' in window))return null;
   const voices=window.speechSynthesis.getVoices?.()||[];
-  return voices.find(v=>v.localService===true&&(v.lang||'').toLowerCase()===accent.toLowerCase())||null;
+  // Use installed English voices only; pitch and rate cannot generate an authentic regional accent.
+  const local=voices.filter(v=>v.localService!==false&&/^en(?:-|$)/i.test(v.lang||''));
+  const exact=local.find(v=>(v.lang||'').toLowerCase()===accent.toLowerCase());
+  const fallback=exact||local.find(v=>(v.lang||'').toLowerCase()==='en-us')||local[0]||null;
+  return fallback?{voice:fallback,approximate:!exact,actualLocale:fallback.lang||'en-US'}:null;
 }
 function clearFlowTimer(){if(runtime.autoNextTimer){clearTimeout(runtime.autoNextTimer);runtime.autoNextTimer=null;}}
 function clearAutoSubmitTimer(){if(runtime.autoSubmitTimer){clearTimeout(runtime.autoSubmitTimer);runtime.autoSubmitTimer=null;}}
@@ -925,7 +865,7 @@ function stopNoise(){
 }
 function startNoise(){
   stopNoise();
-  if(!session||session.mode!=='lesson'||session.levelId!=='num:20'||$('reflectionMode').value==='speak')return;
+  if(!session||session.levelId!=='num:20'||$('reflectionMode').value==='speak')return;
   const type=currentQuestion()?.practiceNoise||'clean';if(type==='clean')return;
   const ctx=initializeAudioContext();if(!ctx)return;
   const duration=2*ctx.sampleRate;
@@ -933,12 +873,14 @@ function startNoise(){
   for(let i=0;i<duration;i++)arr[i]=Math.random()*2-1;
   const noise=ctx.createBufferSource();noise.buffer=buf;noise.loop=true;
   const filter=ctx.createBiquadFilter(),gain=ctx.createGain();
-  filter.type='bandpass';filter.frequency.value=type==='telephone'?1750:450;filter.Q.value=type==='telephone'?.9:.18;
-  gain.gain.value=type==='telephone'?.012:.028;
+  filter.type=type==='factory'?'lowpass':'bandpass';
+  filter.frequency.value=({telephone:1750,street:680,cafe:1050,factory:165})[type]||500;
+  filter.Q.value=type==='telephone'?.9:type==='cafe'?.32:.18;
+  gain.gain.value=({telephone:.012,street:.023,cafe:.018,factory:.028})[type]||.018;
   noise.connect(filter).connect(gain).connect(ctx.destination);
   noise.start();runtime.noiseNodes.push(noise,filter,gain);
-  if(type==='street'){
-    const hum=ctx.createOscillator(),humGain=ctx.createGain();hum.type='sine';hum.frequency.value=80;humGain.gain.value=.009;
+  if(type==='street'||type==='factory'||type==='cafe'){
+    const hum=ctx.createOscillator(),humGain=ctx.createGain();hum.type='sine';hum.frequency.value=type==='factory'?55:type==='cafe'?110:80;humGain.gain.value=type==='factory'?.017:.006;
     hum.connect(humGain).connect(ctx.destination);hum.start();runtime.noiseNodes.push(hum,humGain);
   }
 }
@@ -999,6 +941,7 @@ function setReflectionMode(mode){
   if(!session||runtime.feedback)return;
   stopSpeech();finishSpeechRecognition();stopNoise();clearFlowTimer();
   $('reflectionMode').value=mode;
+  document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===mode;r.closest('.mode-pill').classList.toggle('active',r.checked);});
   runtime.readyAt=null;runtime.input='';runtime.speechText='';
   renderQuestionView();
 }
@@ -1038,22 +981,23 @@ function speakCurrent(){
   clearAutoSubmitTimer();stopSpeech();
   const q=currentQuestion(),token=runtime.token,synth=window.speechSynthesis;
   const accent=questionAccent();
-  $('currentAccent').textContent=session.levelId==='num:19'?'🎲 口音盲盒':'美音 · US';
+  $('currentAccent').textContent=session.levelId==='num:19'?accentLabel(accent):session.levelId==='num:20'?noiseLabel(q.practiceNoise):'美音 · US';
   runtime.speaking=true;runtime.readyAt=null;runtime.early=false;updateListeningStatus();
   if(!synth||typeof SpeechSynthesisUtterance!=='function'){
     speechFallback(token);return;
   }
-  const voice=voiceForAccent(accent);
-  if(!voice){
+  const voiceMatch=voiceForAccent(accent);
+  if(!voiceMatch){
     runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
-    if(accent!=='en-US')toast('设备未提供该国本地语音，请切换口音。');
+    if($('playStatus'))$('playStatus').textContent='请检查手机系统英语语音并点击重听';
     return;
   }
   // Only punctuation and a short queue gap; Safari does not guarantee media-routing.
   const utterance=new SpeechSynthesisUtterance('. '+String(q.audioText||''));
-  utterance.lang=accent;utterance.rate=clamp(Number(state.settings.rate)||1,.8,1.5);
-  utterance.pitch=1;utterance.volume=1;
-  if(voice)utterance.voice=voice;
+  q.actualVoice=voiceMatch.actualLocale;q.approximateAccent=voiceMatch.approximate;
+  utterance.lang=voiceMatch.actualLocale;utterance.rate=clamp((Number(state.settings.rate)||1)*(voiceMatch.approximate?({ 'en-IN':.95,'en-IE':1.03,'en-ZA':.97,'en-NZ':1.02,'en-CA':1.01 }[accent]||1):1),.8,1.5);
+  utterance.pitch=voiceMatch.approximate?({'en-IN':1.07,'en-IE':1.04,'en-ZA':.97,'en-NZ':1.03}[accent]||1):1;utterance.volume=1;
+  utterance.voice=voiceMatch.voice;
   let completed=false;
   const settle=()=>{
     if(completed||token!==runtime.token||!session||runtime.feedback)return;
@@ -1098,8 +1042,8 @@ function speakPlain(text){
     const utterance=new SpeechSynthesisUtterance(String(text||''));
     utterance.lang=questionAccent();utterance.rate=clamp(Number(state.settings.rate)||1,.8,1.5);utterance.pitch=1;utterance.volume=1;
     const voices=synth.getVoices?synth.getVoices():[];
-    const voice=voiceForAccent(questionAccent());
-    if(voice)utterance.voice=voice;
+    const match=voiceForAccent(questionAccent());
+    if(match){utterance.voice=match.voice;utterance.lang=match.actualLocale;}
     synth.speak(utterance);
   }catch(e){toast('系统语音播放失败，请重试。');}
 }
@@ -1123,23 +1067,18 @@ function updateListeningStatus(){
 function beginQuestion(){
   clearAutoSubmitTimer();clearFlowTimer();stopNoise();finishSpeechRecognition();
   const q=currentQuestion();
-  runtime.input='';runtime.selected=-1;runtime.letter=effectiveLevel(q)===14&&/^[A-Za-z]/.test(String(q.answer));
+  runtime.input='';runtime.selected=-1;runtime.letter=false;
   runtime.feedback=false;runtime.readyAt=null;
   showPage('practice');
   $('practiceTitle').textContent=session.title;
   $('comboText').textContent='COMBO '+session.combo;
   $('voiceRate').value=String(state.settings.rate);
-  const accentChallenge=session.mode==='lesson'&&session.levelId==='num:19';
-  const environmentChallenge=session.mode==='lesson'&&session.levelId==='num:20';
-  $('lessonModes').hidden=!(accentChallenge||environmentChallenge);
-  $('accentMode').hidden=!accentChallenge;
-  $('noiseMode').hidden=!environmentChallenge;
-  if(accentChallenge)$('accentMode').value=session.accentMode||'mixed';
-  if(environmentChallenge)$('noiseMode').value=session.noiseMode||'random';
-  $('currentAccent').textContent=accentChallenge?'🎲 口音盲盒':'美音 · US';
+  const accentChallenge=session.levelId==='num:19';
+  const environmentChallenge=session.levelId==='num:20';
+  $('currentAccent').textContent=accentChallenge?accentLabel(q.practiceAccent):environmentChallenge?noiseLabel(q.practiceNoise):'美音 · US';
   $('questionCount').textContent=(session.index+1)+' / '+session.queue.length;
   $('questionFill').style.width=(session.index/session.queue.length*100)+'%';
-  $('flowMode').checked=state.settings.flowMode!==false;
+  document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===$('reflectionMode').value;r.closest('.mode-pill').classList.toggle('active',r.checked);});
   if(session.awaitingNext&&session.lastFeedback){
     runtime.feedback=true;
     const f=session.lastFeedback;
@@ -1154,14 +1093,15 @@ function renderInput(){
   if(q.kind==='word')return;
   const value=runtime.input;
   const el=$('answerDisplay');el.classList.toggle('placeholder',!value);
-  el.textContent=value||'使用下方大键盘作答 · 不会弹出系统键盘';
+  if(effectiveLevel(q)===14){
+    el.innerHTML='<input id="codeEntry" class="code-entry" type="text" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="航班号 / 邮编：点击输入字母和数字" value="'+esc(value)+'">';
+  }else{el.textContent=value||'使用下方数字键盘作答';}
 }
 function effectiveLevel(q){return Number(q.sourceLevelId||q.levelId);}
 function keyCapabilities(q){
-  const id=effectiveLevel(q),pure=id>=1&&id<=10;
-  return {symbols:!pure,colon:id===11||(id===18&&String(q.answer).includes(':')),
-    decimal:id===12||id===15||(id===16&&String(q.answer).includes('.')),
-    percent:id===12,letters:id===14};
+  const id=effectiveLevel(q);
+  return {decimal:id===12||id===15||(id===16&&String(q.answer).includes('.')),
+    colon:id===11||(id===18&&String(q.answer).includes(':'))};
 }
 function renderKeyboard(){
   if(!session)return;
@@ -1176,21 +1116,14 @@ function renderKeyboard(){
     return;
   }
   const cap=keyCapabilities(q);
-  if(runtime.letter){
-    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c=>'<button class="key letters" data-key="'+c+'">'+c+'</button>').join('');
-    shell.innerHTML='<div class="keypad-grid letter-grid">'+chars+'<button class="key alt letters" data-action="toggle">123</button><button class="key alt letters" data-action="backspace">⌫</button></div><div class="letter-actions"><button class="key alt" data-key=" ">空格</button><button class="key alt" data-action="replay">重听</button><button class="key alt" data-action="clear">清空</button></div>';
-    return;
-  }
-  const keys=['1','2','3','退格','4','5','6','重听','7','8','9','ABC',',','0','.',':'];
-  const extras=['%','清空','空格'];
-  const action={'退格':'backspace','重听':'replay','ABC':'toggle','清空':'clear','空格':'space'};
+  const keys=['1','2','3','4','5','6','7','8','9','.','0',':'];
+  const actionKeys=[['清空','clear'],['退格','backspace'],['重听','replay']];
   const build=k=>{
-    const keyAction=action[k],symbol=[',','.',':','%','ABC','空格'].includes(k);
-    const relevant=(k===':'&&cap.colon)||(k==='.'&&cap.decimal)||(k==='%'&&cap.percent)||(k==='ABC'&&cap.letters);
-    const disabled=(k==='ABC'&&!cap.letters)||(k===','&&effectiveLevel(q)!==13)||(k==='.'&&!cap.decimal)||(k===':'&&!cap.colon)||(k==='%'&&!cap.percent)||(k==='空格'&&effectiveLevel(q)!==13&&effectiveLevel(q)!==14);
-    return '<button class="key'+(keyAction?' alt':'')+(disabled?' disabled-key':'')+(relevant?' relevant-key':'')+'" '+(disabled?'disabled ':'')+(keyAction?'data-action="'+keyAction+'"':'data-key="'+esc(k)+'"')+'>'+esc(k)+'</button>';
+    const disabled=(k==='.'&&!cap.decimal)||(k===':'&&!cap.colon);
+    return '<button class="key'+((k==='.'&&cap.decimal)||(k===':'&&cap.colon)?' relevant-key':'')+(disabled?' disabled-key':'')+'" '+(disabled?'disabled ':'')+'data-key="'+k+'">'+k+'</button>';
   };
-  shell.innerHTML='<div class="keypad-grid">'+keys.map(build).join('')+'</div><div class="keypad-extras">'+extras.map(build).join('')+'</div>';
+  shell.innerHTML='<div class="keypad-grid">'+keys.map(build).join('')+
+    actionKeys.map(([name,action])=>'<button class="key alt" data-action="'+action+'">'+name+'</button>').join('')+'</div>';
 }
 function inputLooksComplete(q,typed){
   const v=String(typed||'').trim(),expected=String(q.answer||'');
@@ -1199,10 +1132,10 @@ function inputLooksComplete(q,typed){
   if(level===11||(level===18&&expected.includes(':')))return /^\d{1,2}:\d{2}$/.test(v);
   if(level===13)return v.replace(/\D/g,'').length>=expected.replace(/\D/g,'').length;
   if(level===14)return v.replace(/[\s-]/g,'').length>=expected.replace(/[\s-]/g,'').length;
-  if(expected.endsWith('%')&&!expected.includes('.'))return v.endsWith('%')&&v.replace(/\D/g,'').length>=expected.replace(/\D/g,'').length;
+  if(expected.endsWith('%')&&!expected.includes('.'))return v.replace(/\D/g,'').length>=expected.replace(/\D/g,'').length;
   if(expected.includes('.')){
     const decimals=(expected.split('.')[1]||'').replace(/%/g,'').length;
-    return /^\d+\.\d+$/.test(v.replace(/%/g,''))&&v.split('.')[1].replace(/%/g,'').length>=decimals&&v.endsWith('%')===expected.endsWith('%');
+    return /^\d+\.\d+$/.test(v.replace(/%/g,''))&&v.split('.')[1].replace(/%/g,'').length>=decimals;
   }
   return v.replace(/\D/g,'').length>=expected.replace(/\D/g,'').length;
 }
@@ -1232,10 +1165,8 @@ function keyboardAction(action){
   if(action==='self-fail'){submitAnswer(true,'自检未通过');return;}
   if(action==='backspace')runtime.input=runtime.input.slice(0,-1);
   if(action==='clear')runtime.input='';
-  if(action==='space')pressKey(' ');
-  if(action==='toggle')runtime.letter=!runtime.letter;
   if(action==='unknown')submitAnswer(true);
-  if(['toggle','backspace','clear'].includes(action)){
+  if(['backspace','clear'].includes(action)){
     renderInput();renderKeyboard();
     if(runtime.input.trim())scheduleAutoSubmit();else clearAutoSubmitTimer();
   }
@@ -1252,6 +1183,7 @@ function normalizeAnswer(q,value){
   }
   s=s.replace(/,/g,'').replace(/\s+/g,'');
   if(/^\d+(\.\d+)?%?$/.test(s)){
+    if(String(q.answer).endsWith('%')&&!s.endsWith('%'))s+='%';
     const hasPercent=s.endsWith('%');
     const base=hasPercent?s.slice(0,-1):s;
     if(!base.includes('.'))s=String(Number(base))+(hasPercent?'%':'');
@@ -1297,10 +1229,10 @@ function submitAnswer(forceUnknown=false,spokenResult){
   $('comboText').textContent='COMBO '+session.combo;
   $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
   renderLab();
-  if($('flowMode').checked&&correct&&!early&&elapsed<=FLOW_LIMIT_MS){
+  if(correct&&!early&&elapsed<=FLOW_LIMIT_MS){
     correctTone();
     $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+msText(elapsed)+'</div>'+
-      (session.levelId==='num:19'?'<div class="micro" style="text-align:center;margin:8px">'+(q.practiceAccent==='en-GB'?'英音 UK':q.practiceAccent==='en-AU'?'澳音 AU':'美音 US')+'</div>':'');
+      (session.levelId==='num:19'?'<div class="micro" style="text-align:center;margin:8px">'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?'（近似播报）':'')+'</div>':'');
     $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
     runtime.autoNextTimer=setTimeout(()=>{runtime.autoNextTimer=null;if(session&&runtime.feedback&&session.awaitingNext)nextQuestion();},FLOW_NEXT_DELAY_MS);
   }else{
@@ -1328,8 +1260,8 @@ function renderFeedback(q,correct,given,elapsed,early){
   const timerLabel=early?'&lt;0.5s':msText(elapsed);
   const twin=session?.mode==='weak'&&q.kind==='numeric'?(q.confusableBase||getConfusableTwin(q.answer)):null;
   const comparison=twin?'<div class="feedback-line"><span class="k">⚡ 易混对比提示</span>'+esc('本题 '+q.answer+'（'+q.audioText+'），注意与 '+(q.confusableBase||twin)+' 区分；留意重音和数量级。')+'</div>':'';
-  const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题口音</span>'+esc(q.practiceAccent==='en-GB'?'英音 · UK':q.practiceAccent==='en-AU'?'澳音 · AU':'美音 · US')+'</div>':'';
-  const environmentReveal=session?.levelId==='num:20'?'<div class="feedback-line"><span class="k">本题环境</span>'+esc(q.practiceNoise==='telephone'?'电话电流音':q.practiceNoise==='street'?'候机厅嘈杂音':'纯净标准')+'</div>':'';
+  const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题目标口音</span>'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?' · 使用设备 '+esc(q.actualVoice||'英语语音')+' 近似播报':'')+'</div>':'';
+  const environmentReveal=session?.levelId==='num:20'?'<div class="feedback-line"><span class="k">本题环境</span>'+esc(noiseLabel(q.practiceNoise))+'</div>':'';
   $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">标准答案</span><span class="v">${esc(answerShown)}</span></div><div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">含义与解题提示</span>${esc(q.meaning||'—')}</div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(q.answer),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}</div>`;
   $('answerDisplay').classList.add('hidden');
 }
@@ -1378,7 +1310,7 @@ function renderLessons(){
   $('resumeArea').innerHTML=active&&active.queue?.length?`<div class="card" style="margin-top:13px"><div class="row between"><div><strong style="font-size:13px">继续上次练习</strong><div class="micro" style="margin-top:5px">${esc(active.title)} · 第 ${active.index+1}/${active.queue.length} 题</div></div><button class="btn primary" id="resumeBtn">继续</button></div></div>`:'';
   if($('resumeBtn'))$('resumeBtn').onclick=resumeSession;
   const stageHtml=stages.map(stage=>renderGroup(stage.title,stage.ids.map(i=>lessons.find(x=>x.id==='num:'+i)))).join('');
-  const wordHtml=renderGroup('第五阶段 · 自定义专业词库',wordGroups());
+  const wordHtml=renderGroup('第五阶段 · 工业自动化与实战句型',wordGroups());
   $('lessonList').innerHTML=stageHtml+wordHtml;
 }
 function renderGroup(title,items){
@@ -1388,7 +1320,7 @@ function renderGroup(title,items){
     const stateClass=passed?'passed':active||record.attempts?'started':'';
     const status=passed?'<span class="status passed">'+('★'.repeat(record.stars||1))+'</span>':active?'<span class="status going">进行中</span>':record.attempts?'<span class="status going">待通关</span>':'<span class="status">未开始</span>';
     const best=record.best?`最佳: ${msText(record.best.avgMs)} | 准确率 ${record.best.accuracy}%`:'尚无历史成绩';
-    const index=l.kind==='numeric'?String(l.number).padStart(2,'0'):'词';
+    const index=String(l.number).padStart(2,'0');
     return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div></div>${status}</button>`;
   }).join('')}</div>`;
 }
@@ -1399,7 +1331,7 @@ function renderLab(){
   const selected=$('freeLevel').value;
   $('freeLevel').innerHTML=allLessons().map(x=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('');
   if(allLessons().some(x=>x.id===selected))$('freeLevel').value=selected;
-  $('statsText').textContent=`累计作答 ${state.totalAnswered||0} 题 · 累计正确 ${state.totalCorrect||0} 题 · 已导入 ${state.imports.length} 个自定义词条`;
+  $('statsText').textContent=`累计作答 ${state.totalAnswered||0} 题 · 累计正确 ${state.totalCorrect||0} 题`;
   updateStorageStatus();
 }
 function refresh(){renderLessons();renderLab();}
@@ -1412,61 +1344,28 @@ function setupEvents(){
     if(b.dataset.action==='play')speakCurrent();
     else keyboardAction(b.dataset.action);
   });
+  $('answerDisplay').addEventListener('input',e=>{
+    if(e.target.id!=='codeEntry'||!session||runtime.feedback)return;
+    runtime.input=e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g,'').slice(0,32);
+    if(inputLooksComplete(currentQuestion(),runtime.input))scheduleAutoSubmit();
+    else clearAutoSubmitTimer();
+  });
   $('keypadShell').addEventListener('click',e=>{
     const choice=e.target.closest('[data-choice]');if(choice){runtime.selected=Number(choice.dataset.choice);submitAnswer(false);return;}
     const key=e.target.closest('[data-key]');if(key){pressKey(key.dataset.key);return;}
     const action=e.target.closest('[data-action]');if(action)keyboardAction(action.dataset.action);
   });
   $('backPractice').addEventListener('click',leavePractice);
-  $('accentMode').addEventListener('change',e=>{
-    if(!session||session.mode!=='lesson'||session.levelId!=='num:19')return;
-    session.accentMode=e.target.value;
-    chooseAccents(session.queue.slice(session.index),e.target.value);
-    if($('reflectionMode').value==='listen'&&!runtime.feedback)speakCurrent();
-    state.activeSession=session;persist();
-  });
-  $('noiseMode').addEventListener('change',e=>{
-    if(!session||session.mode!=='lesson'||session.levelId!=='num:20')return;
-    initializeAudioContext();
-    session.noiseMode=e.target.value;
-    setQuestionEnvironments(session.queue.slice(session.index),e.target.value);
-    if(runtime.speaking)startNoise();else stopNoise();
-    state.activeSession=session;persist();
-  });
-  $('reflectionMode').addEventListener('change',e=>setReflectionMode(e.target.value));
-  $('flowMode').addEventListener('change',e=>{state.settings.flowMode=e.target.checked;persist();});
+  document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>r.addEventListener('change',e=>{if(e.target.checked)setReflectionMode(e.target.value);}));
   $('voiceRate').addEventListener('change',e=>{state.settings.rate=Number(e.target.value);persist();if(session&&!runtime.feedback)speakCurrent();});
   $('weakStart').addEventListener('click',startWeak);
   $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
   $('weakList').addEventListener('click',e=>{const b=e.target.closest('[data-drop]');if(!b)return;delete state.errorPool[b.dataset.drop];persist();renderLab();});
   $('clearWeak').addEventListener('click',()=>{if(!Object.keys(state.errorPool).length)return;if(confirm('确定清空全部错题与超时记录？')){state.errorPool={};persist();renderLab();}});
-  $('importVocab').addEventListener('click',()=>$('vocabFile').click());
-  $('importBackup').addEventListener('click',()=>$('backupFile').click());
-  $('vocabFile').addEventListener('change',async e=>{
-    const file=e.target.files?.[0];if(!file)return;
-    try{
-      if(file.size>2*1024*1024)throw Error('文件最大支持 2MB');
-      const text=await file.text();const raw=file.name.toLowerCase().endsWith('.csv')?parseCsv(text):decodeVocabJson(JSON.parse(text.replace(/^\uFEFF/,'')));
-      updateImports(normalizeWords(raw));
-    }catch(error){toast('导入失败：'+error.message);}finally{e.target.value='';}
-  });
-  $('backupFile').addEventListener('change',async e=>{
-    const file=e.target.files?.[0];if(!file)return;
-    try{
-      if(file.size>4*1024*1024)throw Error('备份文件最大支持 4MB');
-      const restored=validateBackup(JSON.parse((await file.text()).replace(/^\uFEFF/,'')));
-      if(!confirm('恢复备份将覆盖本浏览器已有的学习记录和导入词库，确定继续？'))return;
-      const old=state;state=restored;
-      if(!persist()){state=old;return;}
-      refresh();toast('学习数据恢复成功');
-    }catch(error){toast('恢复失败：'+error.message);}finally{e.target.value='';}
-  });
-  $('exportVocab').addEventListener('click',()=>downloadFile('英语词库_'+todayStamp()+'.json',JSON.stringify({words:state.imports},null,2)));
-  $('exportBackup').addEventListener('click',()=>downloadFile('声音反射训练_学习备份_'+todayStamp()+'.json',JSON.stringify({...state,backupAt:new Date().toISOString()},null,2)));
   $('clearHistory').addEventListener('click',()=>{
-    if(!confirm('确定重置全部进度、错题本、设置与导入词库？此操作不可撤销，建议先备份。'))return;
+    if(!confirm('确定重置全部练习进度、错题与设置？此操作不可撤销。'))return;
     const old=state;stopSpeech();state=emptyState();
-    if(!persist()){state=old;return;}session=null;refresh();toast('已重置全部数据');
+    if(!persist()){state=old;return;}session=null;$('reflectionMode').value='listen';document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value==='listen';r.closest('.mode-pill').classList.toggle('active',r.checked);});refresh();toast('已重置全部数据');
   });
   window.addEventListener('keydown',e=>{
     if(!session || !$('practicePage').classList.contains('active'))return;
@@ -1475,7 +1374,7 @@ function setupEvents(){
     if(runtime.feedback)return;
     if(e.key==='Backspace'){e.preventDefault();keyboardAction('backspace');}
     else if(e.key.toLowerCase()==='r' && e.ctrlKey){e.preventDefault();keyboardAction('replay');}
-    else if(session.queue[session.index].kind==='numeric' && /^[a-z0-9.,:% ]$/i.test(e.key)){e.preventDefault();pressKey(e.key.toUpperCase());}
+    else if(session.queue[session.index].kind==='numeric' && /^[0-9.:]$/.test(e.key)){e.preventDefault();if(e.key!=='.'||keyCapabilities(currentQuestion()).decimal)if(e.key!==':'||keyCapabilities(currentQuestion()).colon)pressKey(e.key);}
     else if(session.queue[session.index].kind==='word' && /^[1-4]$/.test(e.key)){runtime.selected=Number(e.key)-1;submitAnswer(false);}
   });
   const restoreAudio=()=>{

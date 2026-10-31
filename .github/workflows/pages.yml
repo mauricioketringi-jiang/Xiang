@@ -25,7 +25,7 @@ jobs:
           from pathlib import Path
           s=Path('index.html').read_text(encoding='utf-8')
           required=['function generateNumber(', 'function startSession(', 'function submitAnswer(',
-                    'totalAnswered', 'totalCorrect', 'flowMode', 'accentMode','noiseMode','reflectionMode']
+                    'totalAnswered', 'totalCorrect', 'ACCENT_COUNTRIES', 'NOISE_ENVIRONMENTS','reflectionModeChoice','industrial-23-40']
           missing=[x for x in required if x not in s]
           if missing: raise SystemExit('Missing advanced training features: '+', '.join(missing))
           for name in ('sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.svg'):
