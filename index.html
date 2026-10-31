@@ -629,292 +629,128 @@ function resumeSession(){
   if(!item||!Array.isArray(item.queue)||!item.queue.length||item.index>=item.queue.length){toast('没有可恢复的练习');return;}
   session=item;beginQuestion();
 }
-const PIPER_VOICE_ASSETS={
-  'en-US':{
-    id:'en_US-joe-medium',
-    label:'美音 · Joe',
-    modelUrl:'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/joe/medium/en_US-joe-medium.onnx',
-    configUrl:'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/joe/medium/en_US-joe-medium.onnx.json'
-  },
-  'en-GB':{
-    id:'en_GB-alba-medium',
-    label:'英音 · Alba',
-    modelUrl:'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_GB/alba/medium/en_GB-alba-medium.onnx',
-    configUrl:'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_GB/alba/medium/en_GB-alba-medium.onnx.json'
-  }
-};
-const PIPER_ORt_JS='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.wasm.min.js';
-const PIPER_ORt_WASM='https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/';
-const PIPER_PHONEMIZER_JS='https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize.js';
-const PIPER_PHONEMIZER_BASE='https://cdn.jsdelivr.net/npm/@diffusionstudio/piper-wasm@1.0.0/build/piper_phonemize';
-const piperScriptPromises=new Map();
-function loadPiperScript(url,ready){
-  if(ready())return Promise.resolve();
-  if(piperScriptPromises.has(url))return piperScriptPromises.get(url);
-  const promise=new Promise((resolve,reject)=>{
-    const script=document.createElement('script');
-    script.src=url;
-    script.async=true;
-    script.onload=()=>ready()?resolve():reject(new Error('脚本已加载，但运行时对象不存在'));
-    script.onerror=()=>reject(new Error('无法加载语音运行库：'+url));
-    document.head.appendChild(script);
-  });
-  piperScriptPromises.set(url,promise);
-  promise.catch(()=>piperScriptPromises.delete(url));
-  return promise;
-}
-function readTtsCache(key){
-  return openStateDb().then(db=>new Promise((resolve,reject)=>{
-    const tx=db.transaction('records','readonly');
-    const request=tx.objectStore('records').get('piper:'+key);
-    request.onsuccess=()=>resolve(request.result||null);
-    request.onerror=()=>reject(request.error||new Error('读取语音缓存失败'));
-    tx.onabort=()=>reject(tx.error||new Error('语音缓存读取中断'));
-  }));
-}
-function writeTtsCache(key,value){
-  const copy=value instanceof ArrayBuffer?value.slice(0):value;
-  return openStateDb().then(db=>new Promise((resolve,reject)=>{
-    const tx=db.transaction('records','readwrite');
-    tx.objectStore('records').put(copy,'piper:'+key);
-    tx.oncomplete=()=>resolve(true);
-    tx.onerror=()=>reject(tx.error||new Error('写入语音缓存失败'));
-    tx.onabort=()=>reject(tx.error||new Error('语音缓存写入中断'));
-  }));
-}
-async function fetchTtsAsset(url,key,onProgress){
-  let cached=null;
-  try{cached=await readTtsCache(key);}catch(e){}
-  if(cached){
-    if(cached instanceof Blob)return await cached.arrayBuffer();
-    if(cached instanceof Uint8Array)return cached.buffer.slice(cached.byteOffset,cached.byteOffset+cached.byteLength);
-    if(cached instanceof ArrayBuffer)return cached;
-  }
-  const response=await fetch(url,{cache:'force-cache'});
-  if(!response.ok)throw new Error('语音资源下载失败，HTTP '+response.status);
-  const total=Number(response.headers.get('content-length'))||0;
-  let buffer;
-  if(response.body&&response.body.getReader){
-    const reader=response.body.getReader(),chunks=[];
-    let loaded=0;
-    while(true){
-      const part=await reader.read();
-      if(part.done)break;
-      chunks.push(part.value);
-      loaded+=part.value.byteLength;
-      if(onProgress)onProgress({loaded,total});
-    }
-    const merged=new Uint8Array(loaded);
-    let offset=0;
-    for(const chunk of chunks){merged.set(chunk,offset);offset+=chunk.byteLength;}
-    buffer=merged.buffer;
-  }else{
-    buffer=await response.arrayBuffer();
-    if(onProgress)onProgress({loaded:buffer.byteLength,total:total||buffer.byteLength});
-  }
-  try{await writeTtsCache(key,buffer);}catch(e){}
-  try{localStorage.setItem('voice_reflex_piper_cached_'+key,'1');}catch(e){}
-  return buffer;
-}
-async function loadPiperRuntime(){
-  if(runtime.ort)return runtime.ort;
-  if(runtime.ortPromise)return runtime.ortPromise;
-  runtime.ortPromise=(async()=>{
-    await loadPiperScript(PIPER_ORt_JS,()=>Boolean(window.ort&&window.ort.InferenceSession));
-    const ort=window.ort;
-    ort.env.wasm.wasmPaths=PIPER_ORt_WASM;
-    ort.env.wasm.numThreads=1;
-    runtime.ort=ort;
-    return ort;
-  })();
-  try{return await runtime.ortPromise;}
-  finally{runtime.ortPromise=null;}
-}
-async function loadPiperPhonemizer(){
-  if(runtime.phonemizer)return runtime.phonemizer;
-  if(runtime.phonemizerPromise)return runtime.phonemizerPromise;
-  runtime.phonemizerPromise=(async()=>{
-    await loadPiperScript(PIPER_PHONEMIZER_JS,()=>typeof window.createPiperPhonemize==='function');
-    const mod=await window.createPiperPhonemize({
-      print:line=>{try{runtime.phonemizerOutput.push(JSON.parse(line));}catch(e){}},
-      printErr:line=>console.warn('[Piper phonemizer]',line),
-      locateFile:file=>{
-        if(file.endsWith('.wasm'))return PIPER_PHONEMIZER_BASE+'.wasm';
-        if(file.endsWith('.data'))return PIPER_PHONEMIZER_BASE+'.data';
-        return file;
-      }
-    });
-    runtime.phonemizer=mod;
-    return mod;
-  })();
-  try{return await runtime.phonemizerPromise;}
-  finally{runtime.phonemizerPromise=null;}
-}
-function phonemizePiperText(text,language){
-  const mod=runtime.phonemizer;
-  if(!mod)throw new Error('英语音素模块尚未初始化');
-  runtime.phonemizerOutput=[];
-  const rc=mod.callMain([
-    '--espeak_data','/espeak-ng-data',
-    '--language',language,
-    '--input',JSON.stringify([{text:String(text||'').trim()}])
-  ]);
-  if(rc!==0)throw new Error('英语音素转换失败，代码 '+rc);
-  const result=runtime.phonemizerOutput.find(item=>item&&Array.isArray(item.phoneme_ids));
-  if(!result||!result.phoneme_ids.length)throw new Error('无法将题目转换为英语音素');
-  return result.phoneme_ids;
-}
-async function ensurePiperEngine(locale,onProgress){
-  const voice=PIPER_VOICE_ASSETS[locale]||PIPER_VOICE_ASSETS['en-US'];
-  if(runtime.piperEngine&&runtime.piperEngine.voiceId===voice.id)return runtime.piperEngine;
-  if(runtime.piperEnginePromise&&runtime.piperEnginePromiseVoice===voice.id)return runtime.piperEnginePromise;
-  if(runtime.piperEngine){
-    try{runtime.piperEngine.session.release();}catch(e){}
-    runtime.piperEngine=null;
-  }
-  const promise=(async()=>{
-    const ort=await loadPiperRuntime();
-    await loadPiperPhonemizer();
-    const configBuffer=await fetchTtsAsset(voice.configUrl,'config:'+voice.id);
-    const config=JSON.parse(new TextDecoder().decode(configBuffer));
-    const modelBuffer=await fetchTtsAsset(voice.modelUrl,'model:'+voice.id,onProgress);
-    const session=await ort.InferenceSession.create(modelBuffer,{executionProviders:['wasm']});
-    return {voiceId:voice.id,label:voice.label,config,session,ort};
-  })();
-  runtime.piperEnginePromise=promise;
-  runtime.piperEnginePromiseVoice=voice.id;
-  try{
-    const engine=await promise;
-    if(runtime.piperEnginePromiseVoice===voice.id)runtime.piperEngine=engine;
-    else{try{engine.session.release();}catch(e){}}
-    return engine;
-  }finally{
-    if(runtime.piperEnginePromise===promise){
-      runtime.piperEnginePromise=null;
-      runtime.piperEnginePromiseVoice='';
-    }
-  }
-}
-function piperWavBlob(samples,sampleRate){
-  const buffer=new ArrayBuffer(44+samples.length*2),view=new DataView(buffer);
-  const write=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i));};
-  write(0,'RIFF');view.setUint32(4,36+samples.length*2,true);write(8,'WAVE');write(12,'fmt ');
-  view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,1,true);
-  view.setUint32(24,sampleRate,true);view.setUint32(28,sampleRate*2,true);view.setUint16(32,2,true);view.setUint16(34,16,true);
-  write(36,'data');view.setUint32(40,samples.length*2,true);
-  for(let i=0;i<samples.length;i++){
-    const sample=Math.max(-1,Math.min(1,samples[i]));
-    view.setInt16(44+i*2,sample<0?sample*32768:sample*32767,true);
-  }
-  return new Blob([buffer],{type:'audio/wav'});
-}
-async function synthesizePiper(text,engine,rate){
-  const cfg=engine.config,ids=phonemizePiperText(text,cfg.espeak.voice);
-  const eos=(cfg.phoneme_id_map&&cfg.phoneme_id_map['$']&&cfg.phoneme_id_map['$'][0])??2;
-  const sentences=[];let current=[];
-  for(const id of ids){
-    current.push(id);
-    if(id===eos){sentences.push(current);current=[];}
-  }
-  if(current.length)sentences.push(current);
-  if(!sentences.length)throw new Error('题目没有生成有效音素');
-  const sampleRate=cfg.audio&&cfg.audio.sample_rate?cfg.audio.sample_rate:22050;
-  const inference=cfg.inference||{};
-  const scales=Float32Array.from([
-    Number(inference.noise_scale??0.667),
-    Number(inference.length_scale??1)/Number(rate||1),
-    Number(inference.noise_w??0.8)
-  ]);
-  const chunks=[],gap=new Float32Array(Math.round(sampleRate*0.12));
-  for(let i=0;i<sentences.length;i++){
-    const sentence=sentences[i];
-    const feeds={
-      input:new engine.ort.Tensor('int64',BigInt64Array.from(sentence,value=>BigInt(value)),[1,sentence.length]),
-      input_lengths:new engine.ort.Tensor('int64',BigInt64Array.from([BigInt(sentence.length)]),[1]),
-      scales:new engine.ort.Tensor('float32',scales,[3])
-    };
-    if(cfg.speaker_id_map&&Object.keys(cfg.speaker_id_map).length)feeds.sid=new engine.ort.Tensor('int64',BigInt64Array.from([0n]),[1]);
-    const result=await engine.session.run(feeds);
-    const pcm=result.output&&result.output.data;
-    if(!(pcm instanceof Float32Array))throw new Error('语音模型没有返回有效音频数据');
-    chunks.push(pcm);
-    if(i<sentences.length-1)chunks.push(gap);
-  }
-  const length=chunks.reduce((sum,part)=>sum+part.length,0);
-  const combined=new Float32Array(length);let offset=0;
-  for(const part of chunks){combined.set(part,offset);offset+=part.length;}
-  return piperWavBlob(combined,sampleRate);
-}
+const ONLINE_AUDIO_BASE=new URL('./audio/',document.baseURI);
+const ONLINE_AUDIO_SAMPLE_RATE=16000;
+const onlineTokenMemory=new Map();
 function ensureMediaAudio(){
   if(runtime.mediaAudio)return runtime.mediaAudio;
   const audio=document.createElement('audio');
-  audio.preload='auto';audio.playsInline=true;audio.setAttribute('playsinline','');audio.setAttribute('webkit-playsinline','');
+  audio.preload='auto';
+  audio.playsInline=true;
+  audio.setAttribute('playsinline','');
+  audio.setAttribute('webkit-playsinline','');
   audio.setAttribute('aria-hidden','true');
-  audio.style.position='fixed';audio.style.width='1px';audio.style.height='1px';audio.style.opacity='0';audio.style.pointerEvents='none';audio.style.left='-10px';audio.style.bottom='0';
+  audio.style.position='fixed';
+  audio.style.width='1px';
+  audio.style.height='1px';
+  audio.style.opacity='0';
+  audio.style.pointerEvents='none';
+  audio.style.left='-10px';
+  audio.style.bottom='0';
   document.body.appendChild(audio);
   runtime.mediaAudio=audio;
   return audio;
 }
-function makeSilentWav(){
-  const sampleRate=8000,samples=new Float32Array(800);
-  return piperWavBlob(samples,sampleRate);
+function pcmWavBlob(pcm,rate=ONLINE_AUDIO_SAMPLE_RATE){
+  const buffer=new ArrayBuffer(44+pcm.byteLength),view=new DataView(buffer);
+  const write=(offset,str)=>{
+    for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));
+  };
+  write(0,'RIFF');
+  view.setUint32(4,36+pcm.byteLength,true);
+  write(8,'WAVE');write(12,'fmt ');
+  view.setUint32(16,16,true);
+  view.setUint16(20,1,true);
+  view.setUint16(22,1,true);
+  view.setUint32(24,rate,true);
+  view.setUint32(28,rate*2,true);
+  view.setUint16(32,2,true);
+  view.setUint16(34,16,true);
+  write(36,'data');view.setUint32(40,pcm.byteLength,true);
+  new Uint8Array(buffer,44).set(new Uint8Array(pcm));
+  return new Blob([buffer],{type:'audio/wav'});
 }
 function unlockMediaAudioFromGesture(){
   const audio=ensureMediaAudio();
   if(runtime.mediaUnlocked)return;
   try{
-    const url=URL.createObjectURL(makeSilentWav());
+    const silent=new Uint8Array(3200).buffer;
+    const url=URL.createObjectURL(pcmWavBlob(silent));
     runtime.silentAudioUrl=url;
     audio.onended=()=>{
       try{audio.pause();audio.removeAttribute('src');audio.load();}catch(e){}
       if(runtime.silentAudioUrl){URL.revokeObjectURL(runtime.silentAudioUrl);runtime.silentAudioUrl=null;}
       runtime.mediaUnlocked=true;
     };
-    audio.src=url;audio.currentTime=0;
-    const playPromise=audio.play();
-    if(playPromise&&typeof playPromise.then==='function'){
-      playPromise.then(()=>{runtime.mediaUnlocked=true;}).catch(()=>{runtime.mediaUnlocked=false;});
-    }
+    audio.src=url;
+    audio.play().then(()=>{runtime.mediaUnlocked=true;}).catch(()=>{runtime.mediaUnlocked=false;});
   }catch(e){runtime.mediaUnlocked=false;}
 }
-async function forcePlaybackAudioSession(){
-  try{
-    if(navigator.audioSession){
-      navigator.audioSession.type='ambient';
-      await new Promise(resolve=>setTimeout(resolve,0));
-      navigator.audioSession.type='playback';
-    }
-  }catch(e){}
+function audioTokenKey(word){
+  return String(word).toLowerCase().replace(/[^a-z]/g,'');
 }
-function showMediaEnginePrompt(message){
-  const locale=state.settings.locale||'en-US';
-  const label=locale==='en-GB'?'英音 Alba':'美音 Joe';
-  const status=message||(state.settings.mediaTtsEnabled?'首次使用此口音需要下载约 63MB 的发音资源。':'首次使用需要下载约 90MB 的发音资源，建议连接 Wi-Fi。');
-  $('listenCard').innerHTML='<div class="listen-chip">英语发音 · 媒体播放</div><div class="sound-wave paused" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">等待启用</div><div class="timer-hint" id="playStatus">'+esc(status)+'</div><div class="media-engine-box" style="margin-top:14px;padding:12px;border-radius:14px;background:#F7F8FA"><div style="font-size:13px;font-weight:700;color:#1F2937">'+label+' · 英语发音</div><div style="font-size:11px;color:#6B7280;line-height:1.55;margin:6px 0 10px">首次使用需要下载语音资源，下载后会自动保存在手机上。</div><button class="btn primary" data-audio-action="enable-media" style="width:100%">启用媒体语音并播放本题</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">暂时使用系统语音</button></div>';
+function audioTokens(text){
+  const matches=String(text||'').match(/[A-Za-z]+(?:'[A-Za-z]+)*/g)||[];
+  return matches.map(audioTokenKey).filter(Boolean);
+}
+async function getOnlineToken(locale,key){
+  const url=new URL(encodeURIComponent(locale)+'/'+encodeURIComponent(key)+'.pcm',ONLINE_AUDIO_BASE).href;
+  if(onlineTokenMemory.has(url))return onlineTokenMemory.get(url);
+  const request=fetch(url,{cache:'force-cache'}).then(async response=>{
+    if(!response.ok){
+      if(response.status===404)throw new Error('此题词汇暂无在线发音：'+key);
+      throw new Error('语音资源获取失败，请检查网络连接。');
+    }
+    const buffer=await response.arrayBuffer();
+    if(!buffer.byteLength||buffer.byteLength%2)throw new Error('下载的音频数据不完整');
+    return new Uint8Array(buffer);
+  });
+  onlineTokenMemory.set(url,request);
+  request.catch(()=>onlineTokenMemory.delete(url));
+  if(onlineTokenMemory.size>300)onlineTokenMemory.delete(onlineTokenMemory.keys().next().value);
+  return request;
+}
+function combineOnlinePcm(parts){
+  const gap=640;
+  const total=parts.reduce((sum,p)=>sum+p.byteLength,0)+Math.max(0,parts.length-1)*gap;
+  const joined=new Uint8Array(total);
+  let offset=0;
+  for(let i=0;i<parts.length;i++){
+    joined.set(parts[i],offset);
+    offset+=parts[i].byteLength+(i<parts.length-1?gap:0);
+  }
+  return pcmWavBlob(joined.buffer);
 }
 function showMediaError(message){
   const card=$('listenCard');
-  if(card)card.querySelectorAll('.media-engine-box').forEach(node=>node.remove());
+  if(!card)return;
+  card.querySelectorAll('.media-engine-box,[data-audio-action="retry-media"]').forEach(node=>node.remove());
   const status=$('playStatus');
   if(status)status.textContent=message;
-  if(!card)return;
   const actions=document.createElement('div');
   actions.className='media-engine-box';
   actions.style.marginTop='12px';
-  actions.innerHTML='<button class="btn primary" data-audio-action="retry-media" style="width:100%">重试媒体语音</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">临时使用系统语音</button>';
+  actions.innerHTML='<button class="btn primary" data-audio-action="retry-media" style="width:100%">重新播放</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">试用系统语音</button>';
   card.appendChild(actions);
 }
 function showMediaTapToPlay(){
   const card=$('listenCard');
-  if(card)card.querySelectorAll('[data-audio-action="retry-media"]').forEach(node=>node.remove());
-  const status=$('playStatus');
-  if(status)status.textContent='语音已生成。iPhone 需要一次明确的播放触摸，请点击下方按钮。';
   if(!card)return;
+  card.querySelectorAll('[data-audio-action="retry-media"]').forEach(node=>node.remove());
+  const status=$('playStatus');
+  if(status)status.textContent='发音已准备好，请点击下方按钮开始播放。';
   const button=document.createElement('button');
-  button.className='btn primary';button.dataset.audioAction='retry-media';button.style.width='100%';button.style.marginTop='12px';button.textContent='点击播放英语语音';
+  button.className='btn primary';
+  button.dataset.audioAction='retry-media';
+  button.style.width='100%';
+  button.style.marginTop='12px';
+  button.textContent='点击播放英语发音';
   card.appendChild(button);
 }
-async function playPiperBlob(blob,token,question){
+async function forcePlaybackAudioSession(){
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+}
+async function playOnlineBlob(blob,token,question){
   const audio=ensureMediaAudio();
   if(runtime.audioObjectUrl){try{URL.revokeObjectURL(runtime.audioObjectUrl);}catch(e){}runtime.audioObjectUrl=null;}
   const url=URL.createObjectURL(blob);
@@ -922,10 +758,11 @@ async function playPiperBlob(blob,token,question){
   if(runtime.silentAudioUrl){try{URL.revokeObjectURL(runtime.silentAudioUrl);}catch(e){}runtime.silentAudioUrl=null;}
   runtime.pendingAudioBlob=blob;
   runtime.pendingAudioQuestion=question;
-  audio.pause();
+  try{audio.pause();}catch(e){}
   audio.onplaying=()=>{
     if(token!==runtime.token)return;
-    runtime.generating=false;runtime.speaking=true;runtime.ttsProgressText='';updateListeningStatus();
+    runtime.generating=false;runtime.speaking=true;runtime.ttsProgressText='';
+    updateListeningStatus();
   };
   audio.onended=()=>{
     if(token!==runtime.token)return;
@@ -938,16 +775,21 @@ async function playPiperBlob(blob,token,question){
   audio.onerror=()=>{
     if(token!==runtime.token)return;
     runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
-    showMediaError('播放失败，请检查媒体音量后重试。');
+    showMediaError('英语发音播放失败，请点击重新播放。');
   };
-  audio.src=url;audio.currentTime=0;audio.volume=1;audio.muted=false;audio.playbackRate=1;audio.load();
+  audio.src=url;
+  audio.currentTime=0;
+  audio.volume=1;
+  audio.muted=false;
+  audio.playbackRate=Number(state.settings.rate)||1;
+  audio.load();
   await forcePlaybackAudioSession();
   try{
     await audio.play();
     if(token!==runtime.token){audio.pause();return;}
     runtime.mediaUnlocked=true;
     runtime.generating=false;runtime.speaking=true;updateListeningStatus();
-  }catch(error){
+  }catch(e){
     if(token!==runtime.token)return;
     runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
     showMediaTapToPlay();
@@ -957,41 +799,30 @@ async function playMediaText(text,question=true){
   stopSpeech();
   unlockMediaAudioFromGesture();
   const chip=$('listenCard').querySelector('.listen-chip');
-  if(chip)chip.textContent='英语发音 · 媒体播放';
+  if(chip)chip.textContent='在线英语发音';
   $('listenCard').querySelectorAll('.media-engine-box').forEach(node=>node.remove());
   const token=runtime.token;
   runtime.generating=true;runtime.speaking=false;runtime.readyAt=null;runtime.early=false;
-  runtime.ttsProgressText='正在准备英语发音…';
+  runtime.ttsProgressText='正在获取本题发音…';
   updateListeningStatus();
   try{
-    const locale=state.settings.locale||'en-US';
-    const voice=PIPER_VOICE_ASSETS[locale]||PIPER_VOICE_ASSETS['en-US'];
-    const engine=await ensurePiperEngine(locale,progress=>{
-      if(token!==runtime.token)return;
-      const mb=progress.total?Math.round(progress.loaded/1024/1024*10)/10:null;
-      const total=progress.total?Math.round(progress.total/1024/1024*10)/10:null;
-      runtime.ttsProgressText=total?('下载语音资源 '+mb+' / '+total+' MB'):'正在下载语音资源 '+mb+' MB';
-      updateListeningStatus();
-    });
+    const tokens=audioTokens(text);
+    if(!tokens.length)throw new Error('当前题目没有可播放的英文内容');
+    if(tokens.length>100)throw new Error('题目过长，请缩短发音文本');
+    const locale=state.settings.locale==='en-GB'?'en-GB':'en-US';
+    const unique=[...new Set(tokens)];
+    const files=await Promise.all(unique.map(key=>getOnlineToken(locale,key)));
     if(token!==runtime.token)return;
-    const rate=Number(state.settings.rate)||1;
-    const cacheKey=voice.id+'|'+rate+'|'+String(text);
-    let blob=runtime.audioCache.get(cacheKey);
-    if(!blob){
-      runtime.ttsProgressText='正在准备本题发音…';
-      updateListeningStatus();
-      blob=await synthesizePiper(text,engine,rate);
-      runtime.audioCache.set(cacheKey,blob);
-      if(runtime.audioCache.size>40)runtime.audioCache.delete(runtime.audioCache.keys().next().value);
-    }
-    if(token!==runtime.token)return;
+    const index=new Map(unique.map((key,i)=>[key,files[i]]));
+    const blob=combineOnlinePcm(tokens.map(key=>index.get(key)));
     runtime.generating=false;runtime.ttsProgressText='';
-    await playPiperBlob(blob,token,question);
+    await playOnlineBlob(blob,token,question);
   }catch(error){
     if(token!==runtime.token)return;
-    runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;runtime.ttsProgressText='';updateListeningStatus();
-    console.warn('Media voice error:',error);
-    showMediaError('语音准备失败，请检查网络或存储空间后重试。');
+    runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;runtime.ttsProgressText='';
+    updateListeningStatus();
+    console.warn('Online speech playback:',error);
+    showMediaError(error&&error.message?error.message:'当前题目暂时无法播放，请检查网络。');
   }
 }
 function speakNativeText(text,question=true){
@@ -1023,11 +854,10 @@ function speakNativeText(text,question=true){
 function speakCurrent(){
   if(!session||runtime.feedback)return;
   clearAutoSubmitTimer();
-  if(runtime.nativeFallback){speakNativeText(session.queue[session.index].audioText,true);return;}
-  const voice=PIPER_VOICE_ASSETS[state.settings.locale]||PIPER_VOICE_ASSETS['en-US'];
-  let voiceConsent=Array.isArray(state.settings.mediaTtsVoiceIds)&&state.settings.mediaTtsVoiceIds.includes(voice.id);
-  try{voiceConsent=voiceConsent||localStorage.getItem('voice_reflex_piper_consent_'+voice.id)==='1';}catch(e){}
-  if(!state.settings.mediaTtsEnabled||!voiceConsent){showMediaEnginePrompt();return;}
+  if(runtime.nativeFallback){
+    speakNativeText(session.queue[session.index].audioText,true);
+    return;
+  }
   playMediaText(session.queue[session.index].audioText,true);
 }
 function stopSpeech(){
@@ -1037,7 +867,14 @@ function stopSpeech(){
   if('speechSynthesis' in window){try{window.speechSynthesis.cancel();}catch(e){}}
   cancelAnimationFrame(runtime.animation);
   if(runtime.mediaAudio){
-    try{runtime.mediaAudio.pause();runtime.mediaAudio.onplaying=null;runtime.mediaAudio.onended=null;runtime.mediaAudio.onerror=null;runtime.mediaAudio.removeAttribute('src');runtime.mediaAudio.load();}catch(e){}
+    try{
+      runtime.mediaAudio.pause();
+      runtime.mediaAudio.onplaying=null;
+      runtime.mediaAudio.onended=null;
+      runtime.mediaAudio.onerror=null;
+      runtime.mediaAudio.removeAttribute('src');
+      runtime.mediaAudio.load();
+    }catch(e){}
   }
   if(runtime.audioObjectUrl){try{URL.revokeObjectURL(runtime.audioObjectUrl);}catch(e){}runtime.audioObjectUrl=null;}
   if(runtime.silentAudioUrl){try{URL.revokeObjectURL(runtime.silentAudioUrl);}catch(e){}runtime.silentAudioUrl=null;}
@@ -1053,7 +890,6 @@ function selectSpeechVoice(locale){
     ||voices.find(v=>String(v.lang||'').toLowerCase().startsWith(target.split('-')[0]))
     ||null;
 }
-
 function startTimer(){
   cancelAnimationFrame(runtime.animation);
   const loop=()=>{
@@ -1167,8 +1003,7 @@ function keyboardAction(action){
     clearAutoSubmitTimer();
     if(action==='replay-feedback'){
       if(runtime.nativeFallback)speakNativeText(session.queue[session.index].audioText,false);
-      else if(state.settings.mediaTtsEnabled)playMediaText(session.queue[session.index].audioText,false);
-      else showMediaEnginePrompt('先启用媒体语音，或选择系统语音备用方案。');
+      else playMediaText(session.queue[session.index].audioText,false);
     }else speakCurrent();
     return;
   }
@@ -1340,21 +1175,12 @@ function setupEvents(){
     const audioAction=e.target.closest('[data-audio-action]');
     if(audioAction){
       const action=audioAction.dataset.audioAction;
-      if(action==='enable-media'){
-        state.settings.mediaTtsEnabled=true;runtime.nativeFallback=false;
-        const consentVoice=PIPER_VOICE_ASSETS[state.settings.locale]||PIPER_VOICE_ASSETS['en-US'];
-        state.settings.mediaTtsVoiceIds=Array.from(new Set([...(state.settings.mediaTtsVoiceIds||[]),consentVoice.id]));
-        try{localStorage.setItem('voice_reflex_piper_consent_'+consentVoice.id,'1');}catch(e){}
-        persist();
-        if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
-        speakCurrent();
-      }else if(action==='native-fallback'){
+      if(action==='native-fallback'){
         runtime.nativeFallback=true;
-        speakNativeText(session?session.queue[session.index].audioText:'Hello, this is an audio test.',true);
-      }
-      else if(action==='retry-media'){
-        unlockMediaAudioFromGesture();
-        if(runtime.pendingAudioBlob)playPiperBlob(runtime.pendingAudioBlob,runtime.token,runtime.pendingAudioQuestion);
+        speakNativeText(session?session.queue[session.index].audioText:'Hello',true);
+      }else if(action==='retry-media'){
+        runtime.nativeFallback=false;
+        if(runtime.pendingAudioBlob)playOnlineBlob(runtime.pendingAudioBlob,runtime.token,runtime.pendingAudioQuestion);
         else if(session&&!runtime.feedback)playMediaText(session.queue[session.index].audioText,true);
       }
       return;
