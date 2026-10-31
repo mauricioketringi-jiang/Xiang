@@ -759,7 +759,7 @@ function phonemizePiperText(text,language){
     '--language',language,
     '--input',JSON.stringify([{text:String(text||'').trim()}])
   ]);
-  if(rc!==0&&rc!==undefined)throw new Error('英语音素转换失败，代码 '+rc);
+  if(rc!==0)throw new Error('英语音素转换失败，代码 '+rc);
   const result=runtime.phonemizerOutput.find(item=>item&&Array.isArray(item.phoneme_ids));
   if(!result||!result.phoneme_ids.length)throw new Error('无法将题目转换为英语音素');
   return result.phoneme_ids;
