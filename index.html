@@ -893,6 +893,8 @@ function showMediaEnginePrompt(message){
   $('listenCard').innerHTML='<div class="listen-chip">媒体音频模式 · 本地神经网络语音</div><div class="sound-wave paused" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">等待启用</div><div class="timer-hint" id="playStatus">'+esc(status)+'</div><div class="media-engine-box" style="margin-top:14px;padding:12px;border-radius:14px;background:#F7F8FA"><div style="font-size:13px;font-weight:700;color:#1F2937">'+label+' · Piper TTS</div><div style="font-size:11px;color:#6B7280;line-height:1.55;margin:6px 0 10px">音频由本机生成，再通过 HTML5 Audio 媒体通道播放。首次下载后会缓存模型。</div><button class="btn primary" data-audio-action="enable-media" style="width:100%">启用媒体语音并播放本题</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">暂时使用系统语音</button></div>';
 }
 function showMediaError(message){
+  const card=$('listenCard');
+  if(card)card.querySelectorAll('.media-engine-box').forEach(node=>node.remove());
   const status=$('playStatus');
   if(status)status.textContent=message;
   const card=$('listenCard');
@@ -904,6 +906,8 @@ function showMediaError(message){
   card.appendChild(actions);
 }
 function showMediaTapToPlay(){
+  const card=$('listenCard');
+  if(card)card.querySelectorAll('[data-audio-action="retry-media"]').forEach(node=>node.remove());
   const status=$('playStatus');
   if(status)status.textContent='语音已生成。iPhone 需要一次明确的播放触摸，请点击下方按钮。';
   const card=$('listenCard');
@@ -917,6 +921,8 @@ async function playPiperBlob(blob,token,question){
   if(runtime.audioObjectUrl){try{URL.revokeObjectURL(runtime.audioObjectUrl);}catch(e){}runtime.audioObjectUrl=null;}
   const url=URL.createObjectURL(blob);
   runtime.audioObjectUrl=url;
+  if(runtime.silentAudioUrl){try{URL.revokeObjectURL(runtime.silentAudioUrl);}catch(e){}runtime.silentAudioUrl=null;}
+  runtime.mediaUnlocked=true;
   runtime.pendingAudioBlob=blob;
   runtime.pendingAudioQuestion=question;
   audio.pause();
@@ -951,6 +957,7 @@ async function playPiperBlob(blob,token,question){
 }
 async function playMediaText(text,question=true){
   stopSpeech();
+  unlockMediaAudioFromGesture();
   const token=runtime.token;
   runtime.generating=true;runtime.speaking=false;runtime.readyAt=null;runtime.early=false;
   runtime.ttsProgressText='正在加载本地媒体语音引擎…';
@@ -1012,7 +1019,6 @@ function speakCurrent(){
   if(!session||runtime.feedback)return;
   clearAutoSubmitTimer();
   if(!state.settings.mediaTtsEnabled){showMediaEnginePrompt();return;}
-  unlockMediaAudioFromGesture();
   playMediaText(session.queue[session.index].audioText,true);
 }
 function stopSpeech(){
@@ -1025,6 +1031,7 @@ function stopSpeech(){
     try{runtime.mediaAudio.pause();runtime.mediaAudio.onplaying=null;runtime.mediaAudio.onended=null;runtime.mediaAudio.onerror=null;runtime.mediaAudio.removeAttribute('src');runtime.mediaAudio.load();}catch(e){}
   }
   if(runtime.audioObjectUrl){try{URL.revokeObjectURL(runtime.audioObjectUrl);}catch(e){}runtime.audioObjectUrl=null;}
+  if(runtime.silentAudioUrl){try{URL.revokeObjectURL(runtime.silentAudioUrl);}catch(e){}runtime.silentAudioUrl=null;}
   runtime.pendingAudioBlob=null;
   try{if(navigator.audioSession)navigator.audioSession.type='auto';}catch(e){}
 }
@@ -1321,7 +1328,9 @@ function setupEvents(){
     if(audioAction){
       const action=audioAction.dataset.audioAction;
       if(action==='enable-media'){
-        state.settings.mediaTtsEnabled=true;persist();unlockMediaAudioFromGesture();speakCurrent();
+        state.settings.mediaTtsEnabled=true;persist();
+        if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+        speakCurrent();
       }else if(action==='native-fallback')speakNativeText(session?session.queue[session.index].audioText:'Hello, this is an audio test.',true);
       else if(action==='retry-media'){
         unlockMediaAudioFromGesture();
