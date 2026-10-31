@@ -53,9 +53,23 @@ jobs:
             const special=await page.evaluate(()=>({accent:ACCENT_COUNTRIES.length,noise:NOISE_ENVIRONMENTS.length}));
             if(special.accent!==8||special.noise!==4)throw Error('Random accents/noises are incomplete');
             await page.locator('[data-lesson="num:1"]').first().click();
-            await page.waitForTimeout(100);
+            const standby=await page.evaluate(()=>({
+              started:session.isStarted,ready:runtime.readyAt,
+              tts:window.__calls.length,button:!!document.querySelector('.ready-start')
+            }));
+            if(standby.started!==false||standby.ready!==null||standby.tts!==0||!standby.button)
+              throw Error('V8 lesson must stay silent and untimed until Start is clicked');
+            await page.locator('input[type=radio][value=spell]').check({force:true});
+            if((await page.locator('.ready-start').count())!==1)
+              throw Error('Switching mode before Start must not begin a lesson');
+            await page.locator('input[type=radio][value=listen]').check({force:true});
+            await page.locator('#voiceRate').selectOption('1.2');
+            if((await page.locator('.ready-start').count())!==1||await page.evaluate(()=>window.__calls.length)!==0)
+              throw Error('Changing voice rate must preserve standby');
+            await page.locator('.ready-start').click();
+            await page.waitForTimeout(200);
             const calls=await page.evaluate(()=>window.__calls.length);
-            if(!calls)throw Error('No automatic TTS after starting a lesson');
+            if(!calls)throw Error('Start button did not trigger US TTS');
             if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')throw Error('Wrong question count');
             if((await page.locator('#keypadShell .key').count())!==12)throw Error('Expected 4x3 keypad');
             if((await page.locator('.training-controls input[type=radio]').count())!==3)throw Error('Three mode pills missing');
@@ -66,6 +80,9 @@ jobs:
             await page.waitForTimeout(560);
             if(!(await page.evaluate(()=>session.index===1)))throw Error('Rapid-fire did not advance');
             await page.locator('input[type=radio][value=spell]').check({force:true});
+            if((await page.locator('.ready-start').count())!==1)
+              throw Error('Switching mode mid-lesson must return to standby');
+            await page.locator('.ready-start').click();
             if((await page.locator('.spell-key').count())!==26)throw Error('Expected 26-key spelling keyboard');
             if((await page.locator('.spell-confirm').count())!==1)throw Error('Manual spelling confirmation missing');
             await page.evaluate(()=>{
@@ -79,7 +96,7 @@ jobs:
             await page.locator('.spell-confirm').click();
             if((await page.locator('.fast-feedback').count())!==1)throw Error('Manual spelling confirmation failed');
             if(errors.length)throw Error('Page errors: '+errors.join(' | '));
-            console.log('PASS: V7 23 lessons, slow correct instant transition, 12-key numeric pad, manual spelling confirmation, records');
+            console.log('PASS: V8 23 lessons, ready-state start gesture, mode and speed switching, TTS, rapid-fire, spelling confirmation');
             await b.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           JS
