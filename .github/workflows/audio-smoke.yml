@@ -70,6 +70,21 @@ jobs:
               return [...wanted].sort();
             });
             const manifest=await (await page.request.get('http://127.0.0.1:8765/audio/manifest.json')).json();
+            if(manifest.version!==2 || !Array.isArray(manifest.phrases) || manifest.phrases.length<90)
+              throw new Error('Complete-phrase audio assets are missing');
+            const phraseCheck=await page.evaluate(async()=>{
+              const units=audioUnits('The time is twenty three, thirty four.',await getOnlinePhrases());
+              const files=await Promise.all(units.map(x=>getOnlineToken('en-US',x.key)));
+              const wav=combineOnlinePcm(files,units);
+              const bytes=await wav.arrayBuffer();
+              const view=new DataView(bytes);
+              return {keys:units.map(x=>x.key),rate:view.getUint32(24,true),wavBytes:bytes.byteLength,duration:(bytes.byteLength-44)/(view.getUint32(24,true)*2)};
+            });
+            if(JSON.stringify(phraseCheck.keys)!==JSON.stringify(['the_time_is','twenty_three','thirty_four']))
+              throw new Error('Phrase segmentation failed: '+JSON.stringify(phraseCheck.keys));
+            if(phraseCheck.rate!==16000 || phraseCheck.duration<0.8 || phraseCheck.duration>12)
+              throw new Error('Invalid continuous phrase audio: '+JSON.stringify(phraseCheck));
+            console.log('CONTINUOUS PHRASE AUDIO:',JSON.stringify(phraseCheck));
             const missing=coverage.filter(word=>!manifest.tokens.includes(word));
             if(missing.length)throw new Error('Missing online audio tokens: '+missing.join(', '));
             console.log('ONLINE AUDIO COVERAGE:',coverage.length,'tokens');
