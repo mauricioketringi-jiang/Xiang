@@ -231,7 +231,7 @@
 </div>
 <script>
 'use strict';
-/* 所有功能、课程引擎、样式和持久化逻辑均在本文件中，无第三方依赖。 */
+/* 课程、界面与学习数据逻辑集中在本文件；媒体语音按需加载开源 Piper / ONNX WASM 运行库及模型。 */
 const STORE_KEY = 'voice_reflex_app_v1';
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -295,7 +295,7 @@ async function hydrateState(){
   }
 }
 let session = null;
-let runtime = {input:'', selected:-1, letter:false, feedback:false, speaking:false, generating:false, readyAt:null, early:false, token:0, animation:0, autoSubmitTimer:null, mediaAudio:null, mediaUnlocked:false, audioObjectUrl:null, silentAudioUrl:null, pendingAudioBlob:null, pendingAudioQuestion:false, ttsProgressText:'', ort:null, ortPromise:null, phonemizer:null, phonemizerPromise:null, phonemizerOutput:[], piperEngine:null, piperEnginePromise:null, piperEnginePromiseVoice:'', audioCache:new Map()};
+let runtime = {input:'', selected:-1, letter:false, feedback:false, speaking:false, generating:false, readyAt:null, early:false, token:0, animation:0, autoSubmitTimer:null, mediaAudio:null, mediaUnlocked:false, audioObjectUrl:null, silentAudioUrl:null, pendingAudioBlob:null, pendingAudioQuestion:false, nativeFallback:false, ttsProgressText:'', ort:null, ortPromise:null, phonemizer:null, phonemizerPromise:null, phonemizerOutput:[], piperEngine:null, piperEnginePromise:null, piperEnginePromiseVoice:'', audioCache:new Map()};
 let toastTimer = null;
 let storageWarningShown=false;
 function persist(){
@@ -587,7 +587,7 @@ function updateImports(words){
 function validateBackup(raw){
   if(!raw||typeof raw!=='object'||raw.version!==1||!raw.levels||!raw.errorPool||!Array.isArray(raw.imports))throw Error('文件不是有效的 V1 学习备份');
   const words=raw.imports.length?normalizeWords(raw.imports):[];
-  return {...emptyState(),...raw,imports:words,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1}, activeSession:null};
+  return {...emptyState(),...raw,imports:words,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1,mediaTtsEnabled:Boolean(raw.settings?.mediaTtsEnabled)}, activeSession:null};
 }
 
 /* 练习会话：语音结束计时；前置提交记 0ms。 */
@@ -1018,6 +1018,7 @@ function speakNativeText(text,question=true){
 function speakCurrent(){
   if(!session||runtime.feedback)return;
   clearAutoSubmitTimer();
+  if(runtime.nativeFallback){speakNativeText(session.queue[session.index].audioText,true);return;}
   if(!state.settings.mediaTtsEnabled){showMediaEnginePrompt();return;}
   playMediaText(session.queue[session.index].audioText,true);
 }
@@ -1155,8 +1156,11 @@ function keyboardAction(action){
   if(!session)return;
   if(action==='replay'||action==='replay-feedback'){
     clearAutoSubmitTimer();
-    if(action==='replay-feedback')playMediaText(session.queue[session.index].audioText,false);
-    else speakCurrent();
+    if(action==='replay-feedback'){
+      if(runtime.nativeFallback)speakNativeText(session.queue[session.index].audioText,false);
+      else if(state.settings.mediaTtsEnabled)playMediaText(session.queue[session.index].audioText,false);
+      else showMediaEnginePrompt('先启用媒体语音，或选择系统语音备用方案。');
+    }else speakCurrent();
     return;
   }
   if(runtime.feedback){if(action==='next')nextQuestion();return;}
@@ -1328,10 +1332,13 @@ function setupEvents(){
     if(audioAction){
       const action=audioAction.dataset.audioAction;
       if(action==='enable-media'){
-        state.settings.mediaTtsEnabled=true;persist();
+        state.settings.mediaTtsEnabled=true;runtime.nativeFallback=false;persist();
         if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
         speakCurrent();
-      }else if(action==='native-fallback')speakNativeText(session?session.queue[session.index].audioText:'Hello, this is an audio test.',true);
+      }else if(action==='native-fallback'){
+        runtime.nativeFallback=true;
+        speakNativeText(session?session.queue[session.index].audioText:'Hello, this is an audio test.',true);
+      }
       else if(action==='retry-media'){
         unlockMediaAudioFromGesture();
         if(runtime.pendingAudioBlob)playPiperBlob(runtime.pendingAudioBlob,runtime.token,runtime.pendingAudioQuestion);
