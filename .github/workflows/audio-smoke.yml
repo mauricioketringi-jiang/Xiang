@@ -1,0 +1,53 @@
+name: Mobile audio browser smoke test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Chromium automation
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify Piper TTS and answer flow
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 &
+          node <<'JS'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true, args: ['--no-sandbox','--autoplay-policy=no-user-gesture-required'] });
+            const page = await browser.newPage({ viewport: {width:390,height:844},isMobile:true,hasTouch:true });
+            const errors = [];
+            page.on('pageerror', err => { errors.push(err.message); console.log('PAGE ERROR:',err.message); });
+            page.on('console', msg => { if(msg.type()==='error') console.log('CONSOLE ERROR:',msg.text()); });
+            await page.goto('http://127.0.0.1:8765/', {waitUntil:'domcontentloaded'});
+            await page.locator('[data-lesson="num:1"]').first().click();
+            await page.locator('[data-audio-action="enable-media"]').click();
+            await page.waitForFunction(
+              () => {
+                const s = document.getElementById('playStatus')?.textContent || '';
+                if(/初始化失败|无法播放|下载失败/.test(s)) throw new Error(s);
+                return s.includes('声音播放结束') || (document.getElementById('timerText')?.textContent || '').endsWith('s');
+              },
+              {timeout:240000}
+            );
+            const status = await page.locator('#playStatus').textContent();
+            console.log('AUDIO PLAYBACK STATUS:',status);
+            const key = await page.locator('[data-key]').filter({hasText:/^[0-9]$/}).first();
+            await key.click();
+            await page.locator('.feedback-card').waitFor({timeout:5000});
+            if(errors.length)throw new Error('Browser JS errors: '+errors.join(' | '));
+            console.log('PASS: Piper generated audio played to completion and auto-submit feedback rendered.');
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          JS
