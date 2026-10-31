@@ -40,12 +40,12 @@ jobs:
             });
             await page.goto('http://127.0.0.1:8765/',{waitUntil:'load'});
             const course=await page.evaluate(()=>allLessons().map(x=>x.id));
-            if(course.length!==18||course.filter(x=>x.startsWith('num:')).length!==16)
+            if(course.length!==22||course.filter(x=>x.startsWith('num:')).length!==20)
               throw Error('All 18 original course categories must be preserved');
             const options=await page.locator('#freeCount option').evaluateAll(xs=>xs.map(x=>x.value));
             if(JSON.stringify(options)!=='["10","30","50"]')throw Error('Wrong practice counts');
             if(!(await page.locator('#flowMode').isChecked()))throw Error('Rapid-fire default off');
-            if((await page.locator('#accentMode').inputValue())!=='en-US')throw Error('US accent not default');
+            if((await page.locator('#accentMode').inputValue())!=='mixed')throw Error('US accent not default');
             await page.locator('[data-lesson="num:1"]').first().click();
             await page.waitForTimeout(100);
             const calls=await page.evaluate(()=>window.__calls.length);
