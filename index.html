@@ -169,8 +169,8 @@
       <p class="subtitle">慢反应与错误自动归档，针对薄弱点重复巩固</p>
       <article class="card lab-card">
         <div class="row between"><h2 class="lab-title">智能弱项特训</h2><span class="pill" id="weakCount">0 题待巩固</span></div>
-        <p class="hint">答错或答对但反应超过 2500ms 的题目，自动进入特训池。连续快速答对 2 次即可移出。</p>
-        <button class="btn primary full" id="weakStart">开始弱项强化（15 题）</button>
+        <p class="hint">答错或反应超过 2.5 秒的题目，会自动加入错题练习。连续快速答对 2 次后移出。</p>
+        <button class="btn primary full" id="weakStart">开始弱项强化（10 题）</button>
         <div class="weak-list" id="weakList"></div>
         <button class="btn danger full" id="clearWeak" style="margin-top:9px">清空特训池</button>
       </article>
@@ -180,12 +180,12 @@
         <label class="form-label" for="freeLevel">练习范围</label>
         <select class="select" id="freeLevel"></select>
         <label class="form-label" for="freeCount">每次题量</label>
-        <select class="select" id="freeCount"><option value="5">5 题</option><option value="10">10 题</option><option value="15" selected>15 题</option><option value="30">30 题</option></select>
+        <select class="select" id="freeCount"><option value="10" selected>10 题</option><option value="30">30 题</option><option value="50">50 题</option></select>
         <button class="btn primary full" id="freeStart" style="margin-top:14px">开始自由练习</button>
       </article>
       <article class="card lab-card">
         <h2 class="lab-title">词库与数据管理</h2>
-        <p class="hint">导入 JSON / CSV 单词表，按 category 自动建立课程。所有学习数据只保存在当前浏览器。</p>
+        <p class="hint">导入个人英语词库，自动生成练习课程。学习记录保存在当前手机浏览器。</p>
         <div class="import-actions">
           <button class="btn ghost" id="importVocab">导入 JSON / CSV</button>
           <button class="btn outline" id="exportVocab">导出自定义词库</button>
@@ -194,7 +194,7 @@
         </div>
         <input class="hidden" id="vocabFile" type="file" accept=".json,.csv,application/json,text/csv">
         <input class="hidden" id="backupFile" type="file" accept=".json,application/json">
-        <div class="notice">字段：id, category, subCategory, audioText, answer, meaning, phonetic, example。必填 answer、meaning；其余字段可缺省。UTF-8 CSV 支持带引号的逗号和换行。建议定期导出备份；清理浏览器数据会丢失本地记录。</div>
+        <div class="notice">支持 JSON 或 CSV 格式，至少包含英文单词与中文释义。CSV 可使用“单词”和“释义”作为表头。建议定期备份学习记录，以免清理浏览器数据后丢失。</div>
       </article>
       <article class="card lab-card">
         <div class="row between"><h2 class="lab-title">学习记录</h2><button class="btn danger" id="clearHistory">重置全部学习数据</button></div>
@@ -213,7 +213,7 @@
       <div class="settings-row">
         <select class="select" id="voiceLocale" aria-label="英语口音"><option value="en-US">美音 · US</option><option value="en-GB">英音 · UK</option></select>
         <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
-        <span class="question-count" id="questionCount">1 / 15</span>
+        <span class="question-count" id="questionCount">1 / 10</span>
       </div>
       <div class="tiny-track"><div class="tiny-fill" id="questionFill"></div></div>
     </header>
@@ -595,7 +595,7 @@ function showPage(name){
   for(const p of document.querySelectorAll('.page'))p.classList.toggle('active',p.id===name+'Page');
   document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
 }
-function startSession(levelId,mode='lesson',count=15){
+function startSession(levelId,mode='lesson',count=10){
   try{
     const level=allLessons().find(x=>x.id===levelId);
     if(!level)throw Error('该关卡不存在');
@@ -610,7 +610,7 @@ function startWeak(){
   if(!entries.length){toast('暂无错题或超时题目，先完成一次练习。');return;}
   const items=entries.flatMap(e=>Array.from({length:clamp((e.errors||0)+(e.slow||0),1,5)},()=>e.question));
   const queue=[];
-  for(let i=0;i<15;i++){
+  for(let i=0;i<10;i++){
     const q=JSON.parse(JSON.stringify(pick(items)));
     if(q.kind==='word'){
       const w=allWords().find(x=>x.id===q.wordId && 'word:'+x.category===q.levelId);
@@ -889,8 +889,8 @@ async function forcePlaybackAudioSession(){
 function showMediaEnginePrompt(message){
   const locale=state.settings.locale||'en-US';
   const label=locale==='en-GB'?'英音 Alba':'美音 Joe';
-  const status=message||(state.settings.mediaTtsEnabled?'首次使用该口音还需下载约 63MB 模型；下载后会缓存到本机。':'首次启用需要下载约 90MB 运行资源；切换另一口音还需约 63MB 模型。');
-  $('listenCard').innerHTML='<div class="listen-chip">媒体音频模式 · 本地神经网络语音</div><div class="sound-wave paused" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">等待启用</div><div class="timer-hint" id="playStatus">'+esc(status)+'</div><div class="media-engine-box" style="margin-top:14px;padding:12px;border-radius:14px;background:#F7F8FA"><div style="font-size:13px;font-weight:700;color:#1F2937">'+label+' · Piper TTS</div><div style="font-size:11px;color:#6B7280;line-height:1.55;margin:6px 0 10px">音频由本机生成，再通过 HTML5 Audio 媒体通道播放。首次下载后会缓存模型。</div><button class="btn primary" data-audio-action="enable-media" style="width:100%">启用媒体语音并播放本题</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">暂时使用系统语音</button></div>';
+  const status=message||(state.settings.mediaTtsEnabled?'首次使用此口音需要下载约 63MB 的发音资源。':'首次使用需要下载约 90MB 的发音资源，建议连接 Wi-Fi。');
+  $('listenCard').innerHTML='<div class="listen-chip">英语发音 · 媒体播放</div><div class="sound-wave paused" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">等待启用</div><div class="timer-hint" id="playStatus">'+esc(status)+'</div><div class="media-engine-box" style="margin-top:14px;padding:12px;border-radius:14px;background:#F7F8FA"><div style="font-size:13px;font-weight:700;color:#1F2937">'+label+' · 英语发音</div><div style="font-size:11px;color:#6B7280;line-height:1.55;margin:6px 0 10px">首次使用需要下载语音资源，下载后会自动保存在手机上。</div><button class="btn primary" data-audio-action="enable-media" style="width:100%">启用媒体语音并播放本题</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">暂时使用系统语音</button></div>';
 }
 function showMediaError(message){
   const card=$('listenCard');
@@ -938,7 +938,7 @@ async function playPiperBlob(blob,token,question){
   audio.onerror=()=>{
     if(token!==runtime.token)return;
     runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
-    showMediaError('HTML5 Audio 播放失败。请检查网络、媒体音量或重新播放。');
+    showMediaError('播放失败，请检查媒体音量后重试。');
   };
   audio.src=url;audio.currentTime=0;audio.volume=1;audio.muted=false;audio.playbackRate=1;audio.load();
   await forcePlaybackAudioSession();
@@ -957,11 +957,11 @@ async function playMediaText(text,question=true){
   stopSpeech();
   unlockMediaAudioFromGesture();
   const chip=$('listenCard').querySelector('.listen-chip');
-  if(chip)chip.textContent='媒体音频播放 · Piper TTS';
+  if(chip)chip.textContent='英语发音 · 媒体播放';
   $('listenCard').querySelectorAll('.media-engine-box').forEach(node=>node.remove());
   const token=runtime.token;
   runtime.generating=true;runtime.speaking=false;runtime.readyAt=null;runtime.early=false;
-  runtime.ttsProgressText='正在加载本地媒体语音引擎…';
+  runtime.ttsProgressText='正在准备英语发音…';
   updateListeningStatus();
   try{
     const locale=state.settings.locale||'en-US';
@@ -970,7 +970,7 @@ async function playMediaText(text,question=true){
       if(token!==runtime.token)return;
       const mb=progress.total?Math.round(progress.loaded/1024/1024*10)/10:null;
       const total=progress.total?Math.round(progress.total/1024/1024*10)/10:null;
-      runtime.ttsProgressText=total?('下载 '+mb+' / '+total+' MB'):'下载语音模型 '+mb+' MB';
+      runtime.ttsProgressText=total?('下载语音资源 '+mb+' / '+total+' MB'):'正在下载语音资源 '+mb+' MB';
       updateListeningStatus();
     });
     if(token!==runtime.token)return;
@@ -978,7 +978,7 @@ async function playMediaText(text,question=true){
     const cacheKey=voice.id+'|'+rate+'|'+String(text);
     let blob=runtime.audioCache.get(cacheKey);
     if(!blob){
-      runtime.ttsProgressText='正在本机生成英语语音…';
+      runtime.ttsProgressText='正在准备本题发音…';
       updateListeningStatus();
       blob=await synthesizePiper(text,engine,rate);
       runtime.audioCache.set(cacheKey,blob);
@@ -990,7 +990,8 @@ async function playMediaText(text,question=true){
   }catch(error){
     if(token!==runtime.token)return;
     runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;runtime.ttsProgressText='';updateListeningStatus();
-    showMediaError('媒体语音初始化失败：'+(error&&error.message?error.message:'未知错误'));
+    console.warn('Media voice error:',error);
+    showMediaError('语音准备失败，请检查网络或存储空间后重试。');
   }
 }
 function speakNativeText(text,question=true){
@@ -1302,7 +1303,7 @@ function leavePractice(){
 function renderLessons(){
   const lessons=allLessons();const complete=lessons.filter(l=>state.levels[l.id]?.passed).length;
   const percentage=lessons.length?Math.round(complete/lessons.length*100):0;
-  $('progressCard').innerHTML=`<div class="overline">课程总进度</div><div class="big-percent">${percentage}%</div><div class="progress-track"><div class="progress-fill" style="width:${percentage}%"></div></div><div class="progress-caption">已通关 ${complete} / ${lessons.length} 关 · 每关 15 题</div>`;
+  $('progressCard').innerHTML=`<div class="overline">课程总进度</div><div class="big-percent">${percentage}%</div><div class="progress-track"><div class="progress-fill" style="width:${percentage}%"></div></div><div class="progress-caption">已通关 ${complete} / ${lessons.length} 关 · 每关 10 题</div>`;
   const active=state.activeSession;
   $('resumeArea').innerHTML=active&&active.queue?.length?`<div class="card" style="margin-top:13px"><div class="row between"><div><strong style="font-size:13px">继续上次练习</strong><div class="micro" style="margin-top:5px">${esc(active.title)} · 第 ${active.index+1}/${active.queue.length} 题</div></div><button class="btn primary" id="resumeBtn">继续</button></div></div>`:'';
   if($('resumeBtn'))$('resumeBtn').onclick=resumeSession;
@@ -1426,8 +1427,8 @@ function installManifest(){
 async function boot(){
   await hydrateState();
   installManifest();setupEvents();refresh();
-  if(!window.Audio||!window.WebAssembly)toast('当前浏览器缺少媒体语音所需能力；可尝试系统语音备用方案。');
-  else if(!('speechSynthesis' in window))toast('系统语音备用不可用；媒体语音引擎仍可启用。');
+  if(!window.Audio||!window.WebAssembly)toast('当前浏览器暂不支持此发音方式，请尝试系统语音。');
+  else if(!('speechSynthesis' in window))toast('当前浏览器无法使用系统语音，仍可尝试媒体播放。');
 }
 boot();
 </script>
