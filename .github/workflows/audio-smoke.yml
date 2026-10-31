@@ -31,7 +31,16 @@ jobs:
             page.on('pageerror', err => { errors.push(err.message); console.log('PAGE ERROR:',err.message); });
             page.on('console', msg => { if(msg.type()==='error') console.log('CONSOLE ERROR:',msg.text()); });
             await page.goto('http://127.0.0.1:8765/', {waitUntil:'domcontentloaded'});
+            await page.locator('[data-tab="lab"]').first().click();
+            const options = await page.locator('#freeCount option').evaluateAll(nodes => nodes.map(x => x.value));
+            if(JSON.stringify(options)!==JSON.stringify(['10','30','50'])) throw new Error('Incorrect training counts: '+JSON.stringify(options));
+            await page.locator('#freeCount').selectOption('50');
+            await page.locator('#freeStart').click();
+            if(await page.locator('#questionCount').textContent()!=='1 / 50') throw new Error('50-question training was not generated');
+            await page.locator('#backPractice').click();
+            await page.locator('[data-tab="home"]').first().click();
             await page.locator('[data-lesson="num:1"]').first().click();
+            if(await page.locator('#questionCount').textContent()!=='1 / 10') throw new Error('Standard lesson should contain 10 questions');
             await page.locator('[data-audio-action="enable-media"]').click();
             await page.waitForFunction(
               () => {
