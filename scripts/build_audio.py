@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build small, individually streamed PCM voice tokens for GitHub Pages."""
+"""Build coherent online English audio clips for GitHub Pages."""
 from __future__ import annotations
 
 import json
@@ -16,6 +16,30 @@ CONTEXT = """the time is phone number flight postcode price dollars sorry i mean
 LETTERS = list("abcdefghijklmnopqrstuvwxyz")
 PATTERN = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)*")
 MINIMUM = {"its": "it's", "oclock": "o'clock"}
+
+TENS = "twenty thirty forty fifty sixty seventy eighty ninety".split()
+DIGITS = "one two three four five six seven eight nine".split()
+COMMON_PHRASES = [
+    "the time is", "phone number", "the price is", "oh sorry i mean",
+    "please set the speed to", "the quantity is", "the train leaves at",
+    "but it's delayed by", "what is the new time", "a technician has",
+    "how many", "are there now", "are left", "make that",
+    "one hundred", "two hundred", "three hundred", "four hundred",
+    "five hundred", "six hundred", "seven hundred", "eight hundred",
+    "nine hundred",
+]
+PHRASE_TEXTS = [
+    *(f"{tens} {digit}" for tens in TENS for digit in DIGITS),
+    *(f"{digit} thousand" for digit in DIGITS),
+    *COMMON_PHRASES,
+]
+
+def phrase_key(phrase: str) -> str:
+    return "_".join(key_of(word) for word in PATTERN.findall(phrase))
+
+def phrases() -> dict[str, str]:
+    return {phrase_key(text): text for text in PHRASE_TEXTS}
+
 
 
 def key_of(word: str) -> str:
@@ -45,6 +69,7 @@ def vocabulary() -> dict[str, str]:
 
 
 def pcm_for_word(word: str, voice: str) -> bytes:
+    """Preserve quiet consonants at the start/end; shorten only long trailing silence."""
     with tempfile.TemporaryDirectory() as tmp:
         wav = Path(tmp) / "generated.wav"
         subprocess.run(
@@ -60,44 +85,51 @@ def pcm_for_word(word: str, voice: str) -> bytes:
         samples.frombytes(result.stdout)
         if not samples:
             raise RuntimeError(f"No audio samples for {word!r}")
-        # Trim prolonged eSpeak leading/trailing pauses, retaining a short natural margin.
-        active = [i for i, sample in enumerate(samples) if abs(sample) > 200]
+
+        # Preserve the complete onset (including weak /f/, /s/, /th/).
+        # Soft final consonants may continue after louder speech has ended.
+        active = [i for i, sample in enumerate(samples) if abs(sample) > 40]
         if not active:
             raise RuntimeError(f"Silent audio samples for {word!r}")
-        start = max(0, active[0] - 320)
-        end = min(len(samples), active[-1] + 640)
-        return samples[start:end].tobytes()
+        tail = int(16000 * 0.090)
+        end = min(len(samples), max(int(16000 * 0.150), active[-1] + tail))
+        return samples[:end].tobytes()
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     words = vocabulary()
-    if len(words) < 70:
-        raise RuntimeError(f"Audio vocabulary unexpectedly small: {len(words)}")
+    combos = phrases()
+    if len(words) < 70 or len(combos) < 90:
+        raise RuntimeError(f"Unexpected vocabulary sizes: {len(words)} / {len(combos)}")
     totals = {}
     for locale, voice in {"en-US": "en-us", "en-GB": "en-gb"}.items():
         folder = OUT / locale
         folder.mkdir(parents=True, exist_ok=True)
         total = 0
-        for key, spoken in words.items():
+        for key, spoken in {**words, **combos}.items():
             pcm = pcm_for_word(spoken, voice)
             (folder / f"{key}.pcm").write_bytes(pcm)
             total += len(pcm)
         totals[locale] = total
     manifest = {
-        "version": 1,
+        "version": 2,
         "sampleRate": 16000,
         "voices": ["en-US", "en-GB"],
         "tokenCount": len(words),
         "tokens": sorted(words),
+        "phrases": [
+            {"key": key, "words": [key_of(w) for w in PATTERN.findall(spoken)]}
+            for key, spoken in combos.items()
+        ],
         "totalBytes": totals,
-        "engine": "eSpeak NG generated at build time",
+        "engine": "eSpeak NG whole-phrase clips generated at build time",
     }
     (OUT / "manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
-    print(f"Generated {len(words)} tokens × 2 voices: {totals}")
+    print(f"Generated {len(words)} tokens + {len(combos)} phrases x 2 voices: {totals}")
 
 
 if __name__ == "__main__":
