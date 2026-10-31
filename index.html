@@ -631,8 +631,10 @@ function resumeSession(){
 }
 function stopSpeech(){
   runtime.token++;
+  clearAutoSubmitTimer();
   if('speechSynthesis' in window){try{window.speechSynthesis.cancel();}catch(e){}}
   cancelAnimationFrame(runtime.animation);
+  try{if(navigator.audioSession)navigator.audioSession.type='auto';}catch(e){}
 }
 function selectSpeechVoice(locale){
   if(!('speechSynthesis' in window)) return null;
@@ -645,6 +647,8 @@ function selectSpeechVoice(locale){
 }
 function speakCurrent(){
   if(!session||runtime.feedback)return;
+  clearAutoSubmitTimer();
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
   if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined'){
     runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
     toast('当前浏览器不支持系统英语朗读。');return;
@@ -725,6 +729,7 @@ function updateListeningStatus(){
   if(wave)wave.classList.toggle('paused',!runtime.speaking);
 }
 function beginQuestion(){
+  clearAutoSubmitTimer();
   const q=session.queue[session.index];
   runtime.input='';runtime.selected=-1;runtime.letter=false;runtime.feedback=false;runtime.readyAt=null;
   showPage('practice');
@@ -751,7 +756,7 @@ function renderInput(){
   if(q.kind==='word')return;
   const value=runtime.input;
   const el=$('answerDisplay');el.classList.toggle('placeholder',!value);
-  el.textContent=value||'使用下方大键盘作答 · 不会弹出系统键盘';
+  el.textContent=value||'输入完成自动判定 · 自动反馈';
 }
 function renderKeyboard(){
   if(!session)return;
@@ -876,6 +881,7 @@ function captureWeak(q,correct,elapsed){
 }
 function submitAnswer(forceUnknown=false){
   if(!session||runtime.feedback||session.awaitingNext)return;
+  clearAutoSubmitTimer();
   const q=session.queue[session.index];
   let given=q.kind==='word'?(runtime.selected<0?'未选择':q.choices[runtime.selected]):runtime.input;
   if(q.kind==='numeric'&&!given.trim()){toast('请先输入答案');return;}
@@ -922,6 +928,7 @@ function renderFeedback(q,correct,given,elapsed,early){
 }
 function nextQuestion(){
   if(!session)return;
+  clearAutoSubmitTimer();
   if(session.index===session.queue.length-1){finishSession();return;}
   session.index++;session.awaitingNext=false;session.lastFeedback=null;state.activeSession=session;persist();beginQuestion();
 }
@@ -994,7 +1001,7 @@ function setupEvents(){
   $('lessonList').addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(b)startSession(b.dataset.lesson);});
   $('listenCard').addEventListener('click',e=>{const b=e.target.closest('[data-action="replay"]');if(b)keyboardAction('replay');});
   $('keypadShell').addEventListener('click',e=>{
-    const choice=e.target.closest('[data-choice]');if(choice){runtime.selected=Number(choice.dataset.choice);renderKeyboard();return;}
+    const choice=e.target.closest('[data-choice]');if(choice){runtime.selected=Number(choice.dataset.choice);submitAnswer(false);return;}
     const key=e.target.closest('[data-key]');if(key){pressKey(key.dataset.key);return;}
     const action=e.target.closest('[data-action]');if(action)keyboardAction(action.dataset.action);
   });
@@ -1036,12 +1043,12 @@ function setupEvents(){
   window.addEventListener('keydown',e=>{
     if(!session || !$('practicePage').classList.contains('active'))return;
     if(['SELECT','INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
-    if(e.key==='Enter'){e.preventDefault();keyboardAction(runtime.feedback?'next':session.queue[session.index].kind==='word'?'know':'submit');return;}
+    if(e.key==='Enter'&&runtime.feedback){e.preventDefault();keyboardAction('next');return;}
     if(runtime.feedback)return;
     if(e.key==='Backspace'){e.preventDefault();keyboardAction('backspace');}
     else if(e.key.toLowerCase()==='r' && e.ctrlKey){e.preventDefault();keyboardAction('replay');}
     else if(session.queue[session.index].kind==='numeric' && /^[a-z0-9.,:% ]$/i.test(e.key)){e.preventDefault();pressKey(e.key.toUpperCase());}
-    else if(session.queue[session.index].kind==='word' && /^[1-4]$/.test(e.key)){runtime.selected=Number(e.key)-1;renderKeyboard();}
+    else if(session.queue[session.index].kind==='word' && /^[1-4]$/.test(e.key)){runtime.selected=Number(e.key)-1;submitAnswer(false);}
   });
   window.addEventListener('pagehide',()=>{try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}writeIndexedState(state).catch(()=>{});});
   document.addEventListener('visibilitychange',()=>{
