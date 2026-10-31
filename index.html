@@ -889,7 +889,7 @@ async function forcePlaybackAudioSession(){
 function showMediaEnginePrompt(message){
   const locale=state.settings.locale||'en-US';
   const label=locale==='en-GB'?'英音 Alba':'美音 Joe';
-  const status=message||'首次启用需要下载约 90MB 运行资源；所选口音模型会缓存到本机，后续使用无需重复下载。';
+  const status=message||(state.settings.mediaTtsEnabled?'首次使用该口音还需下载约 63MB 模型；下载后会缓存到本机。':'首次启用需要下载约 90MB 运行资源；切换另一口音还需约 63MB 模型。');
   $('listenCard').innerHTML='<div class="listen-chip">媒体音频模式 · 本地神经网络语音</div><div class="sound-wave paused" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">等待启用</div><div class="timer-hint" id="playStatus">'+esc(status)+'</div><div class="media-engine-box" style="margin-top:14px;padding:12px;border-radius:14px;background:#F7F8FA"><div style="font-size:13px;font-weight:700;color:#1F2937">'+label+' · Piper TTS</div><div style="font-size:11px;color:#6B7280;line-height:1.55;margin:6px 0 10px">音频由本机生成，再通过 HTML5 Audio 媒体通道播放。首次下载后会缓存模型。</div><button class="btn primary" data-audio-action="enable-media" style="width:100%">启用媒体语音并播放本题</button><button class="btn ghost" data-audio-action="native-fallback" style="width:100%;margin-top:7px">暂时使用系统语音</button></div>';
 }
 function showMediaError(message){
@@ -956,6 +956,9 @@ async function playPiperBlob(blob,token,question){
 async function playMediaText(text,question=true){
   stopSpeech();
   unlockMediaAudioFromGesture();
+  const chip=$('listenCard').querySelector('.listen-chip');
+  if(chip)chip.textContent='媒体音频播放 · Piper TTS';
+  $('listenCard').querySelectorAll('.media-engine-box').forEach(node=>node.remove());
   const token=runtime.token;
   runtime.generating=true;runtime.speaking=false;runtime.readyAt=null;runtime.early=false;
   runtime.ttsProgressText='正在加载本地媒体语音引擎…';
@@ -991,6 +994,9 @@ async function playMediaText(text,question=true){
   }
 }
 function speakNativeText(text,question=true){
+  const chip=$('listenCard').querySelector('.listen-chip');
+  if(chip)chip.textContent='系统语音备用模式';
+  $('listenCard').querySelectorAll('.media-engine-box').forEach(node=>node.remove());
   if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined'){
     toast('当前浏览器不支持系统语音备用方案。');return;
   }
@@ -1017,7 +1023,10 @@ function speakCurrent(){
   if(!session||runtime.feedback)return;
   clearAutoSubmitTimer();
   if(runtime.nativeFallback){speakNativeText(session.queue[session.index].audioText,true);return;}
-  if(!state.settings.mediaTtsEnabled){showMediaEnginePrompt();return;}
+  const voice=PIPER_VOICE_ASSETS[state.settings.locale]||PIPER_VOICE_ASSETS['en-US'];
+  let voiceConsent=false;
+  try{voiceConsent=localStorage.getItem('voice_reflex_piper_consent_'+voice.id)==='1';}catch(e){}
+  if(!state.settings.mediaTtsEnabled||!voiceConsent){showMediaEnginePrompt();return;}
   playMediaText(session.queue[session.index].audioText,true);
 }
 function stopSpeech(){
@@ -1330,7 +1339,10 @@ function setupEvents(){
     if(audioAction){
       const action=audioAction.dataset.audioAction;
       if(action==='enable-media'){
-        state.settings.mediaTtsEnabled=true;runtime.nativeFallback=false;persist();
+        state.settings.mediaTtsEnabled=true;runtime.nativeFallback=false;
+        const consentVoice=PIPER_VOICE_ASSETS[state.settings.locale]||PIPER_VOICE_ASSETS['en-US'];
+        try{localStorage.setItem('voice_reflex_piper_consent_'+consentVoice.id,'1');}catch(e){}
+        persist();
         if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
         speakCurrent();
       }else if(action==='native-fallback'){
