@@ -1132,6 +1132,13 @@ function updateListeningStatus(){
 }
 function beginQuestion(){
   clearAutoSubmitTimer();clearFlowTimer();stopNoise();finishSpeechRecognition();
+  // Never resurrect a detailed review for a correct answer after iOS/PWA resume.
+  if(session?.awaitingNext&&session.lastFeedback?.correct){
+    if(session.index>=session.queue.length-1){finishSession();return;}
+    session.index++;
+    session.awaitingNext=false;session.lastFeedback=null;
+    state.activeSession=session;persist();
+  }
   const q=currentQuestion();
   runtime.input='';runtime.selected=-1;runtime.letter=false;
   runtime.feedback=false;runtime.readyAt=null;runtime.lastZeroTapAt=0;
