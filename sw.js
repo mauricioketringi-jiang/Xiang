@@ -1,34 +1,13 @@
-/* Only the app shell is cached. No voices, audio models or audio downloads. */
-const CACHE_NAME='xiang-offline-system-speech-v2';
-const APP_SHELL=['./','./index.html'];
-self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache=>cache.addAll(APP_SHELL))
-      .then(()=>self.skipWaiting())
-  );
-});
-self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME&&k.startsWith('xiang-')).map(k=>caches.delete(k))))
-      .then(()=>self.clients.claim())
-  );
-});
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET'||event.request.mode!=='navigate')return;
-  const url=new URL(event.request.url);
-  const base=new URL(self.registration.scope);
-  if(url.origin!==base.origin)return;
-  if(url.pathname!==base.pathname&&url.pathname!==base.pathname+'index.html')return;
-  event.respondWith((async()=>{
-    const cache=await caches.open(CACHE_NAME);
-    try{
-      const fresh=await fetch(event.request);
-      if(fresh.ok)await cache.put('./index.html',fresh.clone());
-      return fresh;
-    }catch(error){
-      const cached=await cache.match('./index.html');
-      return cached||Response.error();
-    }
-  })());
+const CACHE='voice-reflex-advanced-v2';
+const SHELL=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('voice-reflex-advanced-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET'||e.request.mode!=='navigate')return;
+  const url=new URL(e.request.url),scope=new URL(self.registration.scope);
+  if(url.origin!==scope.origin||!(url.pathname===scope.pathname||url.pathname===scope.pathname+'index.html'))return;
+  e.respondWith(caches.open(CACHE).then(async cache=>{
+    try{const response=await fetch(e.request);if(response.ok)cache.put('./index.html',response.clone()).catch(()=>{});return response;}
+    catch(error){return await cache.match('./index.html')||Response.error();}
+  }));
 });

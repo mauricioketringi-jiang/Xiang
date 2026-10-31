@@ -1,66 +1,46 @@
-name: Deploy static site to GitHub Pages
-
+name: Deploy advanced voice reflex PWA
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
   group: github-pages
   cancel-in-progress: true
-
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Validate inline JavaScript
+      - uses: actions/checkout@v4
+      - name: Validate complete app
         run: |
           python3 - <<'PY'
           import re
           from pathlib import Path
-          html = Path('index.html').read_text(encoding='utf-8')
-          required = [
-              'function speakNativeText(',
-              'voice.localService===true',
-              "navigator.serviceWorker.register('./sw.js'",
-              'function scheduleAutoSubmit()',
-          ]
-          missing = [item for item in required if item not in html]
-          if missing:
-              raise SystemExit('Missing local offline speech components: ' + ', '.join(missing))
-          for forbidden in ('fetch(', 'ONLINE_AUDIO_BASE', 'PIPER_VOICE_ASSETS', 'playMediaText(', 'data-action="submit"'):
-              if forbidden in html:
-                  raise SystemExit('Removed audio/download behavior returned: ' + forbidden)
-          if not Path('sw.js').is_file():
-              raise SystemExit('Offline service worker is missing')
-          speak = re.search(r'function speakCurrent\(\)\s*\{([\s\S]*?)\n\}', html)
-          if not speak or 'speakNativeText(' not in speak.group(1):
-              raise SystemExit('Native local speech must be primary')
-
-          scripts = re.findall(r'<script\b[^>]*>([\s\S]*?)</script>', html, re.I)
-          if len(scripts) != 1:
-              raise SystemExit(f'Expected one inline script, found {len(scripts)}')
-          Path('/tmp/voice-reflex.js').write_text(scripts[0], encoding='utf-8')
+          s=Path('index.html').read_text(encoding='utf-8')
+          required=['function generateNumber(', 'function startSession(', 'function submitAnswer(',
+                    'totalAnswered', 'totalCorrect', 'flowMode', 'accentMode','noiseMode','reflectionMode']
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('Missing advanced training features: '+', '.join(missing))
+          for name in ('sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'):
+              if not Path(name).is_file():raise SystemExit('Missing PWA file: '+name)
+          blocks=re.findall(r'<script\b[^>]*>([\s\S]*?)</script>',s,re.I)
+          if len(blocks)!=1:raise SystemExit('Expected one complete inline JavaScript block')
+          Path('/tmp/voice-reflex-check.js').write_text(blocks[0],encoding='utf-8')
           PY
-          node --check /tmp/voice-reflex.js
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+          node --check /tmp/voice-reflex-check.js
+          python3 -m json.tool manifest.webmanifest > /dev/null
+      - uses: actions/configure-pages@v5
         with:
           enablement: true
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: .
-      - name: Deploy to GitHub Pages
+      - uses: actions/deploy-pages@v4
         id: deployment
-        uses: actions/deploy-pages@v4

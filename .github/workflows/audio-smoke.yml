@@ -1,109 +1,64 @@
-name: Offline system voice browser smoke test
-
+name: Advanced training smoke tests
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
-  browser-audio:
+  browser-smoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install Chromium automation
+      - uses: actions/checkout@v4
+      - name: Install Playwright
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: Verify offline usage and native voice answer flow
+      - name: Run actual browser checks
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 &
           node <<'JS'
-          const { chromium } = require('playwright');
-          (async () => {
-            const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-            const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-            await context.addInitScript(()=>{
-              const voices=[
-                {name:'Local English US',lang:'en-US',localService:true},
-                {name:'Local English UK',lang:'en-GB',localService:true},
-                {name:'Remote English',lang:'en-US',localService:false}
-              ];
-              let speechTimer=null;
-              const synth={
-                paused:false,
-                getVoices:()=>voices,
-                resume(){},
-                cancel(){clearTimeout(speechTimer);},
-                speak(utterance){
-                  window.__nativeSpeechCalls=(window.__nativeSpeechCalls||[]);
-                  window.__nativeSpeechCalls.push({text:utterance.text,voice:utterance.voice.name,locale:utterance.lang,local:utterance.voice.localService});
-                  clearTimeout(speechTimer);
-                  speechTimer=setTimeout(()=>{
-                    utterance.onstart?.();
-                    speechTimer=setTimeout(()=>utterance.onend?.(),120);
-                  },20);
-                }
-              };
-              Object.defineProperty(window,'speechSynthesis',{configurable:true,value:synth});
-              Object.defineProperty(window,'SpeechSynthesisUtterance',{
-                configurable:true,value:class {constructor(text){this.text=text;}}
-              });
-              window.fetch=(...args)=>{
-                window.__unexpectedFetches=(window.__unexpectedFetches||[]);
-                window.__unexpectedFetches.push(String(args[0]));
-                throw new Error('App tried an unexpected network fetch');
-              };
-            });
-            const page=await context.newPage();
+          const {chromium}=require('playwright');
+          (async()=>{
+            const b=await chromium.launch({headless:true,args:['--no-sandbox']});
+            const page=await b.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
             const errors=[];
             page.on('pageerror',e=>errors.push(e.message));
-            await page.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
-            await page.locator('[data-tab="lab"]').first().click();
-            const counts=await page.locator('#freeCount option').evaluateAll(items=>items.map(x=>x.value));
-            if(JSON.stringify(counts)!==JSON.stringify(['10','30','50']))throw new Error('Wrong lesson counts: '+counts);
-            await page.locator('[data-lesson]').first().count();
-            await page.waitForFunction(()=>navigator.serviceWorker?.controller!==null,null,{timeout:20000});
-            console.log('PASS: Offline app shell service worker activated');
-            await context.setOffline(true);
-            await page.reload({waitUntil:'domcontentloaded'});
-            const localeUI=await page.evaluate(()=>({
-              badges:[...document.querySelectorAll('.voice-us-label')].map(el=>el.textContent.trim()),
-              ukLabels:document.body.textContent.includes('英音'),
-              localeControl:!!document.querySelector('#voiceLocale')
-            }));
-            if(localeUI.ukLabels||localeUI.localeControl||JSON.stringify(localeUI.badges)!==JSON.stringify(['美音 · US']))
-              throw new Error('American-only selector regression: '+JSON.stringify(localeUI));
-            const beforeCalls=await page.evaluate(()=>(window.__nativeSpeechCalls||[]).length);
+            await page.addInitScript(()=>{
+              window.__calls=[];
+              window.SpeechSynthesisUtterance=class {constructor(text){this.text=text;}};
+              const voices=['en-US','en-GB','en-AU'].map(lang=>({name:lang,lang,localService:true}));
+              const synth={speaking:false,paused:false,pending:false,
+                getVoices(){return voices;},cancel(){this.speaking=false;},resume(){},
+                speak(u){this.speaking=true;window.__calls.push({lang:u.lang,text:u.text});
+                  setTimeout(()=>u.onstart?.(),5);
+                  setTimeout(()=>{this.speaking=false;u.onend?.();},30);}
+              };
+              Object.defineProperty(window,'speechSynthesis',{configurable:true,value:synth});
+              window.webkitSpeechRecognition=class {start(){this.onstart?.();}abort(){this.onend?.();}};
+            });
+            await page.goto('http://127.0.0.1:8765/',{waitUntil:'load'});
+            const course=await page.evaluate(()=>allLessons().map(x=>x.id));
+            if(course.length!==18||course.filter(x=>x.startsWith('num:')).length!==16)
+              throw Error('All 18 original course categories must be preserved');
+            const options=await page.locator('#freeCount option').evaluateAll(xs=>xs.map(x=>x.value));
+            if(JSON.stringify(options)!=='["10","30","50"]')throw Error('Wrong practice counts');
+            if(!(await page.locator('#flowMode').isChecked()))throw Error('Rapid-fire default off');
+            if((await page.locator('#accentMode').inputValue())!=='en-US')throw Error('US accent not default');
             await page.locator('[data-lesson="num:1"]').first().click();
-            const immediate=await page.evaluate(()=>({
-              timer:document.querySelector('#timerText')?.textContent,
-              status:document.querySelector('#playStatus')?.textContent,
-              voiceCalls:(window.__nativeSpeechCalls||[]).length
-            }));
-            if(immediate.timer==='准备中'||immediate.status?.includes('没有可用语音'))
-              throw new Error('Old preparation/voice warnings returned');
-            if(immediate.voiceCalls<=beforeCalls)
-              throw new Error('Lesson click did not immediately invoke local US speech');
-            if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')
-              throw new Error('Standard lesson not 10 questions');
-            await page.waitForFunction(
-              ()=>(document.getElementById('playStatus')?.textContent||'').includes('朗读结束'),
-              null,{timeout:10000}
-            );
-            const voiceUse=await page.evaluate(()=>({calls:window.__nativeSpeechCalls||[],fetches:window.__unexpectedFetches||[]}));
-            if(!voiceUse.calls.length||!voiceUse.calls.every(x=>x.local && x.locale==='en-US' && x.voice==='Local English US'))
-              throw new Error('The app used a nonlocal voice');
-            if(voiceUse.fetches.length)throw new Error('Voice still fetched online resources: '+voiceUse.fetches);
-            if(await page.locator('audio').count())throw new Error('Audio asset player still exists');
-            await page.locator('[data-key="0"]').click();
-            await page.locator('.feedback-card').waitFor({timeout:5000});
-            if(errors.length)throw new Error('Uncaught browser errors: '+errors.join(' | '));
-            console.log('PASS: Offline reload, US-only automatic speech on lesson entry, no voice prompt, timer and auto answer');
-            await browser.close();
-          })().catch(error=>{console.error(error);process.exitCode=1});
+            await page.waitForTimeout(100);
+            const calls=await page.evaluate(()=>window.__calls.length);
+            if(!calls)throw Error('No automatic TTS after starting a lesson');
+            if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')throw Error('Wrong question count');
+            await page.evaluate(()=>{runtime.readyAt=performance.now();pressKey(session.queue[0].answer);});
+            const stats=await page.evaluate(()=>({answered:state.totalAnswered,correct:state.totalCorrect,saved:JSON.parse(localStorage.getItem(STORE_KEY)).totalAnswered}));
+            if(stats.answered!==1||stats.correct!==1||stats.saved!==1)throw Error('Global statistics did not update');
+            if((await page.locator('.fast-feedback').count())!==1)throw Error('Fast feedback was not rendered');
+            await page.waitForTimeout(560);
+            if(!(await page.evaluate(()=>session.index===1)))throw Error('Rapid-fire did not advance');
+            if(errors.length)throw Error('Page errors: '+errors.join(' | '));
+            console.log('PASS: all 18 levels, 10/30/50, US default, immediate TTS, stats and rapid-fire');
+            await b.close();
+          })().catch(e=>{console.error(e);process.exitCode=1});
           JS
