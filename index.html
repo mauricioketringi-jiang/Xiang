@@ -850,7 +850,7 @@ function normalizeAnswer(q,value){
   let s=String(value??'').trim();
   if(q.kind==='word')return s;
   if(Number(q.levelId)===14){return s.toUpperCase().replace(/[\s-]/g,'');}
-  if(Number(q.levelId)===13)return s.replace(/[\s-]/g,'');
+  if(Number(q.levelId)===13)return s.replace(/\D/g,'');
   if(Number(q.levelId)===11 || (Number(q.levelId)===16 && String(q.answer).includes(':'))){
     const m=s.match(/^(\d{1,2}):(\d{1,2})$/);
     return m?String(Number(m[1])).padStart(2,'0')+':'+String(Number(m[2])).padStart(2,'0'):s;
