@@ -28,7 +28,7 @@ jobs:
                     'totalAnswered', 'totalCorrect', 'flowMode', 'accentMode','noiseMode','reflectionMode']
           missing=[x for x in required if x not in s]
           if missing: raise SystemExit('Missing advanced training features: '+', '.join(missing))
-          for name in ('sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'):
+          for name in ('sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.svg'):
               if not Path(name).is_file():raise SystemExit('Missing PWA file: '+name)
           blocks=re.findall(r'<script\b[^>]*>([\s\S]*?)</script>',s,re.I)
           if len(blocks)!=1:raise SystemExit('Expected one complete inline JavaScript block')
