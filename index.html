@@ -241,11 +241,11 @@ const shuffle = arr => { const a = [...arr]; for(let i = a.length - 1; i > 0; i-
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const msText = ms => (Number(ms) / 1000).toFixed(2) + 's';
 const integerString = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1,mediaTtsEnabled:false}, levels:{}, errorPool:{}, imports:[], totalQuestions:0, totalCorrect:0, activeSession:null}; }
+function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1,mediaTtsEnabled:false,mediaTtsVoiceIds:[]}, levels:{}, errorPool:{}, imports:[], totalQuestions:0, totalCorrect:0, activeSession:null}; }
 function normalizeState(raw){
   if(!raw || raw.version!==1) return emptyState();
   const base=emptyState();
-  return {...base,...raw,updatedAt:Number(raw.updatedAt)||0,settings:{...base.settings,...raw.settings},levels:raw.levels&&typeof raw.levels==='object'?raw.levels:{},errorPool:raw.errorPool&&typeof raw.errorPool==='object'?raw.errorPool:{},imports:Array.isArray(raw.imports)?raw.imports:[]};
+  return {...base,...raw,updatedAt:Number(raw.updatedAt)||0,settings:{...base.settings,...raw.settings,mediaTtsVoiceIds:Array.isArray(raw.settings?.mediaTtsVoiceIds)?raw.settings.mediaTtsVoiceIds:[]},levels:raw.levels&&typeof raw.levels==='object'?raw.levels:{},errorPool:raw.errorPool&&typeof raw.errorPool==='object'?raw.errorPool:{},imports:Array.isArray(raw.imports)?raw.imports:[]};
 }
 function loadState(){
   try { return normalizeState(JSON.parse(localStorage.getItem(STORE_KEY)||'null')); }
@@ -587,7 +587,7 @@ function updateImports(words){
 function validateBackup(raw){
   if(!raw||typeof raw!=='object'||raw.version!==1||!raw.levels||!raw.errorPool||!Array.isArray(raw.imports))throw Error('文件不是有效的 V1 学习备份');
   const words=raw.imports.length?normalizeWords(raw.imports):[];
-  return {...emptyState(),...raw,imports:words,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1,mediaTtsEnabled:Boolean(raw.settings?.mediaTtsEnabled)}, activeSession:null};
+  return {...emptyState(),...raw,imports:words,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1,mediaTtsEnabled:Boolean(raw.settings?.mediaTtsEnabled),mediaTtsVoiceIds:Array.isArray(raw.settings?.mediaTtsVoiceIds)?raw.settings.mediaTtsVoiceIds:[]}, activeSession:null};
 }
 
 /* 练习会话：语音结束计时；前置提交记 0ms。 */
@@ -1024,8 +1024,8 @@ function speakCurrent(){
   clearAutoSubmitTimer();
   if(runtime.nativeFallback){speakNativeText(session.queue[session.index].audioText,true);return;}
   const voice=PIPER_VOICE_ASSETS[state.settings.locale]||PIPER_VOICE_ASSETS['en-US'];
-  let voiceConsent=false;
-  try{voiceConsent=localStorage.getItem('voice_reflex_piper_consent_'+voice.id)==='1';}catch(e){}
+  let voiceConsent=Array.isArray(state.settings.mediaTtsVoiceIds)&&state.settings.mediaTtsVoiceIds.includes(voice.id);
+  try{voiceConsent=voiceConsent||localStorage.getItem('voice_reflex_piper_consent_'+voice.id)==='1';}catch(e){}
   if(!state.settings.mediaTtsEnabled||!voiceConsent){showMediaEnginePrompt();return;}
   playMediaText(session.queue[session.index].audioText,true);
 }
@@ -1342,6 +1342,7 @@ function setupEvents(){
       if(action==='enable-media'){
         state.settings.mediaTtsEnabled=true;runtime.nativeFallback=false;
         const consentVoice=PIPER_VOICE_ASSETS[state.settings.locale]||PIPER_VOICE_ASSETS['en-US'];
+        state.settings.mediaTtsVoiceIds=Array.from(new Set([...(state.settings.mediaTtsVoiceIds||[]),consentVoice.id]));
         try{localStorage.setItem('voice_reflex_piper_consent_'+consentVoice.id,'1');}catch(e){}
         persist();
         if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
