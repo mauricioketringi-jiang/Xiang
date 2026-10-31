@@ -29,6 +29,22 @@ jobs:
           import re
           from pathlib import Path
           html = Path('index.html').read_text(encoding='utf-8')
+          required = [
+              'async function synthesizePiper(',
+              "document.createElement('audio')",
+              'async function playPiperBlob(',
+              "navigator.audioSession.type='playback'",
+              'voice_reflex_piper_consent_',
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit('Missing media-audio implementation markers: ' + ', '.join(missing))
+          if 'data-action="submit"' in html:
+              raise SystemExit('Legacy manual submit button must remain removed')
+          speak = re.search(r'function speakCurrent\\(\\)\\s*\\{([\\s\\S]*?)\\n\\}', html)
+          if not speak or 'playMediaText(' not in speak.group(1):
+              raise SystemExit('Media TTS must remain the primary speakCurrent path')
+
           scripts = re.findall(r'<script\b[^>]*>([\s\S]*?)</script>', html, re.I)
           if len(scripts) != 1:
               raise SystemExit(f'Expected one inline script, found {len(scripts)}')
