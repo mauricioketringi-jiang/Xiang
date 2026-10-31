@@ -212,6 +212,51 @@
     @media(max-height:700px){.keypad-grid .key{height:42px;min-height:42px;}.spell-row .key{height:35px;min-height:35px;}.spell-actions .key{height:39px;min-height:39px;}.answer-display.spell-entry{min-height:43px;}}
 
     @media(max-height:700px){.key{height:40px;min-height:40px;}.listen-card{min-height:88px;}.practice-body{padding-top:6px;}.answer-display{min-height:40px;}}
+
+    /* V7 QWERTY: nearly edge-to-edge and thumb-sized without system keyboard. */
+    .keypad-shell.spelling-layout {
+      width:100%;min-width:0;margin:0;padding:6px 4px calc(7px + var(--safe-bottom));
+      box-sizing:border-box;overflow:hidden;
+    }
+    .keypad-shell.spelling-layout .spell-board {width:100%;gap:6px;}
+    .keypad-shell.spelling-layout .spell-row {display:grid;gap:4px;grid-template-columns:repeat(10,minmax(0,1fr));margin:0;}
+    .keypad-shell.spelling-layout .spell-row.row9 {
+      grid-template-columns:repeat(9,minmax(0,1fr));padding-inline:4.5%;margin:0;
+    }
+    .keypad-shell.spelling-layout .spell-row.spell-third {
+      grid-template-columns:1.4fr repeat(7,minmax(0,1fr)) 1.55fr;padding-inline:0;
+    }
+    .keypad-shell.spelling-layout .spell-row .key {
+      width:100%;min-width:0;height:clamp(48px,5.9dvh,52px);min-height:48px;
+      padding:0;border-radius:8px;font-size:18px;font-weight:600;
+      box-shadow:0 2px 0 #D7DFDB;background:#fff;
+    }
+    .keypad-shell.spelling-layout .spell-row .key.spell-special {
+      font-size:21px;background:#E5EBE9;font-weight:700;
+    }
+    .keypad-shell.spelling-layout .spell-actions {
+      display:grid;grid-template-columns:1fr 1.5fr 1.2fr;gap:4px;margin:0;
+    }
+    .keypad-shell.spelling-layout .spell-actions .key {
+      width:100%;height:52px;min-height:48px;border-radius:8px;font-size:14px;font-weight:700;
+    }
+    .keypad-shell.spelling-layout .spell-actions .spell-confirm {
+      background:#07C160;color:white;border-color:#07C160;font-size:17px;
+    }
+    .keypad-shell.spelling-layout .spell-row .key:active,
+    .keypad-shell.spelling-layout .spell-actions .key:active {
+      transform:scale(.94);background:#D8F3E4;box-shadow:none;
+    }
+    .keypad-shell.spelling-layout .spell-actions .spell-confirm:active{background:#078846;color:white;}
+    @media(max-width:340px){
+      .keypad-shell.spelling-layout .spell-row {gap:3px;}
+      .keypad-shell.spelling-layout .spell-row .key {font-size:17px;}
+      .keypad-shell.spelling-layout .spell-actions .key {font-size:13px;}
+    }
+    @media(max-height:600px){
+      .keypad-shell.spelling-layout .spell-row .key {height:45px;min-height:45px;}
+      .keypad-shell.spelling-layout .spell-actions .key {height:46px;min-height:46px;}
+    }
   </style>
 </head>
 <body>
@@ -826,8 +871,8 @@ function resumeSession(){
   session=item;beginQuestion();
 }
 
-const FLOW_LIMIT_MS=1800;
-const FLOW_NEXT_DELAY_MS=450;
+const FLOW_NEXT_DELAY_MS=380; // Listening and speaking: any correct answer, within 400ms.
+const SPELL_NEXT_DELAY_MS=600; // Spelling: manual confirm, then automatic transition.
 const spokenNumberAliases={zero:'0',oh:'0',o:'0',one:'1',won:'1',two:'2',to:'2',too:'2',three:'3',four:'4',for:'4',five:'5',six:'6',seven:'7',eight:'8',ate:'8',nine:'9'};
 function currentQuestion(){return session?.queue?.[session.index]||null;}
 function questionAccent(){
@@ -1157,16 +1202,19 @@ function keyCapabilities(q){
 function renderKeyboard(){
   if(!session)return;
   const q=currentQuestion(),shell=$('keypadShell'),mode=$('reflectionMode').value;
+  shell.classList.toggle('spelling-layout',mode==='spell'&&!runtime.feedback);
   if(runtime.feedback){
     shell.innerHTML='<div class="review-controls"><button class="btn ghost" data-action="replay-feedback">重听原题</button><button class="btn primary" data-action="next">'+(session.index===session.queue.length-1?'查看结算':'下一题 →')+'</button></div>';
     return;
   }
   if(mode==='speak'){shell.innerHTML='';return;}
   if(mode==='spell'){
-    const key=char=>'<button type="button" class="key spell-key" data-key="'+char+'">'+char+'</button>';
-    const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
-    shell.innerHTML='<div class="spell-board">'+rows.map((row,i)=>'<div class="spell-row '+(i===1?'row9':i===2?'row7':'')+'">'+[...row].map(key).join('')+'</div>').join('')+
-      '<div class="spell-actions"><button type="button" class="key alt" data-action="backspace" aria-label="退格，长按清空">退格</button><button type="button" class="key alt" data-action="space" aria-label="空格，长按连字符">空格 / -</button><button type="button" class="key alt" data-action="replay">重听</button></div></div>';
+    const key=char=>'<button type="button" class="key spell-key" data-key="'+char+'" aria-label="字母 '+char+'">'+char+'</button>';
+    shell.innerHTML='<div class="spell-board" aria-label="26键拼写键盘">'+
+      '<div class="spell-row">'+[...'qwertyuiop'].map(key).join('')+'</div>'+
+      '<div class="spell-row row9">'+[...'asdfghjkl'].map(key).join('')+'</div>'+
+      '<div class="spell-row spell-third"><button type="button" class="key spell-special" data-action="replay" title="重听本题" aria-label="重听本题">🔊</button>'+[...'zxcvbnm'].map(key).join('')+'<button type="button" class="key spell-special" data-action="backspace" aria-label="退格，长按清空">⌫</button></div>'+
+      '<div class="spell-actions"><button type="button" class="key alt" data-action="clear">清空</button><button type="button" class="key alt" data-action="space" aria-label="空格，长按连字符">空格 / -</button><button type="button" class="key green spell-confirm" data-action="confirm-spelling" aria-label="确认并提交拼写">确认 ✓</button></div></div>';
     return;
   }
   if(q.kind==='word'){
@@ -1184,7 +1232,7 @@ function renderKeyboard(){
 function inputLooksComplete(q,typed){
   const v=String(typed||'').trim(),expected=String(q.answer||'');
   if(!v)return false;
-  if($('reflectionMode').value==='spell')return normalizeSpelling(v).length>=normalizeSpelling(spellingTarget(q)).length;
+  if($('reflectionMode').value==='spell')return false; // Spelling is submitted ONLY via explicit confirmation.
   const level=effectiveLevel(q);
   if(level===11||(level===18&&expected.includes(':')))return /^\d{1,2}:\d{2}$/.test(v);
   if(level===13)return v.replace(/\D/g,'').length>=expected.replace(/\D/g,'').length;
@@ -1198,7 +1246,7 @@ function inputLooksComplete(q,typed){
 }
 function scheduleAutoSubmit(){
   clearAutoSubmitTimer();
-  if(!session||runtime.feedback||!runtime.input.trim())return;
+  if(!session||runtime.feedback||!runtime.input.trim()||$('reflectionMode').value==='spell')return;
   const q=currentQuestion();
   if(inputLooksComplete(q,runtime.input)){submitAnswer();return;}
   runtime.autoSubmitTimer=setTimeout(()=>{
@@ -1225,7 +1273,8 @@ function pressKey(key){
     runtime.input+=key;
     runtime.lastZeroTapAt=key==='0'&&mark?time:0;
   }
-  renderInput();scheduleAutoSubmit();
+  renderInput();
+  if(mode!=='spell')scheduleAutoSubmit();
 }
 function keyboardAction(action){
   if(!session)return;
@@ -1233,6 +1282,7 @@ function keyboardAction(action){
     if(action==='replay-feedback')speakPlain(currentQuestion().audioText);else speakCurrent();return;
   }
   if(runtime.feedback){if(action==='next')nextQuestion();return;}
+  if(action==='confirm-spelling'){if($('reflectionMode').value==='spell')submitAnswer();return;}
   if(action==='mic-start'){startSpeechRecognition();return;}
   if(action==='self-pass'){submitAnswer(false,'自检通过');return;}
   if(action==='self-fail'){submitAnswer(true,'自检未通过');return;}
@@ -1251,7 +1301,8 @@ function keyboardAction(action){
   if(['backspace','clear'].includes(action)){
     runtime.lastZeroTapAt=0;
     renderInput();renderKeyboard();
-    if(runtime.input.trim())scheduleAutoSubmit();else clearAutoSubmitTimer();
+    if($('reflectionMode').value!=='spell'&&runtime.input.trim())scheduleAutoSubmit();
+    else clearAutoSubmitTimer();
   }
 }
 
@@ -1310,12 +1361,13 @@ function submitAnswer(forceUnknown=false,spokenResult){
   state.activeSession=session;persist();
   $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
   renderLab();
-  if(correct&&(spelling||(!early&&elapsed<=FLOW_LIMIT_MS))){
+  if(correct){
     correctTone();
     $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+(early?'提前完成':msText(elapsed))+'</div>'+
       (session.levelId==='num:19'?'<div class="micro" style="text-align:center;margin:8px">'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?'（近似播报）':'')+'</div>':'');
     $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
-    runtime.autoNextTimer=setTimeout(()=>{runtime.autoNextTimer=null;if(session&&runtime.feedback&&session.awaitingNext)nextQuestion();},FLOW_NEXT_DELAY_MS);
+    const nextDelay=spelling?SPELL_NEXT_DELAY_MS:FLOW_NEXT_DELAY_MS;
+    runtime.autoNextTimer=setTimeout(()=>{runtime.autoNextTimer=null;if(session&&runtime.feedback&&session.awaitingNext)nextQuestion();},nextDelay);
   }else{
     renderFeedback(q,correct,given,elapsed,early);renderKeyboard();
   }
@@ -1338,13 +1390,13 @@ function renderFeedback(q,correct,given,elapsed,early){
   const answerShown=spelling?spellingTarget(q):(q.displayAnswer || (q.kind==='numeric'&&/^\d{4,}$/.test(q.answer)&&Number(q.levelId)!==13&&Number(q.levelId)!==14?integerString(q.answer):q.answer));
   const reading=q.kind==='word'?(q.word||q.audioText):q.audioText;
   const ipa=q.kind==='word'?(q.phonetic||'音标未提供'):phoneticBreakdown(reading);
-  const optional=q.kind==='word'&&q.example?`<div class="feedback-line"><span class="k">例句 Example</span>${esc(q.example)}</div>`:'';
+  const optional=q.kind==='word'?'<div class="feedback-line"><span class="k">中文释义</span>'+esc(q.meaning||q.answer)+'</div>':'';
   const timerLabel=early?'&lt;0.5s':msText(elapsed);
   const twin=session?.mode==='weak'&&q.kind==='numeric'?(q.confusableBase||getConfusableTwin(q.answer)):null;
   const comparison=twin?'<div class="feedback-line"><span class="k">⚡ 易混对比提示</span>'+esc('本题 '+q.answer+'（'+q.audioText+'），注意与 '+(q.confusableBase||twin)+' 区分；留意重音和数量级。')+'</div>':'';
   const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题目标口音</span>'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?' · 使用设备 '+esc(q.actualVoice||'英语语音')+' 近似播报':'')+'</div>':'';
   const environmentReveal=session?.levelId==='num:20'?'<div class="feedback-line"><span class="k">本题环境</span>'+esc(noiseLabel(q.practiceNoise))+'</div>':'';
-  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">含义与解题提示</span>${esc(q.meaning||'—')}</div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}</div>`;
+  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}</div>`;
   $('answerDisplay').classList.add('hidden');
 }
 function nextQuestion(){
@@ -1488,7 +1540,7 @@ function setupEvents(){
     else if($('reflectionMode').value==='spell'){
       if(/^[a-z]$/i.test(e.key)){e.preventDefault();pressKey(e.key.toLowerCase());}
       else if(e.key===' '||e.key==='-'){e.preventDefault();pressKey(e.key);}
-      else if(e.key==='Enter'&&runtime.input){e.preventDefault();submitAnswer();}
+      // Spelling may only be submitted with the visible '确认 ✓' button.
     }
     else if(session.queue[session.index].kind==='numeric' && /^[0-9.:]$/.test(e.key)){
       e.preventDefault();
