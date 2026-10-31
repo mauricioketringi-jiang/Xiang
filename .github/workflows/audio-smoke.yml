@@ -43,7 +43,7 @@ jobs:
             if(course.length!==23||course.filter(x=>x.startsWith('num:')).length!==20)
               throw Error('Expected 20 numeric and 3 industrial English lessons');
             const options=await page.locator('#freeCount option').evaluateAll(xs=>xs.map(x=>x.value));
-            if(JSON.stringify(options)!=='["10","30","50"]')throw Error('Wrong practice counts');
+            if(JSON.stringify(options)!=='["10","20","30"]')throw Error('Wrong practice counts');
             if((await page.locator('#flowMode').count())!==0)throw Error('Rapid-fire switch should be removed');
             if((await page.locator('#keypadShell .key').count())!==0)throw Error('Keypad should only render inside practice');
             const words=await page.evaluate(()=>wordGroups().map(g=>g.words.length));
@@ -59,6 +59,11 @@ jobs:
             }));
             if(standby.started!==false||standby.ready!==null||standby.tts!==0||!standby.button)
               throw Error('V8 lesson must stay silent and untimed until Start is clicked');
+            await page.locator('#questionCount').selectOption('20');
+            const selected=await page.evaluate(()=>({length:session.queue.length,started:session.isStarted,calls:window.__calls.length}));
+            if(selected.length!==20||selected.started||selected.calls)throw Error('Changing to 20 in standby must not start TTS');
+            if((await page.locator('#questionCount option:checked').textContent()).trim()!=='1 / 20')
+              throw Error('20-question selector did not update');
             await page.locator('input[type=radio][value=spell]').check({force:true});
             if((await page.locator('.ready-start').count())!==1)
               throw Error('Switching mode before Start must not begin a lesson');
@@ -70,7 +75,7 @@ jobs:
             await page.waitForTimeout(200);
             const calls=await page.evaluate(()=>window.__calls.length);
             if(!calls)throw Error('Start button did not trigger US TTS');
-            if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')throw Error('Wrong question count');
+            if((await page.locator('#questionCount option:checked').textContent()).trim()!=='1 / 20')throw Error('Wrong question count');
             if((await page.locator('#keypadShell .key').count())!==12)throw Error('Expected 4x3 keypad');
             if((await page.locator('.training-controls input[type=radio]').count())!==3)throw Error('Three mode pills missing');
             await page.evaluate(()=>{runtime.readyAt=performance.now()-2700;pressKey(session.queue[0].answer);});
@@ -79,6 +84,13 @@ jobs:
             if((await page.locator('.fast-feedback').count())!==1)throw Error('Fast feedback was not rendered');
             await page.waitForTimeout(560);
             if(!(await page.evaluate(()=>session.index===1)))throw Error('Rapid-fire did not advance');
+            if((await page.locator('#questionCount option:checked').textContent()).trim()!=='2 / 20')
+              throw Error('Progress selector must update to 2 / 20');
+            await page.locator('#questionCount').selectOption('30');
+            const resized=await page.evaluate(()=>({length:session.queue.length,index:session.index,started:session.isStarted,correct:session.correct}));
+            if(resized.length!==30||resized.index!==0||resized.started||resized.correct!==0)
+              throw Error('Changing count while active must reset to 30-question standby');
+            await page.locator('#questionCount').selectOption('20');
             await page.locator('input[type=radio][value=spell]').check({force:true});
             if((await page.locator('.ready-start').count())!==1)
               throw Error('Switching mode mid-lesson must return to standby');
@@ -96,7 +108,7 @@ jobs:
             await page.locator('.spell-confirm').click();
             if((await page.locator('.fast-feedback').count())!==1)throw Error('Manual spelling confirmation failed');
             if(errors.length)throw Error('Page errors: '+errors.join(' | '));
-            console.log('PASS: V8 23 lessons, ready-state start gesture, mode and speed switching, TTS, rapid-fire, spelling confirmation');
+            console.log('PASS: V9 23 lessons, 10/20/30 select, standby, mid-training reset, spelling manual confirmation');
             await b.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           JS

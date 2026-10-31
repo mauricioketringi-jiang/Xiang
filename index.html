@@ -191,6 +191,7 @@
     .settings-row .select,.settings-row .accent-display,.settings-row .question-count{box-sizing:border-box;min-width:0;width:100%;height:37px;min-height:37px;border-radius:10px;background:#F2F7F4;display:flex;justify-content:center;align-items:center;text-align:center;padding:4px 6px;font-size:12px;border:1px solid #E4EDE7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .settings-row .select{display:block;text-align:center;text-align-last:center;appearance:auto;-webkit-appearance:menulist;color:#27352F;}
     .settings-row .accent-display{font-size:10px;line-height:1.15;white-space:normal;overflow-wrap:anywhere;}
+    .settings-row #questionCount{font-size:12px;font-weight:750;color:#27352F;font-variant-numeric:tabular-nums;cursor:pointer;}
     .training-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:center;}
     .mode-pill{min-width:0;min-height:37px;height:37px;display:flex;justify-content:center;align-items:center;gap:3px;padding:0 2px;border:1px solid #E3E9E7;background:#F6F8F7;border-radius:10px;color:#6A7771;font-size:13px;font-weight:750;cursor:pointer;white-space:nowrap;letter-spacing:-.45px;}
     .mode-pill.active{background:#E5F9EE;border:1.5px solid #07C160;color:#078949;}
@@ -301,7 +302,7 @@
         <label class="form-label" for="freeLevel">练习范围</label>
         <select class="select" id="freeLevel"></select>
         <label class="form-label" for="freeCount">每次题量</label>
-        <select class="select" id="freeCount"><option value="10" selected>10 题</option><option value="30">30 题</option><option value="50">50 题</option></select>
+        <select class="select" id="freeCount"><option value="10" selected>10 题</option><option value="20">20 题</option><option value="30">30 题</option></select>
         <button class="btn primary full" id="freeStart" style="margin-top:14px">开始自由练习</button>
       </article>
       <article class="card lab-card">
@@ -322,7 +323,9 @@
       <div class="settings-row">
         <span class="accent-display" id="currentAccent" aria-live="polite">美音 · US</span>
         <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
-        <span class="question-count" id="questionCount">1 / 10</span>
+        <select class="select question-count" id="questionCount" aria-label="本轮题量与当前题号" title="选择本轮总题数">
+          <option value="10" selected>1 / 10</option><option value="20">1 / 20</option><option value="30">1 / 30</option>
+        </select>
       </div>
       <div class="training-controls" role="radiogroup" aria-label="训练方式">
         <label class="mode-pill active"><input type="radio" name="reflectionModeChoice" value="listen" checked><span>🎧 听音按键</span></label>
@@ -748,13 +751,26 @@ function makeQuestion(levelId){
   return wordQuestion(pick(group.words),group);
 }
 function assembleQueue(levelId,count){
+  // Short vocabulary sets cycle through separately shuffled decks, never leave a slot empty.
+  if(levelId.startsWith('word:')){
+    const group=wordGroups().find(g=>g.id===levelId);
+    if(!group||!group.words.length)throw Error('词库为空');
+    const queue=[];
+    while(queue.length<count){
+      for(const word of shuffle(group.words)){
+        if(queue.length===count)break;
+        queue.push(wordQuestion(word,group));
+      }
+    }
+    return queue;
+  }
   const q=[],used=new Set();
   for(let i=0;i<count;i++){
     let next=null;
     for(let retry=0;retry<20;retry++){
       const candidate=makeQuestion(levelId);next=candidate;
       const key=candidate.kind==='word'?candidate.wordId:candidate.answer;
-      if(!used.has(key)) {used.add(key);break;}
+      if(!used.has(key)){used.add(key);break;}
     }
     q.push(next);
   }
@@ -766,12 +782,17 @@ function showPage(name){
   for(const p of document.querySelectorAll('.page'))p.classList.toggle('active',p.id===name+'Page');
   document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
 }
+const TRAINING_COUNTS=[10,20,30];
+function normalizedTrainingCount(count){
+  const n=Number(count);
+  return TRAINING_COUNTS.includes(n)?n:10;
+}
 function startSession(levelId,mode='lesson',count=10){
   try{
     const level=allLessons().find(x=>x.id===levelId);
     if(!level)throw Error('该关卡不存在');
     stopSpeech();
-    const queue=assembleQueue(levelId,count);
+    const queue=assembleQueue(levelId,normalizedTrainingCount(count));
     const accentMode=levelId==='num:19'?'mixed':'en-US';
     const noiseMode=levelId==='num:20'?'random':'clean';
     chooseAccents(queue,accentMode);setQuestionEnvironments(queue,noiseMode);
@@ -856,21 +877,29 @@ function weakQuestionCopy(original){
   }
   return q;
 }
-function startWeak(){
+function assembleWeakQueue(count,fallback=[]){
   const entries=Object.values(state.errorPool).filter(x=>x&&x.question&&x.question.answer!=null);
-  if(!entries.length){toast('暂无错题或超时题目，先完成一次练习。');return;}
-  const weighted=entries.flatMap(e=>Array.from({length:clamp((e.errors||0)+(e.slow||0),1,5)},()=>e.question));
+  const weighted=entries.length
+    ?entries.flatMap(e=>Array.from({length:clamp((e.errors||0)+(e.slow||0),1,5)},()=>e.question))
+    :fallback.filter(q=>q&&q.answer!=null);
+  if(!weighted.length)throw Error('暂无可用于弱项强化的题目');
   const queue=[];
-  while(queue.length<10){
+  while(queue.length<count){
     const original=weakQuestionCopy(pick(weighted));
     const twin=makeConfusableTwin(original);
     const burst=twin?[original,twin,twin,original]:[original,original];
-    for(const q of burst){if(queue.length<10)queue.push(weakQuestionCopy(q));}
+    for(const q of burst){if(queue.length<count)queue.push(weakQuestionCopy(q));}
   }
-  stopSpeech();
-  session={mode:'weak',levelId:'weak',title:'成对易混镜像特训',queue,index:0,correct:0,
-    sumMs:0,fastestMs:null,startedAt:null,isStarted:false,accentMode:'en-US',noiseMode:'clean'};
-  state.activeSession=session;persist();beginQuestion();
+  return queue;
+}
+function startWeak(count=10){
+  try{
+    const queue=assembleWeakQueue(normalizedTrainingCount(count));
+    stopSpeech();
+    session={mode:'weak',levelId:'weak',title:'成对易混镜像特训',queue,index:0,correct:0,
+      sumMs:0,fastestMs:null,startedAt:null,isStarted:false,accentMode:'en-US',noiseMode:'clean'};
+    state.activeSession=session;persist();beginQuestion();
+  }catch(e){toast(e.message||'无法生成弱项练习');}
 }
 
 function resumeSession(){
@@ -883,6 +912,11 @@ function resumeSession(){
     session.index++;session.awaitingNext=false;session.lastFeedback=null;
   }
   session.isStarted=false;
+  // Legacy free-practice rounds of 50 cannot be represented in the 10/20/30 selector.
+  if(!TRAINING_COUNTS.includes(session.queue.length)){
+    changeTrainingQuestionCount(30);
+    return;
+  }
   state.activeSession=session;persist();
   beginQuestion();
 }
@@ -1016,6 +1050,43 @@ function startSpeechRecognition(){
     recognition.start();
   }catch(e){runtime.recognition=null;if($('speechHelp'))$('speechHelp').textContent='请点击开始录音；若浏览器不支持，请使用自检按钮。';}
 }
+function updateQuestionCountSelector(){
+  if(!session)return;
+  const selector=$('questionCount');
+  const n=session.index+1;
+  for(const option of selector.options){
+    option.textContent=n+' / '+option.value;
+  }
+  selector.value=String(session.queue.length);
+}
+function changeTrainingQuestionCount(count){
+  if(!session)return;
+  const next=Number(count);
+  if(!TRAINING_COUNTS.includes(next)){
+    updateQuestionCountSelector();
+    return;
+  }
+  if(next===session.queue.length){updateQuestionCountSelector();return;}
+  // Hard-stop speech, timer, next-question callbacks, recognition and noise before
+  // discarding a partially answered round. Global answered counters are historical.
+  stopSpeech();clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();stopNoise();
+  try{
+    const fresh=session.mode==='weak'
+      ?assembleWeakQueue(next,session.queue)
+      :assembleQueue(session.levelId,next);
+    chooseAccents(fresh,session.accentMode||'en-US');
+    setQuestionEnvironments(fresh,session.noiseMode||'clean');
+    Object.assign(session,{queue:fresh,index:0,correct:0,sumMs:0,fastestMs:null,
+      startedAt:null,isStarted:false,awaitingNext:false,lastFeedback:null});
+    runtime.readyAt=null;runtime.feedback=false;runtime.input='';runtime.selected=-1;
+    runtime.speechText='';runtime.lastZeroTapAt=0;
+    state.activeSession=session;persist();
+    beginQuestion();
+    toast('已切换为 '+next+' 题，本轮从第 1 题开始');
+  }catch(e){
+    updateQuestionCountSelector();toast(e.message||'切换题量失败');
+  }
+}
 function resetToReadyState(){
   if(!session)return;
   stopSpeech();finishSpeechRecognition();stopNoise();clearFlowTimer();clearAutoSubmitTimer();
@@ -1032,7 +1103,7 @@ function renderReadyState(){
   if(!session)return;
   // Strictly no target number, audio, recognition or reaction timer in ready state.
   $('listenCard').classList.add('ready-card');
-  $('listenCard').innerHTML='<div class="ready-kicker">请先在上方选择训练模式与倍速</div>'+ 
+  $('listenCard').innerHTML='<div class="ready-kicker">请先在上方选择训练模式、倍速与题量</div>'+ 
     '<div class="ready-mode">当前模式：'+esc(selectedTrainingModeLabel())+'</div>'+ 
     '<button type="button" class="ready-start" data-action="start-training" aria-label="开始训练">▶ 开始训练</button>';
   $('answerDisplay').classList.add('hidden');
@@ -1212,7 +1283,7 @@ function beginQuestion(){
   const accentChallenge=session.levelId==='num:19';
   const environmentChallenge=session.levelId==='num:20';
   $('currentAccent').textContent=accentChallenge?accentLabel(q.practiceAccent):environmentChallenge?noiseLabel(q.practiceNoise):'美音 · US';
-  $('questionCount').textContent=(session.index+1)+' / '+session.queue.length;
+  updateQuestionCountSelector();
   $('questionFill').style.width=(session.index/session.queue.length*100)+'%';
   document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===$('reflectionMode').value;r.closest('.mode-pill').classList.toggle('active',r.checked);});
   if(session.awaitingNext&&session.lastFeedback){
@@ -1500,7 +1571,7 @@ function finishSession(){
   $('summaryPanel').innerHTML=`<div class="summary-title">${passed||completed.mode!=='lesson'?'练习完成':'本关尚未通关'}</div><div class="summary-stars">${completed.mode==='lesson'?('★'.repeat(stars)+'☆'.repeat(3-stars)):'✓'}</div><div class="micro">${completed.mode==='lesson'?(passed?'已达通关标准':'通关需要准确率至少 80%'):'自由/弱项练习不改变关卡通关状态'}</div><div class="summary-grid"><div><strong>${accuracy}%</strong><span>准确率</span></div><div><strong>${msText(avg)}</strong><span>平均反应</span></div><div><strong>${completed.correct}/${completed.queue.length}</strong><span>答对题数</span></div></div><p class="hint" style="text-align:left">三星：全对且均速 ≤1.5s；二星：准确率 ≥90% 且均速 ≤2.5s；一星：准确率 ≥80%。</p><div class="summary-actions"><button class="btn outline" id="summaryHome">返回课程</button><button class="btn primary" id="summaryAgain">再练一次</button></div>`;
   $('summaryMask').classList.add('visible');
   $('summaryHome').onclick=()=>{$('summaryMask').classList.remove('visible');refresh();showPage('home');};
-  $('summaryAgain').onclick=()=>{$('summaryMask').classList.remove('visible');if(completed.mode==='weak')startWeak();else startSession(completed.levelId,completed.mode,completed.queue.length);};
+  $('summaryAgain').onclick=()=>{$('summaryMask').classList.remove('visible');if(completed.mode==='weak')startWeak(completed.queue.length);else startSession(completed.levelId,completed.mode,completed.queue.length);};
 }
 function leavePractice(){
   stopSpeech();clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();session=null;refresh();showPage('home');
@@ -1511,7 +1582,7 @@ function leavePractice(){
 function renderLessons(){
   const lessons=allLessons();const complete=lessons.filter(l=>state.levels[l.id]?.passed).length;
   const percentage=lessons.length?Math.round(complete/lessons.length*100):0;
-  $('progressCard').innerHTML=`<div class="overline">课程总进度</div><div class="big-percent">${percentage}%</div><div class="progress-track"><div class="progress-fill" style="width:${percentage}%"></div></div><div class="progress-caption">已通关 ${complete} / ${lessons.length} 关 · 每关 10 题</div>`;
+  $('progressCard').innerHTML=`<div class="overline">课程总进度</div><div class="big-percent">${percentage}%</div><div class="progress-track"><div class="progress-fill" style="width:${percentage}%"></div></div><div class="progress-caption">已通关 ${complete} / ${lessons.length} 关 · 每轮可选 10/20/30 题</div>`;
   const active=state.activeSession;
   $('resumeArea').innerHTML=active&&active.queue?.length?`<div class="card" style="margin-top:13px"><div class="row between"><div><strong style="font-size:13px">继续上次练习</strong><div class="micro" style="margin-top:5px">${esc(active.title)} · 第 ${active.index+1}/${active.queue.length} 题</div></div><button class="btn primary" id="resumeBtn">继续</button></div></div>`:'';
   if($('resumeBtn'))$('resumeBtn').onclick=resumeSession;
@@ -1594,6 +1665,7 @@ function setupEvents(){
   $('backPractice').addEventListener('click',leavePractice);
   document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>r.addEventListener('change',e=>{if(e.target.checked)setReflectionMode(e.target.value);}));
   $('voiceRate').addEventListener('change',e=>{state.settings.rate=Number(e.target.value);persist();if(session&&!runtime.feedback)resetToReadyState();});
+  $('questionCount').addEventListener('change',e=>changeTrainingQuestionCount(e.target.value));
   $('weakStart').addEventListener('click',startWeak);
   $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
   $('weakList').addEventListener('click',e=>{const b=e.target.closest('[data-drop]');if(!b)return;delete state.errorPool[b.dataset.drop];persist();renderLab();});
