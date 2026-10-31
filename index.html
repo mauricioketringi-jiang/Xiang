@@ -107,7 +107,9 @@
     .key.green { color:#fff; background:var(--green); box-shadow:0 2px 0 var(--dark); border-color:var(--green); font-size:14px; }
     .key.letters { font-size:16px; height:clamp(40px,6dvh,50px); }
     .keypad-grid.letter-grid { grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; }
-    .letter-actions { display:grid; grid-template-columns:1fr 1fr 1fr 1.35fr; gap:6px; margin-top:7px; }
+    .letter-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-top:7px; }
+    .keypad-extras { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin-top:6px; }
+    .auto-submit-hint { margin-top:7px; text-align:center; color:var(--muted); font-size:10px; line-height:1.45; }
     .letter-actions .key { font-size:13px; }
     .choice-stack { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
     .choice { min-height:73px; text-align:left; line-height:1.55; padding:12px; font-size:14px; border-radius:12px; background:#fff; border:2px solid #E7EBE9; color:var(--ink); font-weight:650; }
@@ -293,7 +295,7 @@ async function hydrateState(){
   }
 }
 let session = null;
-let runtime = {input:'', selected:-1, letter:false, feedback:false, speaking:false, readyAt:null, early:false, token:0, animation:0};
+let runtime = {input:'', selected:-1, letter:false, feedback:false, speaking:false, readyAt:null, early:false, token:0, animation:0, autoSubmitTimer:null};
 let toastTimer = null;
 let storageWarningShown=false;
 function persist(){
@@ -754,40 +756,75 @@ function renderInput(){
 function renderKeyboard(){
   if(!session)return;
   const q=session.queue[session.index],shell=$('keypadShell');
-  if(runtime.feedback){shell.innerHTML='<div class="review-controls"><button class="btn ghost" data-action="replay-feedback">重听原题</button><button class="btn primary" data-action="next">'+(session.index===session.queue.length-1?'查看结算':'下一题 →')+'</button></div>';return;}
+  if(runtime.feedback){
+    shell.innerHTML='<div class="review-controls"><button class="btn ghost" data-action="replay-feedback">重听原题</button><button class="btn primary" data-action="next">'+(session.index===session.queue.length-1?'查看结算':'下一题 →')+'</button></div>';
+    return;
+  }
   if(q.kind==='word'){
     const choices=q.choices || [];
-    shell.innerHTML='<div class="choice-stack">'+choices.map((c,i)=>`<button class="choice ${runtime.selected===i?'selected':''}" data-choice="${i}"><span style="color:var(--green);font-size:11px">${'ABCD'[i]}.</span> ${esc(c)}</button>`).join('')+'</div><div class="self-row"><button class="btn danger" data-action="unknown">不认识 · 记入错题</button><button class="btn primary" data-action="know">认识 / 提交所选</button></div>';
+    shell.innerHTML='<div class="choice-stack">'+choices.map((c,i)=>`<button class="choice" data-choice="${i}"><span style="color:var(--green);font-size:11px">${'ABCD'[i]}.</span> ${esc(c)}</button>`).join('')+'</div><div class="self-row"><button class="btn danger" data-action="unknown">不认识 · 记入错题</button></div><div class="auto-submit-hint">点击任一中文释义，即自动确认并显示解析</div>';
     return;
   }
   if(runtime.letter){
     const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     const buttons=chars.map(c=>`<button class="key letters" data-key="${c}">${c}</button>`).join('');
-    shell.innerHTML='<div class="keypad-grid letter-grid">'+buttons+'<button class="key alt letters" data-action="toggle">123</button><button class="key alt letters" data-action="backspace">⌫</button></div><div class="letter-actions"><button class="key alt" data-key=" ">空格</button><button class="key alt" data-action="replay">重听</button><button class="key alt" data-action="clear">清空</button><button class="key green" data-action="submit">确认提交</button></div>';
+    shell.innerHTML='<div class="keypad-grid letter-grid">'+buttons+'<button class="key alt letters" data-action="toggle">123</button><button class="key alt letters" data-action="backspace">⌫</button></div><div class="letter-actions"><button class="key alt" data-key=" ">空格</button><button class="key alt" data-action="replay">重听</button><button class="key alt" data-action="clear">清空</button></div><div class="auto-submit-hint">字母与数字输入完整后自动判定 · 无需提交</div>';
     return;
   }
-  const keys=[['1','2','3','退格'],['4','5','6','重听'],['7','8','9','ABC'],[',','0','.',':'],['%','清空','空格','提交']];
-  const action={'退格':'backspace','重听':'replay','ABC':'toggle','清空':'clear','空格':'space','提交':'submit'};
-  shell.innerHTML='<div class="keypad-grid">'+keys.flat().map(k=>{
-    const a=action[k],cls=a?' alt'+(a==='submit'?' green':''):'';
-    return `<button class="key${cls}" ${a?'data-action="'+a+'"':'data-key="'+esc(k)+'"'}>${k==='提交'?'确认提交':esc(k)}</button>`;
-  }).join('')+'</div>';
+  const keys=[['1','2','3','退格'],['4','5','6','重听'],['7','8','9','ABC'],[',','0','.',':']];
+  const action={'退格':'backspace','重听':'replay','ABC':'toggle'};
+  const main=keys.flat().map(k=>{
+    const a=action[k],cls=a?' alt':'';
+    return `<button class="key${cls}" ${a?'data-action="'+a+'"':'data-key="'+esc(k)+'"'}>${esc(k)}</button>`;
+  }).join('');
+  const extraHtml=['%','清空','空格'].map(k=>{
+    const a=k==='清空'?'clear':k==='空格'?'space':'';
+    return `<button class="key alt" ${a?'data-action="'+a+'"':'data-key="'+esc(k)+'"'}>${esc(k)}</button>`;
+  }).join('');
+  shell.innerHTML='<div class="keypad-grid">'+main+'</div><div class="keypad-extras">'+extraHtml+'</div><div class="auto-submit-hint">完整答案自动提交；输入不完整时停顿 1.8 秒自动判定</div>';
+}
+function clearAutoSubmitTimer(){
+  if(runtime.autoSubmitTimer!==null){clearTimeout(runtime.autoSubmitTimer);runtime.autoSubmitTimer=null;}
+}
+function isInputComplete(q,value){
+  const raw=String(value||'').trim();if(!raw)return false;
+  const expected=String(q.answer??''),id=Number(q.levelId);
+  if(id===11||(id===16&&expected.includes(':')))return /^\d{1,2}:\d{2}$/.test(raw);
+  if(id===14)return raw.toUpperCase().replace(/[\s-]/g,'').length===expected.toUpperCase().replace(/[\s-]/g,'').length;
+  if(id===13)return raw.replace(/\D/g,'').length===expected.replace(/\D/g,'').length;
+  const exp=expected.replace(/,/g,'').replace(/\s/g,''),typed=raw.replace(/,/g,'').replace(/\s/g,'');
+  const ep=exp.endsWith('%'),tp=typed.endsWith('%'),eb=ep?exp.slice(0,-1):exp,tb=tp?typed.slice(0,-1):typed;
+  if(eb.includes('.')){
+    const decimals=(eb.split('.')[1]||'').length,match=tb.match(/^\d+\.(\d+)$/);
+    return Boolean(match)&&match[1].length===decimals&&tp===ep;
+  }
+  return tb.replace(/\D/g,'').length===eb.replace(/\D/g,'').length&&tp===ep;
+}
+function scheduleAutoSubmit(){
+  clearAutoSubmitTimer();
+  if(!session||runtime.feedback||!runtime.input.trim())return;
+  const q=session.queue[session.index];
+  if(isInputComplete(q,runtime.input)){submitAnswer();return;}
+  runtime.autoSubmitTimer=setTimeout(()=>{
+    runtime.autoSubmitTimer=null;
+    if(session&&!runtime.feedback&&runtime.input.trim())submitAnswer();
+  },1800);
 }
 function pressKey(key){
   if(!session||runtime.feedback||session.queue[session.index].kind==='word')return;
   if(runtime.input.length>=32){toast('最多输入 32 个字符');return;}
-  runtime.input+=key;renderInput();
+  runtime.input+=key;renderInput();scheduleAutoSubmit();
 }
 function keyboardAction(action){
   if(!session)return;
-  if(action==='replay' || action==='replay-feedback'){
+  if(action==='replay'||action==='replay-feedback'){
+    clearAutoSubmitTimer();
     if(action==='replay-feedback'){
       const q=session.queue[session.index];
       if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined')return;
-      const synth=window.speechSynthesis;
-      if(synth.speaking){try{synth.cancel();}catch(e){}}
-      const utterance=new SpeechSynthesisUtterance(q.audioText);
-      utterance.lang=state.settings.locale;utterance.rate=Number(state.settings.rate);utterance.volume=1;
+      try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+      const synth=window.speechSynthesis;if(synth.speaking){try{synth.cancel();}catch(e){}}
+      const utterance=new SpeechSynthesisUtterance(q.audioText);utterance.lang=state.settings.locale;utterance.rate=Number(state.settings.rate);utterance.volume=1;
       const voice=selectSpeechVoice(state.settings.locale);if(voice)utterance.voice=voice;
       try{if(synth.paused)synth.resume();synth.speak(utterance);}catch(e){toast('无法重播原题语音。');}
     }else speakCurrent();
@@ -798,13 +835,11 @@ function keyboardAction(action){
   if(action==='clear')runtime.input='';
   if(action==='space')pressKey(' ');
   if(action==='toggle')runtime.letter=!runtime.letter;
-  if(action==='submit')submitAnswer();
-  if(action==='know'){
-    if(runtime.selected<0){toast('先选择一个中文释义；不认识可直接记录。');return;}
-    submitAnswer(false);
-  }
   if(action==='unknown')submitAnswer(true);
-  if(['toggle','backspace','clear'].includes(action)){renderInput();renderKeyboard();}
+  if(['toggle','backspace','clear'].includes(action)){
+    renderInput();renderKeyboard();
+    if(action!=='toggle'&&runtime.input.trim())scheduleAutoSubmit();else clearAutoSubmitTimer();
+  }
 }
 function normalizeAnswer(q,value){
   let s=String(value??'').trim();
