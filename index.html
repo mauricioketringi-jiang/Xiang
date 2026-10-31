@@ -80,7 +80,6 @@
     .practice-topline { display:flex; justify-content:space-between; align-items:center; gap:7px; }
     .back { color:var(--ink); background:transparent; font-size:24px; padding:0 7px 0 0; line-height:35px; }
     .practice-title { font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
-    .combo { color:var(--dark); background:var(--soft); padding:6px 9px; border-radius:10px; font-size:12px; font-weight:800; white-space:nowrap; }
     .settings-row { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-top:8px; }
     .settings-row .select { width:auto; min-height:33px; padding:4px 8px; font-size:12px; background:#F5F7F7; border:0; flex:1; }
     .question-count { font-size:11px; font-weight:700; color:#78838B; white-space:nowrap; font-variant-numeric:tabular-nums; }
@@ -179,14 +178,14 @@
     .keypad-extras{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px;}
     .letter-actions{grid-template-columns:repeat(3,minmax(0,1fr));}
 
-    .settings-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:center;}
+    .settings-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:center;}
     .settings-row .select,.settings-row .accent-display,.settings-row .question-count{box-sizing:border-box;min-width:0;width:100%;height:37px;min-height:37px;border-radius:10px;background:#F2F7F4;display:flex;justify-content:center;align-items:center;text-align:center;padding:4px 6px;font-size:12px;border:1px solid #E4EDE7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .settings-row .select{display:block;text-align:center;text-align-last:center;appearance:auto;-webkit-appearance:menulist;color:#27352F;}
     .settings-row .accent-display{font-size:10px;line-height:1.15;white-space:normal;overflow-wrap:anywhere;}
-    .training-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-    .mode-pill{min-width:0;display:flex;justify-content:center;align-items:center;gap:7px;min-height:36px;border:1px solid #E3E9E7;background:#F6F8F7;border-radius:10px;color:#6A7771;font-size:12px;font-weight:750;cursor:pointer;}
+    .training-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:center;}
+    .mode-pill{min-width:0;min-height:37px;height:37px;display:flex;justify-content:center;align-items:center;gap:3px;padding:0 2px;border:1px solid #E3E9E7;background:#F6F8F7;border-radius:10px;color:#6A7771;font-size:13px;font-weight:750;cursor:pointer;white-space:nowrap;letter-spacing:-.45px;}
     .mode-pill.active{background:#E5F9EE;border:1.5px solid #07C160;color:#078949;}
-    .mode-pill input{width:15px;height:15px;accent-color:#07C160;margin:0;}
+    .mode-pill input{flex:none;width:12px;height:12px;accent-color:#07C160;margin:0;}
     .training-controls input[type=hidden]{display:none;}
     .keypad-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
     .keypad-shell{padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));}
@@ -194,6 +193,24 @@
     .key.alt{font-size:15px;font-weight:800;background:#EEF2F1;}
     .code-entry{width:100%;height:36px;border:0;outline:0;background:transparent;text-align:center;font:700 16px -apple-system,BlinkMacSystemFont,sans-serif;text-transform:uppercase;color:#26392F;}
     .code-entry::placeholder{font-size:12px;opacity:.7;}
+    .keypad-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+    .keypad-grid .key{height:clamp(44px,6.5dvh,57px);min-height:44px;min-width:0;}
+    .spell-board{display:flex;flex-direction:column;gap:6px;}
+    .spell-row{display:grid;gap:3px;grid-template-columns:repeat(10,minmax(0,1fr));}
+    .spell-row.row9{grid-template-columns:repeat(9,minmax(0,1fr));margin-inline:3.4%;}
+    .spell-row.row7{grid-template-columns:repeat(7,minmax(0,1fr));margin-inline:10%;}
+    .spell-row .key{height:clamp(39px,5.5dvh,49px);min-height:39px;border-radius:7px;font-size:clamp(14px,3.8vw,20px);font-weight:750;padding:0;box-shadow:0 2px 0 #DFE6E1;}
+    .spell-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:1px;}
+    .spell-actions .key{height:clamp(44px,6dvh,54px);min-height:44px;font-size:13px;}
+    .answer-display.has-inline-separator{display:flex;justify-content:stretch;align-items:center;gap:8px;}
+    .answer-display .answer-value{flex:1;min-width:0;text-align:center;overflow-wrap:anywhere;}
+    .inline-separator{flex:none;min-width:75px;border-radius:9px;border:1.5px solid #07C160;background:#E8F8EF;color:#078949;font-weight:850;font-size:13px;padding:8px 6px;}
+    .answer-display.spell-entry{font-size:19px;letter-spacing:.1px;line-height:1.3;min-height:50px;}
+    .spell-hint{font-size:14px;color:#247047;background:#EBFAF2;border-radius:10px;padding:8px 12px;margin-top:10px;font-weight:750;max-width:100%;overflow-wrap:anywhere;}
+    .keypad-shell button{touch-action:manipulation;-webkit-touch-callout:none;user-select:none;}
+    @media(max-width:360px){.mode-pill{font-size:11.5px;letter-spacing:-.8px;gap:2px;}.mode-pill input{width:11px;height:11px;}.spell-row{gap:2px;}.spell-actions{gap:4px;}}
+    @media(max-height:700px){.keypad-grid .key{height:42px;min-height:42px;}.spell-row .key{height:35px;min-height:35px;}.spell-actions .key{height:39px;min-height:39px;}.answer-display.spell-entry{min-height:43px;}}
+
     @media(max-height:700px){.key{height:40px;min-height:40px;}.listen-card{min-height:88px;}.practice-body{padding-top:6px;}.answer-display{min-height:40px;}}
   </style>
 </head>
@@ -247,7 +264,7 @@
 
   <section class="page" id="practicePage">
     <header class="practice-top">
-      <div class="practice-topline"><button class="back" id="backPractice" aria-label="返回">‹</button><div class="practice-title" id="practiceTitle">练习</div><span class="combo" id="comboText">COMBO 0</span></div>
+      <div class="practice-topline"><button class="back" id="backPractice" aria-label="返回">‹</button><div class="practice-title" id="practiceTitle">练习</div></div>
       <div class="settings-row">
         <span class="accent-display" id="currentAccent" aria-live="polite">美音 · US</span>
         <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
@@ -256,6 +273,7 @@
       <div class="training-controls" role="radiogroup" aria-label="训练方式">
         <label class="mode-pill active"><input type="radio" name="reflectionModeChoice" value="listen" checked><span>🎧 听音按键</span></label>
         <label class="mode-pill"><input type="radio" name="reflectionModeChoice" value="speak"><span>🎙️ 看数开口</span></label>
+        <label class="mode-pill"><input type="radio" name="reflectionModeChoice" value="spell"><span>⌨️ 拼写单词</span></label>
         <input type="hidden" id="reflectionMode" value="listen">
       </div>
       <div class="tiny-track"><div class="tiny-fill" id="questionFill"></div></div>
@@ -704,7 +722,7 @@ function startSession(levelId,mode='lesson',count=10){
     const noiseMode=levelId==='num:20'?'random':'clean';
     chooseAccents(queue,accentMode);setQuestionEnvironments(queue,noiseMode);
     if(levelId==='num:20')initializeAudioContext();
-    session={mode,levelId,title:mode==='weak'?'智能弱项特训':mode==='free'?'自由练习 · '+level.title:level.title,queue,index:0,correct:0,sumMs:0,combo:0,fastestMs:null,startedAt:Date.now(),accentMode,noiseMode};
+    session={mode,levelId,title:mode==='weak'?'智能弱项特训':mode==='free'?'自由练习 · '+level.title:level.title,queue,index:0,correct:0,sumMs:0,fastestMs:null,startedAt:Date.now(),accentMode,noiseMode};
     state.activeSession=session;persist();
     beginQuestion();
   }catch(e){toast(e.message||'无法生成试题');}
@@ -798,7 +816,7 @@ function startWeak(){
   }
   stopSpeech();
   session={mode:'weak',levelId:'weak',title:'成对易混镜像特训',queue,index:0,correct:0,
-    sumMs:0,combo:0,fastestMs:null,startedAt:Date.now(),accentMode:'en-US',noiseMode:'clean'};
+    sumMs:0,fastestMs:null,startedAt:Date.now(),accentMode:'en-US',noiseMode:'clean'};
   state.activeSession=session;persist();beginQuestion();
 }
 
@@ -938,23 +956,26 @@ function startSpeechRecognition(){
   }catch(e){runtime.recognition=null;if($('speechHelp'))$('speechHelp').textContent='请点击开始录音；若浏览器不支持，请使用自检按钮。';}
 }
 function setReflectionMode(mode){
-  if(!session||runtime.feedback)return;
-  stopSpeech();finishSpeechRecognition();stopNoise();clearFlowTimer();
+  if(!session||runtime.feedback||!['listen','speak','spell'].includes(mode))return;
+  stopSpeech();finishSpeechRecognition();stopNoise();clearFlowTimer();clearAutoSubmitTimer();
   $('reflectionMode').value=mode;
   document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===mode;r.closest('.mode-pill').classList.toggle('active',r.checked);});
-  runtime.readyAt=null;runtime.input='';runtime.speechText='';
+  runtime.readyAt=null;runtime.input='';runtime.speechText='';runtime.lastZeroTapAt=0;
   renderQuestionView();
 }
 function renderQuestionView(){
   if(!session)return;
-  const q=currentQuestion(),speaking=$('reflectionMode').value==='speak';
+  const q=currentQuestion(),mode=$('reflectionMode').value,speaking=mode==='speak',spelling=mode==='spell';
   if(speaking){
     $('listenCard').innerHTML='<div class="listen-chip">🎙️ 口语反射 · 看数字说英文</div><div class="speaking-target">'+esc(q.kind==='word'?(q.word||q.audioText):q.displayAnswer||q.answer)+'</div><div class="speaking-help" id="speechHelp">请朗读屏幕上的目标内容</div><div class="speaking-result" id="speechTranscript"></div><div class="speaking-actions"><button class="btn ghost" data-action="mic-start">开始录音</button><button class="btn primary" data-action="self-pass">自检通过</button><button class="btn danger" data-action="self-fail">未能说对</button></div>';
     $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
     speechStartForQuestion();startSpeechRecognition();
   }else{
-    $('listenCard').innerHTML='<div class="listen-chip">'+esc(q.kind==='word'?'听发音 · 选择中文释义':q.formatHint||'盲听模式 · 不显示题面')+'</div><div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">播放中</div><div class="timer-hint" id="playStatus">请认真盲听</div><button class="play-audio-btn" id="playAudio" data-action="play">▶ 播放 / 重听</button>';
-    $('answerDisplay').classList.toggle('hidden',q.kind==='word');renderInput();renderKeyboard();speakCurrent();
+    const hint=spelling?'⌨️ 听音拼写英文':q.kind==='word'?'听发音 · 选择中文释义':q.formatHint||'盲听模式 · 不显示题面';
+    const chinese=spelling&&q.kind==='word'?'<div class="spell-hint">中文释义：'+esc(q.meaning||q.answer)+'</div>':'';
+    $('listenCard').innerHTML='<div class="listen-chip">'+esc(hint)+'</div>'+chinese+'<div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">播放中</div><div class="timer-hint" id="playStatus">请认真盲听</div><button class="play-audio-btn" id="playAudio" data-action="play">▶ 播放 / 重听</button>';
+    $('answerDisplay').classList.toggle('hidden',q.kind==='word'&&!spelling);
+    renderInput();renderKeyboard();speakCurrent();
   }
 }
 
@@ -1068,10 +1089,9 @@ function beginQuestion(){
   clearAutoSubmitTimer();clearFlowTimer();stopNoise();finishSpeechRecognition();
   const q=currentQuestion();
   runtime.input='';runtime.selected=-1;runtime.letter=false;
-  runtime.feedback=false;runtime.readyAt=null;
+  runtime.feedback=false;runtime.readyAt=null;runtime.lastZeroTapAt=0;
   showPage('practice');
   $('practiceTitle').textContent=session.title;
-  $('comboText').textContent='COMBO '+session.combo;
   $('voiceRate').value=String(state.settings.rate);
   const accentChallenge=session.levelId==='num:19';
   const environmentChallenge=session.levelId==='num:20';
@@ -1087,16 +1107,47 @@ function beginQuestion(){
     $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
   } else renderQuestionView();
 }
+function spellingTarget(q){
+  return String(q?.audioText||q?.word||'').trim();
+}
+function normalizeSpelling(value){
+  return String(value??'').toLowerCase().replace(/[^a-z]/g,'');
+}
 function renderInput(){
   if(!session)return;
-  const q=session.queue[session.index];
-  if(q.kind==='word')return;
-  const value=runtime.input;
-  const el=$('answerDisplay');el.classList.toggle('placeholder',!value);
+  const q=currentQuestion(),mode=$('reflectionMode').value;
+  if(q.kind==='word'&&mode==='listen')return;
+  const value=runtime.input,el=$('answerDisplay');
+  el.classList.remove('hidden','has-inline-separator','spell-entry');
+  el.classList.toggle('placeholder',!value);
+  if(mode==='spell'){
+    el.classList.add('spell-entry');
+    el.textContent=value||'用下方字母键盘拼写英文';
+    return;
+  }
   if(effectiveLevel(q)===14){
-    el.innerHTML='<input id="codeEntry" class="code-entry" type="text" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="航班号 / 邮编：点击输入字母和数字" value="'+esc(value)+'">';
-  }else{el.textContent=value||'使用下方数字键盘作答';}
+    el.innerHTML='<input id="codeEntry" class="code-entry" type="text" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="航班号 / 邮编：输入英文字母及数字" value="'+esc(value)+'">';
+  }else{
+    const mark=inlineNumericSeparator(q);
+    if(mark){
+      el.classList.add('has-inline-separator');
+      el.innerHTML='<span class="answer-value">'+esc(value||'用下方数字键盘作答')+'</span><button type="button" class="inline-separator" data-action="insert-separator">输入 '+esc(mark)+'</button>';
+    }else el.textContent=value||'用下方数字键盘作答';
+  }
 }
+function inlineNumericSeparator(q){
+  const ans=String(q?.answer||'');
+  return ans.includes(':')?':':ans.includes('.')?'.':'';
+}
+function insertNumericSeparator(){
+  if(!session||runtime.feedback||$('reflectionMode').value!=='listen')return;
+  const mark=inlineNumericSeparator(currentQuestion());
+  if(!mark||runtime.input.includes(mark)||runtime.input.length>=32)return;
+  runtime.input+=mark;
+  runtime.lastZeroTapAt=0;
+  renderInput();scheduleAutoSubmit();
+}
+
 function effectiveLevel(q){return Number(q.sourceLevelId||q.levelId);}
 function keyCapabilities(q){
   const id=effectiveLevel(q);
@@ -1105,29 +1156,35 @@ function keyCapabilities(q){
 }
 function renderKeyboard(){
   if(!session)return;
-  const q=currentQuestion(),shell=$('keypadShell');
+  const q=currentQuestion(),shell=$('keypadShell'),mode=$('reflectionMode').value;
   if(runtime.feedback){
     shell.innerHTML='<div class="review-controls"><button class="btn ghost" data-action="replay-feedback">重听原题</button><button class="btn primary" data-action="next">'+(session.index===session.queue.length-1?'查看结算':'下一题 →')+'</button></div>';
     return;
   }
-  if($('reflectionMode').value==='speak'){shell.innerHTML='';return;}
+  if(mode==='speak'){shell.innerHTML='';return;}
+  if(mode==='spell'){
+    const key=char=>'<button type="button" class="key spell-key" data-key="'+char+'">'+char+'</button>';
+    const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
+    shell.innerHTML='<div class="spell-board">'+rows.map((row,i)=>'<div class="spell-row '+(i===1?'row9':i===2?'row7':'')+'">'+[...row].map(key).join('')+'</div>').join('')+
+      '<div class="spell-actions"><button type="button" class="key alt" data-action="backspace" aria-label="退格，长按清空">退格</button><button type="button" class="key alt" data-action="space" aria-label="空格，长按连字符">空格 / -</button><button type="button" class="key alt" data-action="replay">重听</button></div></div>';
+    return;
+  }
   if(q.kind==='word'){
     shell.innerHTML='<div class="choice-stack">'+(q.choices||[]).map((c,i)=>'<button class="choice" data-choice="'+i+'"><span style="color:var(--green);font-size:11px">'+('ABCD'[i])+'.</span> '+esc(c)+'</button>').join('')+'</div><div class="self-row"><button class="btn danger" data-action="unknown">不认识 · 记入错题</button></div>';
     return;
   }
-  const cap=keyCapabilities(q);
-  const keys=['1','2','3','4','5','6','7','8','9','.','0',':'];
-  const actionKeys=[['清空','clear'],['退格','backspace'],['重听','replay']];
-  const build=k=>{
-    const disabled=(k==='.'&&!cap.decimal)||(k===':'&&!cap.colon);
-    return '<button class="key'+((k==='.'&&cap.decimal)||(k===':'&&cap.colon)?' relevant-key':'')+(disabled?' disabled-key':'')+'" '+(disabled?'disabled ':'')+'data-key="'+k+'">'+k+'</button>';
-  };
-  shell.innerHTML='<div class="keypad-grid">'+keys.map(build).join('')+
-    actionKeys.map(([name,action])=>'<button class="key alt" data-action="'+action+'">'+name+'</button>').join('')+'</div>';
+  const items=['1','2','3','4','5','6','7','8','9','backspace','0','replay'];
+  shell.innerHTML='<div class="keypad-grid">'+items.map(k=>{
+    if(k==='backspace')return '<button type="button" class="key alt" data-action="backspace" aria-label="退格，长按清空">退格</button>';
+    if(k==='replay')return '<button type="button" class="key alt" data-action="replay">重听</button>';
+    return '<button type="button" class="key" data-key="'+k+'"'+(k==='0'?' aria-label="0，双击或长按输入小数点或冒号"':'')+'>'+k+'</button>';
+  }).join('')+'</div>';
 }
+
 function inputLooksComplete(q,typed){
   const v=String(typed||'').trim(),expected=String(q.answer||'');
   if(!v)return false;
+  if($('reflectionMode').value==='spell')return normalizeSpelling(v).length>=normalizeSpelling(spellingTarget(q)).length;
   const level=effectiveLevel(q);
   if(level===11||(level===18&&expected.includes(':')))return /^\d{1,2}:\d{2}$/.test(v);
   if(level===13)return v.replace(/\D/g,'').length>=expected.replace(/\D/g,'').length;
@@ -1150,9 +1207,25 @@ function scheduleAutoSubmit(){
   },1800);
 }
 function pressKey(key){
-  if(!session||runtime.feedback||currentQuestion().kind==='word'||$('reflectionMode').value==='speak')return;
-  if(runtime.input.length>=32){toast('最多输入 32 个字符');return;}
-  runtime.input+=key;renderInput();scheduleAutoSubmit();
+  if(!session||runtime.feedback||$('reflectionMode').value==='speak')return;
+  const mode=$('reflectionMode').value,q=currentQuestion();
+  if(mode==='spell'){
+    if(!/^[a-z]$/.test(key)&&key!==' '&&key!=='-')return;
+    if(runtime.input.length>=180){toast('拼写内容已达到长度上限');return;}
+    runtime.input+=key;
+  }else{
+    if(q.kind==='word'||!/^[0-9]$/.test(key))return;
+    if(runtime.input.length>=32)return;
+    const time=performance.now(),mark=inlineNumericSeparator(q);
+    if(key==='0'&&mark&&runtime.lastZeroTapAt&&time-runtime.lastZeroTapAt<310&&runtime.input.endsWith('0')&&!runtime.input.includes(mark)&&!String(q.answer).startsWith(runtime.input+'0')){
+      runtime.input=runtime.input.slice(0,-1)+mark;
+      runtime.lastZeroTapAt=0;
+      renderInput();scheduleAutoSubmit();return;
+    }
+    runtime.input+=key;
+    runtime.lastZeroTapAt=key==='0'&&mark?time:0;
+  }
+  renderInput();scheduleAutoSubmit();
 }
 function keyboardAction(action){
   if(!session)return;
@@ -1163,10 +1236,20 @@ function keyboardAction(action){
   if(action==='mic-start'){startSpeechRecognition();return;}
   if(action==='self-pass'){submitAnswer(false,'自检通过');return;}
   if(action==='self-fail'){submitAnswer(true,'自检未通过');return;}
+  if(action==='insert-separator'){insertNumericSeparator();return;}
+  if(action==='space'){
+    if($('reflectionMode').value==='spell')pressKey(' ');
+    return;
+  }
+  if(action==='hyphen'){
+    if($('reflectionMode').value==='spell')pressKey('-');
+    return;
+  }
   if(action==='backspace')runtime.input=runtime.input.slice(0,-1);
   if(action==='clear')runtime.input='';
-  if(action==='unknown')submitAnswer(true);
+  if(action==='unknown'){submitAnswer(true);return;}
   if(['backspace','clear'].includes(action)){
+    runtime.lastZeroTapAt=0;
     renderInput();renderKeyboard();
     if(runtime.input.trim())scheduleAutoSubmit();else clearAutoSubmitTimer();
   }
@@ -1208,30 +1291,28 @@ function captureWeak(q,correct,elapsed){
 }
 function submitAnswer(forceUnknown=false,spokenResult){
   if(!session||runtime.feedback||session.awaitingNext)return;
-  const q=currentQuestion(),speaking=$('reflectionMode').value==='speak';
-  let given=speaking?String((spokenResult??runtime.speechText)||''):q.kind==='word'?(runtime.selected<0?'未选择':q.choices[runtime.selected]):runtime.input;
-  if(!speaking&&q.kind==='numeric'&&!String(given).trim()){toast('请先输入答案');return;}
-  const correct=speaking?!forceUnknown&&((spokenResult==='自检通过')||spokenAnswerMatches(q,given)):!forceUnknown&&normalizeAnswer(q,q.answer)===normalizeAnswer(q,given);
+  const q=currentQuestion(),mode=$('reflectionMode').value,speaking=mode==='speak',spelling=mode==='spell';
+  let given=speaking?String((spokenResult??runtime.speechText)||''):spelling?runtime.input:q.kind==='word'?(runtime.selected<0?'未选择':q.choices[runtime.selected]):runtime.input;
+  if(!speaking&&(spelling||q.kind==='numeric')&&!String(given).trim()){toast('请先输入答案');return;}
+  const correct=spelling?!forceUnknown&&normalizeSpelling(spellingTarget(q))===normalizeSpelling(given):speaking?!forceUnknown&&((spokenResult==='自检通过')||spokenAnswerMatches(q,given)):!forceUnknown&&normalizeAnswer(q,q.answer)===normalizeAnswer(q,given);
   const early=runtime.readyAt===null;
   const elapsed=early?0:Math.max(0,Math.round(performance.now()-runtime.readyAt));
   runtime.early=early;
   stopSpeech();finishSpeechRecognition();clearAutoSubmitTimer();clearFlowTimer();
   runtime.feedback=true;runtime.speaking=false;
   session.correct+=Number(correct);session.sumMs+=elapsed;
-  session.combo=correct?session.combo+1:0;
   if(correct)session.fastestMs=session.fastestMs===null?elapsed:Math.min(session.fastestMs,elapsed);
   state.totalAnswered=(Number(state.totalAnswered)||0)+1;
   state.totalQuestions=state.totalAnswered;
   state.totalCorrect=(Number(state.totalCorrect)||0)+Number(correct);
   captureWeak(q,correct,elapsed);
-  session.awaitingNext=true;session.lastFeedback={correct,given,elapsed,early};
+  session.awaitingNext=true;session.lastFeedback={correct,given,elapsed,early,mode};
   state.activeSession=session;persist();
-  $('comboText').textContent='COMBO '+session.combo;
   $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
   renderLab();
-  if(correct&&!early&&elapsed<=FLOW_LIMIT_MS){
+  if(correct&&(spelling||(!early&&elapsed<=FLOW_LIMIT_MS))){
     correctTone();
-    $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+msText(elapsed)+'</div>'+
+    $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+(early?'提前完成':msText(elapsed))+'</div>'+
       (session.levelId==='num:19'?'<div class="micro" style="text-align:center;margin:8px">'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?'（近似播报）':'')+'</div>':'');
     $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
     runtime.autoNextTimer=setTimeout(()=>{runtime.autoNextTimer=null;if(session&&runtime.feedback&&session.awaitingNext)nextQuestion();},FLOW_NEXT_DELAY_MS);
@@ -1253,7 +1334,8 @@ function phoneticBreakdown(text){
 function renderFeedback(q,correct,given,elapsed,early){
   const verdict=correct?'回答正确':'需要巩固';
   const speed=early?'提前提交 · 记为 <0.5s':elapsed<500?'极速反射':elapsed>2500?'反应偏慢 · 已加入特训':'反应正常';
-  const answerShown=q.displayAnswer || (q.kind==='numeric'&&/^\d{4,}$/.test(q.answer)&&Number(q.levelId)!==13&&Number(q.levelId)!==14?integerString(q.answer):q.answer);
+  const spelling=$('reflectionMode').value==='spell'||session?.lastFeedback?.mode==='spell';
+  const answerShown=spelling?spellingTarget(q):(q.displayAnswer || (q.kind==='numeric'&&/^\d{4,}$/.test(q.answer)&&Number(q.levelId)!==13&&Number(q.levelId)!==14?integerString(q.answer):q.answer));
   const reading=q.kind==='word'?(q.word||q.audioText):q.audioText;
   const ipa=q.kind==='word'?(q.phonetic||'音标未提供'):phoneticBreakdown(reading);
   const optional=q.kind==='word'&&q.example?`<div class="feedback-line"><span class="k">例句 Example</span>${esc(q.example)}</div>`:'';
@@ -1262,7 +1344,7 @@ function renderFeedback(q,correct,given,elapsed,early){
   const comparison=twin?'<div class="feedback-line"><span class="k">⚡ 易混对比提示</span>'+esc('本题 '+q.answer+'（'+q.audioText+'），注意与 '+(q.confusableBase||twin)+' 区分；留意重音和数量级。')+'</div>':'';
   const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题目标口音</span>'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?' · 使用设备 '+esc(q.actualVoice||'英语语音')+' 近似播报':'')+'</div>':'';
   const environmentReveal=session?.levelId==='num:20'?'<div class="feedback-line"><span class="k">本题环境</span>'+esc(noiseLabel(q.practiceNoise))+'</div>':'';
-  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">标准答案</span><span class="v">${esc(answerShown)}</span></div><div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">含义与解题提示</span>${esc(q.meaning||'—')}</div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(q.answer),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}</div>`;
+  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">含义与解题提示</span>${esc(q.meaning||'—')}</div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}</div>`;
   $('answerDisplay').classList.add('hidden');
 }
 function nextQuestion(){
@@ -1344,13 +1426,42 @@ function setupEvents(){
     if(b.dataset.action==='play')speakCurrent();
     else keyboardAction(b.dataset.action);
   });
+  $('answerDisplay').addEventListener('click',e=>{
+    if(e.target.closest('[data-action=insert-separator]'))insertNumericSeparator();
+  });
   $('answerDisplay').addEventListener('input',e=>{
     if(e.target.id!=='codeEntry'||!session||runtime.feedback)return;
     runtime.input=e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g,'').slice(0,32);
     if(inputLooksComplete(currentQuestion(),runtime.input))scheduleAutoSubmit();
     else clearAutoSubmitTimer();
   });
+  const held={timer:null,button:null,consumed:null};
+  function clearHold(){if(held.timer!==null){clearTimeout(held.timer);held.timer=null;}held.button=null;}
+  $('keypadShell').addEventListener('pointerdown',e=>{
+    const btn=e.target.closest('button');
+    if(!btn)return;
+    const isBackspace=btn.dataset.action==='backspace';
+    const isZero=btn.dataset.key==='0'&&!!inlineNumericSeparator(currentQuestion());
+    const isSpace=btn.dataset.action==='space';
+    if(!isBackspace&&!isZero&&!isSpace)return;
+    clearHold();held.consumed=null;held.button=btn;
+    held.timer=setTimeout(()=>{
+      held.timer=null;
+      if(runtime.feedback||!session||btn!==held.button)return;
+      held.consumed=btn;
+      if(isBackspace)keyboardAction('clear');
+      else if(isZero)insertNumericSeparator();
+      else if(isSpace)keyboardAction('hyphen');
+      try{navigator.vibrate?.(12);}catch(e){}
+    },400);
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(type=>$('keypadShell').addEventListener(type,clearHold));
+  $('keypadShell').addEventListener('contextmenu',e=>{if(e.target.closest('[data-action=backspace],[data-action=space],[data-key="0"]'))e.preventDefault();});
   $('keypadShell').addEventListener('click',e=>{
+    const clicked=e.target.closest('button');
+    if(clicked&&clicked===held.consumed){held.consumed=null;return;}
+    held.consumed=null;
+
     const choice=e.target.closest('[data-choice]');if(choice){runtime.selected=Number(choice.dataset.choice);submitAnswer(false);return;}
     const key=e.target.closest('[data-key]');if(key){pressKey(key.dataset.key);return;}
     const action=e.target.closest('[data-action]');if(action)keyboardAction(action.dataset.action);
@@ -1374,7 +1485,17 @@ function setupEvents(){
     if(runtime.feedback)return;
     if(e.key==='Backspace'){e.preventDefault();keyboardAction('backspace');}
     else if(e.key.toLowerCase()==='r' && e.ctrlKey){e.preventDefault();keyboardAction('replay');}
-    else if(session.queue[session.index].kind==='numeric' && /^[0-9.:]$/.test(e.key)){e.preventDefault();if(e.key!=='.'||keyCapabilities(currentQuestion()).decimal)if(e.key!==':'||keyCapabilities(currentQuestion()).colon)pressKey(e.key);}
+    else if($('reflectionMode').value==='spell'){
+      if(/^[a-z]$/i.test(e.key)){e.preventDefault();pressKey(e.key.toLowerCase());}
+      else if(e.key===' '||e.key==='-'){e.preventDefault();pressKey(e.key);}
+      else if(e.key==='Enter'&&runtime.input){e.preventDefault();submitAnswer();}
+    }
+    else if(session.queue[session.index].kind==='numeric' && /^[0-9.:]$/.test(e.key)){
+      e.preventDefault();
+      if(e.key==='.'||e.key===':'){
+        if(inlineNumericSeparator(currentQuestion())===e.key)insertNumericSeparator();
+      }else pressKey(e.key);
+    }
     else if(session.queue[session.index].kind==='word' && /^[1-4]$/.test(e.key)){runtime.selected=Number(e.key)-1;submitAnswer(false);}
   });
   const restoreAudio=()=>{
@@ -1382,7 +1503,7 @@ function setupEvents(){
     try{if(window.speechSynthesis?.paused)window.speechSynthesis.resume();}catch(e){}
     try{if(runtime.audioContext?.state==='suspended')runtime.audioContext.resume().catch(()=>{});}catch(e){}
     if(!session||runtime.feedback||!$('practicePage').classList.contains('active'))return;
-    if($('reflectionMode').value==='listen'&&runtime.readyAt===null&&!runtime.speaking){speakCurrent();}
+    if($('reflectionMode').value!=='speak'&&runtime.readyAt===null&&!runtime.speaking){speakCurrent();}
   };
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden && session && !runtime.feedback){stopSpeech();finishSpeechRecognition();runtime.readyAt=null;}
@@ -1416,7 +1537,7 @@ function boot(){
       engine.getVoices();
       const voiceReady=()=>{
         if(session&&!runtime.feedback&&runtime.readyAt===null&&!runtime.speaking&&
-          $('practicePage').classList.contains('active')&&$('reflectionMode').value==='listen'&&
+          $('practicePage').classList.contains('active')&&$('reflectionMode').value!=='speak'&&
           voiceForAccent(questionAccent()))speakCurrent();
       };
       if(engine.addEventListener)engine.addEventListener('voiceschanged',voiceReady);

@@ -57,16 +57,25 @@ jobs:
             const calls=await page.evaluate(()=>window.__calls.length);
             if(!calls)throw Error('No automatic TTS after starting a lesson');
             if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')throw Error('Wrong question count');
-            if((await page.locator('#keypadShell .key').count())!==15)throw Error('Expected 3x5 keypad');
-            if((await page.locator('.training-controls input[type=radio]').count())!==2)throw Error('Mode pills missing');
+            if((await page.locator('#keypadShell .key').count())!==12)throw Error('Expected 4x3 keypad');
+            if((await page.locator('.training-controls input[type=radio]').count())!==3)throw Error('Three mode pills missing');
             await page.evaluate(()=>{runtime.readyAt=performance.now();pressKey(session.queue[0].answer);});
             const stats=await page.evaluate(()=>({answered:state.totalAnswered,correct:state.totalCorrect,saved:JSON.parse(localStorage.getItem(STORE_KEY)).totalAnswered}));
             if(stats.answered!==1||stats.correct!==1||stats.saved!==1)throw Error('Global statistics did not update');
             if((await page.locator('.fast-feedback').count())!==1)throw Error('Fast feedback was not rendered');
             await page.waitForTimeout(560);
             if(!(await page.evaluate(()=>session.index===1)))throw Error('Rapid-fire did not advance');
+            await page.locator('input[type=radio][value=spell]').check({force:true});
+            if((await page.locator('.spell-key').count())!==26)throw Error('Expected 26-key spelling keyboard');
+            await page.evaluate(()=>{
+              const target=normalizeSpelling(spellingTarget(currentQuestion()));
+              runtime.readyAt=performance.now()-300;
+              runtime.input=target;
+              scheduleAutoSubmit();
+            });
+            if((await page.locator('.fast-feedback').count())!==1)throw Error('Spelling auto-correct flow did not trigger');
             if(errors.length)throw Error('Page errors: '+errors.join(' | '));
-            console.log('PASS: all 23 lessons, 3 industrial banks, 8 accents, 4 noises, 3x5 keypad, stats and rapid-fire');
+            console.log('PASS: all 23 lessons, 3 industrial banks, 8 accents, 4 noises, 4x3 keypad, spelling, stats and rapid-fire');
             await b.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           JS
