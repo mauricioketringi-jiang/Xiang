@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#07C160">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="声音反射训练">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  <title>英语数字与专业词汇 · 声音反射训练</title>
+  <style>
+    :root { --green:#07C160; --dark:#079c50; --bg:#F7F8FA; --white:#fff; --ink:#1D2733; --muted:#8A939E; --line:#EAEFF1; --red:#EA5252; --gold:#E9AA37; --soft:#EAF9F1; --shadow:0 6px 24px rgba(20,48,36,.045); --safe-bottom:env(safe-area-inset-bottom,0px); }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { margin:0; width:100%; height:100%; min-height:100%; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; -webkit-text-size-adjust:100%; background:#E8ECED; color:var(--ink); overscroll-behavior:none; }
+    button,select { font:inherit; }
+    button { cursor:pointer; touch-action:manipulation; -webkit-appearance:none; appearance:none; -webkit-user-select:none; user-select:none; border:0; }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    .app { width:min(100%,480px); height:100vh; height:100dvh; min-height:0; margin:0 auto; position:relative; overflow:hidden; background:var(--bg); box-shadow:0 0 40px rgba(0,0,0,.10); }
+    .page { display:none; height:100%; min-height:0; overflow:hidden; flex-direction:column; }
+    .page.active { display:flex; }
+    .page-scroll { flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:calc(18px + env(safe-area-inset-top,0px)) 16px 16px; scrollbar-width:thin; overscroll-behavior:contain; }
+    .page-title { font-size:24px; font-weight:800; letter-spacing:-.5px; margin:4px 0 5px; }
+    .subtitle { color:var(--muted); font-size:12px; margin:0 0 18px; line-height:1.65; }
+    .card { background:var(--white); border:1px solid #F0F2F3; border-radius:17px; box-shadow:var(--shadow); padding:16px; }
+    .progress-card { background:linear-gradient(135deg,#09BE62,#0A9F56); border:none; color:white; overflow:hidden; position:relative; }
+    .progress-card::after { content:""; width:150px; height:150px; position:absolute; right:-60px; top:-75px; border:25px solid rgba(255,255,255,.08); border-radius:50%; pointer-events:none; }
+    .overline { font-size:12px; font-weight:600; opacity:.83; }
+    .big-percent { font-size:39px; font-weight:800; line-height:1.4; font-variant-numeric:tabular-nums; }
+    .progress-track { height:8px; border-radius:100px; background:rgba(255,255,255,.27); margin:8px 0 10px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:100px; background:#fff; transition:width .25s; }
+    .progress-caption { font-size:12px; opacity:.95; }
+    .section-title { font-size:14px; font-weight:750; margin:24px 2px 10px; display:flex; align-items:center; justify-content:space-between; }
+    .section-title small { color:var(--muted); font-size:11px; font-weight:500; }
+    .lesson-group { background:white; border-radius:16px; overflow:hidden; border:1px solid #F0F1F3; box-shadow:var(--shadow); }
+    .lesson { background:white; width:100%; display:flex; text-align:left; gap:12px; align-items:center; padding:15px 12px; color:var(--ink); }
+    .lesson + .lesson { border-top:1px solid #F1F3F5; }
+    .lesson:active { background:#F7FCF9; }
+    .lesson-index { width:39px; height:39px; flex:none; display:grid; place-items:center; border-radius:12px; background:#F3F5F7; color:#66717A; font-size:13px; font-weight:800; }
+    .lesson.started .lesson-index { background:var(--soft); color:var(--dark); }
+    .lesson.passed .lesson-index { background:#DFF8E9; color:var(--dark); }
+    .lesson-main { min-width:0; flex:1; }
+    .lesson-name { font-size:14px; font-weight:700; line-height:1.35; }
+    .lesson-desc { font-size:11px; margin-top:4px; line-height:1.5; color:var(--muted); }
+    .lesson-score { font-size:10.5px; color:#8D959D; margin-top:7px; font-variant-numeric:tabular-nums; }
+    .status { font-size:10px; border-radius:100px; padding:5px 8px; flex:none; background:#F2F4F5; color:#8C959E; white-space:nowrap; }
+    .status.going { background:#E7F9EF; color:#079D54; }
+    .status.passed { color:#B9821B; background:#FFF6DE; letter-spacing:-1px; }
+    .tabbar { background:#fff; display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--line); padding:7px 8px calc(5px + var(--safe-bottom)); flex:none; }
+    .tab { color:#939DA5; background:transparent; min-height:48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; font-weight:600; }
+    .tab svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+    .tab.active { color:var(--dark); }
+    .lab-title { font-size:14px; margin:0 0 10px; font-weight:750; }
+    .lab-card { margin-bottom:14px; }
+    .hint { font-size:12px; color:#75818C; line-height:1.7; margin:4px 0 12px; }
+    .row { display:flex; align-items:center; gap:9px; }
+    .between { justify-content:space-between; }
+    .pill { background:var(--soft); color:var(--dark); border-radius:20px; padding:4px 8px; font-weight:700; font-size:11px; }
+    .btn { min-height:43px; padding:10px 13px; border-radius:11px; font-weight:700; background:#F3F5F6; color:#51606B; font-size:13px; }
+    .btn.primary { background:var(--green); color:#fff; }
+    .btn.ghost { background:#EAF9F0; color:#078F4A; }
+    .btn.outline { background:#fff; border:1px solid var(--line); }
+    .btn.danger { background:#FFF0F0; color:#D84B4B; }
+    .btn.full { width:100%; }
+    .form-label { display:block; color:#56616D; font-size:12px; font-weight:650; margin:11px 0 6px; }
+    .select { width:100%; min-height:43px; padding:8px 12px; border:1px solid #E3E9EA; border-radius:10px; background:#FAFBFB; color:var(--ink); outline-color:var(--green); }
+    .input-row { display:grid; grid-template-columns:1fr 110px; gap:9px; }
+    .weak-list { max-height:220px; overflow-y:auto; }
+    .weak-row { display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid var(--line); padding:10px 0; font-size:12px; }
+    .weak-row strong { display:block; font-size:13px; line-height:1.6; }
+    .weak-row small { color:var(--muted); line-height:1.4; }
+    .micro { color:var(--muted); font-size:11px; }
+    .import-actions { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .import-actions .btn { min-height:45px; }
+    .notice { background:#F5F8F6; border-radius:10px; color:#76867C; padding:10px; font-size:11px; line-height:1.7; margin-top:12px; }
+    .practice-top { flex:none; background:#fff; border-bottom:1px solid var(--line); padding:calc(9px + env(safe-area-inset-top,0px)) 13px 9px; }
+    .practice-topline { display:flex; justify-content:space-between; align-items:center; gap:7px; }
+    .back { color:var(--ink); background:transparent; font-size:24px; padding:0 7px 0 0; line-height:35px; }
+    .practice-title { font-size:14px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
+    .combo { color:var(--dark); background:var(--soft); padding:6px 9px; border-radius:10px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .settings-row { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-top:8px; }
+    .settings-row .select { width:auto; min-height:33px; padding:4px 8px; font-size:12px; background:#F5F7F7; border:0; flex:1; }
+    .question-count { font-size:11px; font-weight:700; color:#78838B; white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .tiny-track { background:#E8F1EB; height:4px; border-radius:9px; overflow:hidden; margin-top:9px; }
+    .tiny-fill { background:var(--green); width:0; height:100%; transition:width .2s; }
+    .practice-body { min-height:0; flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 15px 10px; display:flex; flex-direction:column; scrollbar-width:none; }
+    .practice-body::-webkit-scrollbar { display:none; }
+    .listen-card { flex:1; min-height:160px; background:#fff; border-radius:18px; border:1px solid #EDF2EF; padding:14px; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; }
+    .listen-chip { color:#87918D; font-size:12px; font-weight:650; }
+    .sound-wave { height:59px; display:flex; gap:5px; justify-content:center; align-items:center; margin:6px 0 9px; }
+    .sound-wave i { display:block; width:5px; border-radius:8px; background:var(--green); height:14px; animation:wave .82s infinite ease-in-out alternate; }
+    .sound-wave i:nth-child(2),.sound-wave i:nth-child(6) { animation-delay:-.4s; height:27px; }
+    .sound-wave i:nth-child(3),.sound-wave i:nth-child(5) { animation-delay:-.2s; height:39px; }
+    .sound-wave i:nth-child(4) { animation-delay:-.55s; height:51px; }
+    .sound-wave.paused i { animation-play-state:paused; opacity:.43; height:10px; }
+    @keyframes wave { from { transform:scaleY(.35); } to { transform:scaleY(1.12); } }
+    .timer { font-size:34px; letter-spacing:-1px; font-weight:850; color:#253A31; font-variant-numeric:tabular-nums; }
+    .timer-hint { color:var(--muted); font-size:11px; margin-top:4px; }
+    .answer-display { flex:none; margin-top:10px; border:2px solid #DDEFE4; border-radius:13px; background:#fff; min-height:55px; padding:12px 13px; text-align:center; font-weight:750; font-size:22px; font-variant-numeric:tabular-nums; letter-spacing:1px; overflow-wrap:anywhere; }
+    .answer-display.placeholder { font-weight:500; letter-spacing:0; font-size:13px; color:#A7B1B2; }
+    .keypad-shell { flex:none; border-top:1px solid #E7EBE9; background:#F9FAFA; padding:9px 11px calc(9px + var(--safe-bottom)); }
+    .keypad-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+    .key { height:44px; height:clamp(42px,6.25dvh,53px); min-height:42px; background:white; color:#27352F; border:1px solid #E8ECE9; border-radius:10px; font-size:21px; font-weight:740; box-shadow:0 2px 0 #DFE6E1; }
+    .key:active { background:#E3F7EB; transform:translateY(1px); box-shadow:none; }
+    .key.alt { font-size:13px; background:#ECF0EF; }
+    .key.green { color:#fff; background:var(--green); box-shadow:0 2px 0 var(--dark); border-color:var(--green); font-size:14px; }
+    .key.letters { font-size:16px; height:clamp(40px,6dvh,50px); }
+    .keypad-grid.letter-grid { grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; }
+    .letter-actions { display:grid; grid-template-columns:1fr 1fr 1fr 1.35fr; gap:6px; margin-top:7px; }
+    .letter-actions .key { font-size:13px; }
+    .choice-stack { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .choice { min-height:73px; text-align:left; line-height:1.55; padding:12px; font-size:14px; border-radius:12px; background:#fff; border:2px solid #E7EBE9; color:var(--ink); font-weight:650; }
+    .choice.selected { border-color:var(--green); background:#EEFBF3; }
+    .choice:disabled { opacity:.95; }
+    .choice.selected:active { opacity:.85; }
+    .self-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:9px; }
+    .self-row .btn { min-height:48px; font-size:13px; }
+    .feedback-card { width:100%; text-align:left; }
+    .feedback-verdict { font-size:21px; font-weight:850; margin-bottom:10px; }
+    .feedback-verdict.good { color:var(--dark); }
+    .feedback-verdict.bad { color:var(--red); }
+    .feedback-sub { font-size:12px; color:#6E7982; margin-bottom:14px; }
+    .feedback-line { padding:9px 0; border-top:1px solid #EDF0F0; line-height:1.6; font-size:12px; overflow-wrap:anywhere; }
+    .feedback-line .k { color:var(--muted); display:block; margin-bottom:3px; font-size:11px; }
+    .feedback-line .v { font-size:15px; color:#26342D; font-weight:700; }
+    .feedback-line .ipa { font-size:12px; font-weight:500; color:#68766E; }
+    .wrong-char { color:#E14B4B; background:#FFF0EF; border-radius:3px; padding:1px; }
+    .right-char { color:#208950; }
+    .review-controls { display:grid; grid-template-columns:1fr 1.5fr; gap:10px; }
+    .review-controls .btn { min-height:50px; }
+    .summary-mask { position:absolute; z-index:10; inset:0; display:none; background:rgba(23,40,34,.52); padding:20px; justify-content:center; align-items:center; backdrop-filter:blur(3px); }
+    .summary-mask.visible { display:flex; }
+    .summary-panel { width:100%; max-width:380px; background:white; padding:25px 21px 19px; border-radius:23px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.16); }
+    .summary-stars { color:var(--gold); font-size:37px; letter-spacing:4px; margin:5px 0 8px; }
+    .summary-title { font-size:22px; font-weight:800; }
+    .summary-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:17px 2px; }
+    .summary-grid strong { display:block; font-size:23px; font-variant-numeric:tabular-nums; }
+    .summary-grid span { font-size:11px; color:#86928C; }
+    .summary-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .toast { display:none; position:absolute; left:10%; right:10%; bottom:calc(85px + var(--safe-bottom)); background:rgba(33,45,40,.94); padding:12px; border-radius:11px; font-size:12px; color:white; text-align:center; z-index:20; line-height:1.6; }
+    .toast.visible { display:block; }
+    .hidden { display:none!important; }
+    @media(max-height:690px) { .practice-body { padding:8px 12px; } .listen-card { min-height:112px; padding:10px; } .sound-wave { height:40px; margin:2px; } .timer { font-size:29px; } .answer-display { min-height:45px; padding:9px; margin-top:7px; } .keypad-shell { padding-top:6px; } .key { height:39px; } .key.letters { height:38px; } .choice { min-height:59px; } }
+    @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <section class="page active" id="homePage">
+    <div class="page-scroll" id="homeScroll">
+      <h1 class="page-title">声音反射训练</h1>
+      <p class="subtitle">数字听写 × 专业词汇 · 听完即答，训练英语声音反射</p>
+      <div class="card progress-card" id="progressCard"></div>
+      <div id="resumeArea"></div>
+      <div id="lessonList"></div>
+    </div>
+    <nav class="tabbar" aria-label="底部导航">
+      <button class="tab active" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程与词库</button>
+      <button class="tab" data-tab="lab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M8 2v6M16 9v6M8 16v6"/></svg>特训与错题台</button>
+    </nav>
+  </section>
+
+  <section class="page" id="labPage">
+    <div class="page-scroll">
+      <h1 class="page-title">特训与错题台</h1>
+      <p class="subtitle">慢反应与错误自动归档，针对薄弱点重复巩固</p>
+      <article class="card lab-card">
+        <div class="row between"><h2 class="lab-title">智能弱项特训</h2><span class="pill" id="weakCount">0 题待巩固</span></div>
+        <p class="hint">答错或答对但反应超过 2500ms 的题目，自动进入特训池。连续快速答对 2 次即可移出。</p>
+        <button class="btn primary full" id="weakStart">开始弱项强化（15 题）</button>
+        <div class="weak-list" id="weakList"></div>
+        <button class="btn danger full" id="clearWeak" style="margin-top:9px">清空特训池</button>
+      </article>
+      <article class="card lab-card">
+        <h2 class="lab-title">自定义自由练习器</h2>
+        <p class="hint">自由指定数字题型或词库、题量，不影响关卡通关记录。</p>
+        <label class="form-label" for="freeLevel">练习范围</label>
+        <select class="select" id="freeLevel"></select>
+        <label class="form-label" for="freeCount">每次题量</label>
+        <select class="select" id="freeCount"><option value="5">5 题</option><option value="10">10 题</option><option value="15" selected>15 题</option><option value="30">30 题</option></select>
+        <button class="btn primary full" id="freeStart" style="margin-top:14px">开始自由练习</button>
+      </article>
+      <article class="card lab-card">
+        <h2 class="lab-title">词库与数据管理</h2>
+        <p class="hint">导入 JSON / CSV 单词表，按 category 自动建立课程。所有学习数据只保存在当前浏览器。</p>
+        <div class="import-actions">
+          <button class="btn ghost" id="importVocab">导入 JSON / CSV</button>
+          <button class="btn outline" id="exportVocab">导出自定义词库</button>
+          <button class="btn outline" id="exportBackup">备份学习记录</button>
+          <button class="btn outline" id="importBackup">恢复学习备份</button>
+        </div>
+        <input class="hidden" id="vocabFile" type="file" accept=".json,.csv,application/json,text/csv">
+        <input class="hidden" id="backupFile" type="file" accept=".json,application/json">
+        <div class="notice">字段：id, category, subCategory, audioText, answer, meaning, phonetic, example。必填 answer、meaning；其余字段可缺省。UTF-8 CSV 支持带引号的逗号和换行。建议定期导出备份；清理浏览器数据会丢失本地记录。</div>
+      </article>
+      <article class="card lab-card">
+        <div class="row between"><h2 class="lab-title">学习记录</h2><button class="btn danger" id="clearHistory">重置全部学习数据</button></div>
+        <div class="micro" id="statsText"></div>
+      </article>
+    </div>
+    <nav class="tabbar" aria-label="底部导航">
+      <button class="tab" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程与词库</button>
+      <button class="tab active" data-tab="lab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M8 2v6M16 9v6M8 16v6"/></svg>特训与错题台</button>
+    </nav>
+  </section>
+
+  <section class="page" id="practicePage">
+    <header class="practice-top">
+      <div class="practice-topline"><button class="back" id="backPractice" aria-label="返回">‹</button><div class="practice-title" id="practiceTitle">练习</div><span class="combo" id="comboText">COMBO 0</span></div>
+      <div class="settings-row">
+        <select class="select" id="voiceLocale" aria-label="英语口音"><option value="en-US">美音 · US</option><option value="en-GB">英音 · UK</option></select>
+        <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
+        <span class="question-count" id="questionCount">1 / 15</span>
+      </div>
+      <div class="tiny-track"><div class="tiny-fill" id="questionFill"></div></div>
+    </header>
+    <main class="practice-body" id="practiceBody">
+      <div class="listen-card" id="listenCard"></div>
+      <div class="answer-display placeholder" id="answerDisplay">用下方键盘作答</div>
+    </main>
+    <div class="keypad-shell" id="keypadShell"></div>
+  </section>
+
+  <div class="summary-mask" id="summaryMask" role="dialog" aria-modal="true" aria-label="练习结算">
+    <div class="summary-panel" id="summaryPanel"></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+</div>
+<script>
+'use strict';
+/* 所有功能、课程引擎、样式和持久化逻辑均在本文件中，无第三方依赖。 */
+const STORE_KEY = 'voice_reflex_app_v1';
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const shuffle = arr => { const a = [...arr]; for(let i = a.length - 1; i > 0; i--){ const j = rand(0, i); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+const msText = ms => (Number(ms) / 1000).toFixed(2) + 's';
+const integerString = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1}, levels:{}, errorPool:{}, imports:[], totalQuestions:0, totalCorrect:0, activeSession:null}; }
+function normalizeState(raw){
+  if(!raw || raw.version!==1) return emptyState();
+  const base=emptyState();
+  return {...base,...raw,updatedAt:Number(raw.updatedAt)||0,settings:{...base.settings,...raw.settings},levels:raw.levels&&typeof raw.levels==='object'?raw.levels:{},errorPool:raw.errorPool&&typeof raw.errorPool==='object'?raw.errorPool:{},imports:Array.isArray(raw.imports)?raw.imports:[]};
+}
+function loadState(){
+  try { return normalizeState(JSON.parse(localStorage.getItem(STORE_KEY)||'null')); }
+  catch(e){ return emptyState(); }
+}
+let state = loadState();
+let stateDbPromise=null;
+function openStateDb(){
+  if(!('indexedDB' in window)) return Promise.reject(new Error('IndexedDB unavailable'));
+  if(stateDbPromise) return stateDbPromise;
+  stateDbPromise=new Promise((resolve,reject)=>{
+    const request=indexedDB.open('voice_reflex_state_v1',1);
+    request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains('records'))db.createObjectStore('records');};
+    request.onsuccess=()=>resolve(request.result);
+    request.onerror=()=>{stateDbPromise=null;reject(request.error||new Error('IndexedDB open failed'));};
+    request.onblocked=()=>{stateDbPromise=null;reject(new Error('IndexedDB is blocked'));};
+  });
+  return stateDbPromise;
+}
+function readIndexedState(){
+  return openStateDb().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction('records','readonly');
+    const request=tx.objectStore('records').get('main');
+    request.onsuccess=()=>resolve(request.result||null);
+    request.onerror=()=>reject(request.error||new Error('IndexedDB read failed'));
+    tx.onabort=()=>reject(tx.error||new Error('IndexedDB read aborted'));
+  }));
+}
+function writeIndexedState(value){
+  const snapshot=JSON.parse(JSON.stringify(value));
+  return openStateDb().then(db=>new Promise((resolve,reject)=>{
+    const tx=db.transaction('records','readwrite');
+    tx.objectStore('records').put(snapshot,'main');
+    tx.oncomplete=()=>resolve(true);
+    tx.onerror=()=>reject(tx.error||new Error('IndexedDB write failed'));
+    tx.onabort=()=>reject(tx.error||new Error('IndexedDB write aborted'));
+  }));
+}
+async function hydrateState(){
+  const localState=state;
+  try {
+    const indexed=await readIndexedState();
+    if(indexed && Number(indexed.updatedAt)>Number(localState.updatedAt)) state=normalizeState(indexed);
+    else if(!indexed || Number(localState.updatedAt)>=Number(indexed.updatedAt)) await writeIndexedState(localState);
+  } catch(e) {
+    /* IndexedDB 不可用时继续使用 localStorage。 */
+  }
+}
+let session = null;
+let runtime = {input:'', selected:-1, letter:false, feedback:false, speaking:false, readyAt:null, early:false, token:0, animation:0};
+let toastTimer = null;
+let storageWarningShown=false;
+function persist(){
+  state.updatedAt=Date.now();
+  const snapshot=JSON.parse(JSON.stringify(state));
+  let localSaved=false;
+  try { localStorage.setItem(STORE_KEY,JSON.stringify(snapshot)); localSaved=true; } catch(e) {}
+  writeIndexedState(snapshot).then(()=>{
+    if(!localSaved) toast('学习记录已保存到 iPhone 浏览器本地数据库。');
+  }).catch(()=>{
+    if(!localSaved) toast('本机存储不可用，请立即使用“备份学习记录”导出备份。');
+  });
+  if(!localSaved && !storageWarningShown){
+    storageWarningShown=true;
+    toast('Safari 本地存储受限，正在尝试 IndexedDB 双重保存。');
+  }
+  return true;
+}
+function toast(message){
+  $('toast').textContent=message; $('toast').classList.add('visible');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>$('toast').classList.remove('visible'),3000);
+}
+function downloadFile(filename, content, type='application/json;charset=utf-8'){
+  const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob);
+  const anchor=document.createElement('a');anchor.href=url;anchor.download=filename;document.body.appendChild(anchor);anchor.click();anchor.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1200);
+}
+function todayStamp(){ const d=new Date();return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`; }
+
+/* A 引擎：数字、年份、时间、编码、语境运算。 */
+const ones=['zero','one','two','three','four','five','six','seven','eight','nine'];
+const teens=['ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+const tens=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function below1000(n, british=false){
+  const parts=[];
+  if(n>=100){parts.push(ones[Math.floor(n/100)]+' hundred');n%=100;if(n && british)parts.push('and');}
+  if(n>=20){parts.push(tens[Math.floor(n/10)]+(n%10?'-'+ones[n%10]:''));}
+  else if(n>=10) parts.push(teens[n-10]);
+  else if(n>0) parts.push(ones[n]);
+  return parts.join(' ');
+}
+function numWords(n, british=false){
+  n=Number(n); if(!Number.isSafeInteger(n)||n<0||n>9999999999) throw Error('数字越界');
+  if(n===0) return 'zero';
+  const groups=[[1000000000,'billion'],[1000000,'million'],[1000,'thousand'],[1,'']];
+  const items=[];
+  for(const [scale,label] of groups){
+    const x=Math.floor(n/scale); if(x){items.push(below1000(x,british)+(label?' '+label:''));n%=scale;}
+  }
+  return items.join(' ');
+}
+function digitsWords(digits, allowGroups=false){
+  const a=[];
+  for(let i=0;i<digits.length;){
+    const current=digits[i];let end=i+1;
+    while(end<digits.length && digits[end]===current)end++;
+    const count=end-i;
+    if(allowGroups && count>=2){
+      if(count===2) a.push('double '+(current==='0'?pick(['zero','oh']):ones[Number(current)]));
+      else if(count===3) a.push('triple '+(current==='0'?pick(['zero','oh']):ones[Number(current)]));
+      else for(let j=0;j<count;j++)a.push(current==='0'?pick(['zero','oh']):ones[Number(current)]);
+    } else for(let j=i;j<end;j++)a.push(current==='0'?pick(['zero','oh']):ones[Number(current)]);
+    i=end;
+  }
+  return a.join(' ');
+}
+function yearWords(y){
+  if(y===2000) return 'two thousand';
+  if(y>=2001 && y<=2009) return 'two thousand '+ones[y%100];
+  const first=Math.floor(y/100),last=y%100;
+  return numWords(first)+(last===0?' hundred':last<10?' oh '+ones[last]: ' '+numWords(last));
+}
+function hourWords(h){ return ones[h] || numWords(h); }
+function timeWords(h,m,style){
+  if(style==='natural'){
+    if(m===0)return hourWords(h)+" o'clock";
+    if(m===15)return 'quarter past '+hourWords(h);
+    if(m===30)return 'half past '+hourWords(h);
+    if(m===45)return 'quarter to '+hourWords(h%12+1);
+    if(m<30)return numWords(m)+' past '+hourWords(h);
+    return numWords(60-m)+' to '+hourWords(h%12+1);
+  }
+  return hourWords(h)+(m===0?" o'clock":m<10?' oh '+ones[m]:' '+numWords(m));
+}
+function timeAnswer(h,m){return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+function question(levelId,answer,audioText,meaning='',extra={}){
+  return {kind:'numeric', levelId, answer:String(answer), audioText:String(audioText), meaning, ...extra};
+}
+function generateNumber(id,locale='en-US'){
+  const british=locale==='en-GB'; const words=n=>numWords(n,british);
+  let n,a,text,meaning='听取播报内容并输入准确数字。';
+  switch(Number(id)){
+    case 1:n=rand(0,9);return question(id,n,words(n),'0 至 9：听音后直接按数字键。');
+    case 2:n=rand(11,19);return question(id,n,words(n),'注意 -teen 的重音。');
+    case 3:n=rand(2,9)*10;return question(id,n,words(n),'注意 -ty 与 -teen 的尾音区别。');
+    case 4:{ const d=rand(3,9);n=rand(0,1)?d*10:d+10;return question(id,n,words(n),'Teen / Ty 最小对立辨音。'); }
+    case 5:n=rand(21,99);return question(id,n,words(n),'两位数需连贯识别。');
+    case 6:n=rand(100,999);return question(id,n,words(n),'关注 hundred 后的后续数字。');
+    case 7:{
+      n=rand(0,3)===0?pick([1200,1300,1400,1500,1600,1800,1900]):rand(1000,9999);
+      text=n%100===0 && n>=1100&&n<=1900&&rand(0,1)===1?words(n/100)+' hundred':words(n);
+      return question(id,n,text,'特别留意 fifteen hundred = 1500。');
+    }
+    case 8:n=rand(10000,999999);return question(id,n,words(n),'Ten thousand 和 hundred thousand 对应万、十万。');
+    case 9:n=rand(1000000,9999999999);return question(id,n,words(n),'辨认 million / billion 的数量级。');
+    case 10:n=pick([1998,2008,2000,1905,2012,2026,1984,1976,2001,2018,2020,1990,rand(1900,2099)]);return question(id,n,yearWords(n),'年份常按前两位、后两位分段读。');
+    case 11:{const h=rand(1,12),m=pick([0,5,10,15,20,25,30,35,40,45,50,55,rand(1,59)]);a=timeAnswer(h,m);text='The time is '+timeWords(h,m,rand(0,1)?'natural':'straight')+'.';return question(id,a,text,'按 HH:MM 输入，使用 12 小时制。');}
+    case 12:{
+      const int=rand(0,999),length=rand(1,3),fraction=Array.from({length},()=>String(rand(0,9))).join(''),percent=rand(0,1)===1;
+      a=int+'.'+fraction+(percent?'%':'');
+      text=words(int)+' point '+[...fraction].map(x=>ones[Number(x)]).join(' ')+(percent?' percent':'');
+      return question(id,a,text,'point 后逐位读数；百分比保留 %。');
+    }
+    case 13:{
+      const length=rand(7,11);let digits=String(rand(0,9));
+      while(digits.length<length)digits+=rand(0,3)===0?digits.at(-1):rand(0,9);
+      return question(id,digits,'Phone number: '+digitsWords(digits,true)+'.','0 可读为 zero / oh；double 表示重复两次。');
+    }
+    case 14:{
+      if(rand(0,1)){
+        const prefix=pick(['BA','CA','UA','AA','CZ','EK','SQ','QF']); const flight=rand(10,9999);
+        a=prefix+flight; text='Flight '+prefix.split('').join(' ')+', '+(rand(0,1)?words(flight):digitsWords(String(flight)))+'.';
+        return question(id,a,text,'航班：先输入英文字母，再输入数字。',{displayAnswer:prefix+' '+flight});
+      }
+      const codes=['SW1A 1AA','W1A 0AX','EC1A 1BB','M1 1AE','B33 8TH','CR2 6XH','DN55 1PT'];
+      a=pick(codes);text='Postcode: '+a.split('').map(c=>/[A-Z]/.test(c)?c:c===' '?',':ones[Number(c)]).join(' ')+'.';
+      return question(id,a,text,'邮编由字母与数字构成，空格可省略。');
+    }
+    case 15:{
+      let wrong=rand(10,999),right=rand(10,999);if(wrong===right)right+=1;
+      const pattern=rand(0,2);
+      text=pattern===0?`The price is ${words(wrong)} dollars. Oh sorry, I mean ${words(right)} dollars.`:
+        pattern===1?`Please set the speed to ${words(wrong)}. No, correction, ${words(right)}.`:
+        `The quantity is ${words(wrong)}. Actually, make that ${words(right)}.`;
+      return question(id,right,text,'忽略被纠正的旧数，只输入最终有效数字。');
+    }
+    case 16:{
+      if(rand(0,1)){
+        const h=rand(1,11),m=pick([0,10,15,20,25,30,35,40,45,50]),delay=pick([5,10,15,20,25,30,40]);
+        const total=h*60+m+delay; const newH=Math.floor(total/60)%12||12,newM=total%60;
+        text=`The train leaves at ${timeWords(h,m,'straight')}, but it's delayed by ${words(delay)} minutes. What is the new time?`;
+        return question(id,timeAnswer(newH,newM),text,'时间加上延误分钟数，填最终 HH:MM。');
+      }
+      const x=rand(20,250),op=rand(0,1),y=rand(5,Math.min(90,op?90:x)),result=op?x+y:x-y;
+      text=`A technician has ${words(x)} parts and ${op?'receives':'uses'} ${words(y)} more. How many parts ${op?'are there now':'are left'}?`;
+      return question(id,result,text,'先听懂运算情境，再输入结果。');
+    }
+    default:throw Error('未定义的数字关卡 '+id);
+  }
+}
+const numericLessons=[
+  {id:1,title:'1位数极速听',desc:'0～9 · 训练 0.5 秒手耳反射'},
+  {id:2,title:'11～19 Teen 系列',desc:'捕捉 thirteen 至 nineteen 的重音'},
+  {id:3,title:'20～90 Ty 整十数',desc:'辨认 -ty 尾音与节奏'},
+  {id:4,title:'Teen vs Ty 盲听辨析',desc:'13/30 至 19/90 高频交叉干扰'},
+  {id:5,title:'2位数混合速听',desc:'21～99 连读整体识别'},
+  {id:6,title:'百位突破',desc:'100～999 · hundred 连读'},
+  {id:7,title:'千位跨越',desc:'四位数 · thousand 与 fifteen hundred'},
+  {id:8,title:'万与十万',desc:'五～六位数 · 跨中英文进位差'},
+  {id:9,title:'百万与十亿大数',desc:'七～十位数 · million / billion'},
+  {id:10,title:'年份听写 Year',desc:'1998、2008 及特殊年份读法'},
+  {id:11,title:'时刻表达 Time',desc:'顺读与 past / to / quarter / half'},
+  {id:12,title:'小数与百分比',desc:'point 逐位发音与百分号'},
+  {id:13,title:'电话与分机号',desc:'7～11 位 · zero / oh / double / triple'},
+  {id:14,title:'邮编与航班号',desc:'数字与英文字母混合编码'},
+  {id:15,title:'自我修正陷阱',desc:'排除干扰，只抓最终生效数字'},
+  {id:16,title:'算术与时间推算',desc:'听懂条件并计算最终结果'}
+];
+const stages=[
+  {title:'第一阶段 · 基础发音与易混攻坚',ids:[1,2,3,4,5]},
+  {title:'第二阶段 · 进位突破与大数反应',ids:[6,7,8,9]},
+  {title:'第三阶段 · 高频场景与混合编码',ids:[10,11,12,13,14]},
+  {title:'第四阶段 · 语境抗干扰实战',ids:[15,16]}
+];
+
+/* B 引擎：统一的 JSON 词汇结构，内置两个样例分类。 */
+const examples=[
+  {id:'ai-1',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'algorithm',answer:'algorithm',meaning:'算法',phonetic:'/ˈælɡərɪðəm/',example:'The algorithm checks every input.'},
+  {id:'ai-2',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'dataset',answer:'dataset',meaning:'数据集',phonetic:'/ˈdeɪtəset/',example:'We need a clean dataset.'},
+  {id:'ai-3',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'inference',answer:'inference',meaning:'推理；推断',phonetic:'/ˈɪnfərəns/',example:'The model performs inference locally.'},
+  {id:'ai-4',category:'计算机与AI核心词',subCategory:'AI基础',audioText:'latency',answer:'latency',meaning:'延迟；时延',phonetic:'/ˈleɪtənsi/',example:'Low latency is important.'},
+  {id:'ai-5',category:'计算机与AI核心词',subCategory:'软件开发',audioText:'compiler',answer:'compiler',meaning:'编译器',phonetic:'/kəmˈpaɪlər/',example:'The compiler reports an error.'},
+  {id:'ai-6',category:'计算机与AI核心词',subCategory:'软件开发',audioText:'variable',answer:'variable',meaning:'变量',phonetic:'/ˈveriəbl/',example:'Set the variable before startup.'},
+  {id:'ai-7',category:'计算机与AI核心词',subCategory:'网络',audioText:'bandwidth',answer:'bandwidth',meaning:'带宽',phonetic:'/ˈbændwɪdθ/',example:'The network needs more bandwidth.'},
+  {id:'ai-8',category:'计算机与AI核心词',subCategory:'网络',audioText:'protocol',answer:'protocol',meaning:'通信协议',phonetic:'/ˈproʊtəkɔːl/',example:'Check the communication protocol.'},
+  {id:'biz-1',category:'医学与商务高频词',subCategory:'医学',audioText:'diagnosis',answer:'diagnosis',meaning:'诊断',phonetic:'/ˌdaɪəɡˈnoʊsɪs/',example:'The doctor explains the diagnosis.'},
+  {id:'biz-2',category:'医学与商务高频词',subCategory:'医学',audioText:'symptom',answer:'symptom',meaning:'症状',phonetic:'/ˈsɪmptəm/',example:'Describe every symptom clearly.'},
+  {id:'biz-3',category:'医学与商务高频词',subCategory:'医学',audioText:'treatment',answer:'treatment',meaning:'治疗',phonetic:'/ˈtriːtmənt/',example:'The treatment takes several days.'},
+  {id:'biz-4',category:'医学与商务高频词',subCategory:'商务',audioText:'quotation',answer:'quotation',meaning:'报价；报价单',phonetic:'/kwoʊˈteɪʃən/',example:'Please send us a quotation.'},
+  {id:'biz-5',category:'医学与商务高频词',subCategory:'商务',audioText:'invoice',answer:'invoice',meaning:'发票',phonetic:'/ˈɪnvɔɪs/',example:'Please issue the invoice.'},
+  {id:'biz-6',category:'医学与商务高频词',subCategory:'商务',audioText:'shipment',answer:'shipment',meaning:'货运；出货',phonetic:'/ˈʃɪpmənt/',example:'The shipment arrives tomorrow.'},
+  {id:'biz-7',category:'医学与商务高频词',subCategory:'商务',audioText:'deadline',answer:'deadline',meaning:'截止期限',phonetic:'/ˈdedlaɪn/',example:'The deadline is next Friday.'},
+  {id:'biz-8',category:'医学与商务高频词',subCategory:'商务',audioText:'negotiation',answer:'negotiation',meaning:'谈判；协商',phonetic:'/nɪˌɡoʊʃiˈeɪʃən/',example:'The negotiation was successful.'}
+];
+function allWords(){return examples.concat(state.imports);}
+function wordGroups(){
+  const groups=new Map();
+  for(const w of allWords()){
+    const key='word:'+w.category;
+    if(!groups.has(key)) groups.set(key,{id:key,title:w.category,desc:'听英语 → 选四个中文释义',kind:'word',words:[]});
+    groups.get(key).words.push(w);
+  }
+  return [...groups.values()];
+}
+function allLessons(){return numericLessons.map(x=>({...x,id:'num:'+x.id,kind:'numeric',number:x.id})).concat(wordGroups());}
+function wordQuestion(word,group){
+  const pool=allWords().filter(x=>x.id!==word.id && x.meaning!==word.meaning);
+  let wrong=shuffle(pool).slice(0,3).map(x=>x.meaning);
+  while(wrong.length<3)wrong.push(['以上都不是','其他意思','无法判断'][wrong.length]);
+  const choices=shuffle([word.meaning,...wrong]);
+  return {kind:'word',levelId:'word:'+word.category,wordId:word.id,answer:word.meaning,audioText:word.audioText,meaning:word.meaning,phonetic:word.phonetic,example:word.example,word:word.answer,subCategory:word.subCategory,choices};
+}
+function makeQuestion(levelId){
+  if(levelId.startsWith('num:')) return generateNumber(Number(levelId.slice(4)),state.settings.locale);
+  const group=wordGroups().find(g=>g.id===levelId);
+  if(!group || !group.words.length) throw Error('词库为空');
+  return wordQuestion(pick(group.words),group);
+}
+function assembleQueue(levelId,count){
+  const q=[],used=new Set();
+  for(let i=0;i<count;i++){
+    let next=null;
+    for(let retry=0;retry<20;retry++){
+      const candidate=makeQuestion(levelId);next=candidate;
+      const key=candidate.kind==='word'?candidate.wordId:candidate.answer;
+      if(!used.has(key)) {used.add(key);break;}
+    }
+    q.push(next);
+  }
+  return q;
+}
+
+/* 词库导入：验证、CSV 引号处理、持久化与备份。 */
+function parseCsv(text){
+  const rows=[];let row=[],value='',quoted=false;
+  text=text.replace(/^\uFEFF/,'');
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(quoted){if(c==='"'&&text[i+1]==='"'){value+='"';i++;}else if(c==='"')quoted=false;else value+=c;}
+    else if(c==='"')quoted=true;
+    else if(c===','){row.push(value);value='';}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(value);if(row.some(x=>x.trim()))rows.push(row);row=[];value='';}
+    else value+=c;
+  }
+  if(quoted)throw Error('CSV 双引号未闭合');
+  row.push(value);if(row.some(x=>x.trim()))rows.push(row);
+  if(rows.length<2)throw Error('CSV 必须包含表头及至少一行词汇');
+  const aliases={分类:'category',子分类:'subCategory',词汇:'answer',单词:'answer',发音文本:'audioText',释义:'meaning',中文:'meaning',音标:'phonetic',例句:'example',编号:'id'};
+  const headers=rows.shift().map(x=>aliases[x.trim()]||x.trim());
+  return rows.map(cells=>Object.fromEntries(headers.map((h,i)=>[h,cells[i]||''])));
+}
+function normalizeWords(items){
+  if(!Array.isArray(items) || !items.length)throw Error('词库内容必须是非空数组');
+  if(items.length>4000)throw Error('一次最多导入 4000 个词');
+  const words=[];
+  for(let i=0;i<items.length;i++){
+    const w=items[i];if(!w||typeof w!=='object'||Array.isArray(w))throw Error('第 '+(i+1)+' 行格式错误');
+    const answer=String(w.answer??'').trim().slice(0,150),meaning=String(w.meaning??'').trim().slice(0,150);
+    if(!answer || !meaning)throw Error('第 '+(i+1)+' 行缺少 answer 或 meaning');
+    words.push({
+      id:String(w.id??'').trim().slice(0,100)||'custom-'+simpleHash([w.category,answer,meaning].join('|')),
+      category:String(w.category??'').trim().slice(0,60)||'我的词库',
+      subCategory:String(w.subCategory??'').trim().slice(0,60),
+      audioText:String(w.audioText??'').trim().slice(0,250)||answer,
+      answer,meaning,phonetic:String(w.phonetic??'').trim().slice(0,150),
+      example:String(w.example??'').trim().slice(0,400)
+    });
+  }
+  return words;
+}
+function simpleHash(value){let h=2166136261;for(const c of value){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36);}
+function decodeVocabJson(json){
+  if(Array.isArray(json))return json;
+  if(json && typeof json==='object'){
+    if(Array.isArray(json.words))return json.words;
+    if(Array.isArray(json.items))return json.items;
+    if(Array.isArray(json.vocabulary))return json.vocabulary;
+  }
+  throw Error('JSON 必须是数组或包含 words/items/vocabulary 数组');
+}
+function updateImports(words){
+  const old=state.imports;
+  const map=new Map(old.map(w=>[w.category+'\u0000'+w.id,w]));
+  for(const w of words)map.set(w.category+'\u0000'+w.id,w);
+  state.imports=[...map.values()];
+  if(!persist()){state.imports=old;return;}
+  refresh();toast(`成功导入 ${words.length} 条词汇，词库已更新`);
+}
+function validateBackup(raw){
+  if(!raw||typeof raw!=='object'||raw.version!==1||!raw.levels||!raw.errorPool||!Array.isArray(raw.imports))throw Error('文件不是有效的 V1 学习备份');
+  const words=raw.imports.length?normalizeWords(raw.imports):[];
+  return {...emptyState(),...raw,imports:words,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1}, activeSession:null};
+}
+
+/* 练习会话：语音结束计时；前置提交记 0ms。 */
+function showPage(name){
+  for(const p of document.querySelectorAll('.page'))p.classList.toggle('active',p.id===name+'Page');
+  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+}
+function startSession(levelId,mode='lesson',count=15){
+  try{
+    const level=allLessons().find(x=>x.id===levelId);
+    if(!level)throw Error('该关卡不存在');
+    if(runtime.speaking || ('speechSynthesis' in window && window.speechSynthesis.speaking)) stopSpeech();
+    session={mode,levelId,title:mode==='weak'?'智能弱项特训':mode==='free'?'自由练习 · '+level.title:level.title,queue:assembleQueue(levelId,count),index:0,correct:0,sumMs:0,combo:0,fastestMs:null,startedAt:Date.now()};
+    state.activeSession=session;persist();
+    beginQuestion();
+  }catch(e){toast(e.message||'无法生成试题');}
+}
+function startWeak(){
+  const entries=Object.values(state.errorPool).filter(x=>x && x.question && x.question.answer!=null);
+  if(!entries.length){toast('暂无错题或超时题目，先完成一次练习。');return;}
+  const items=entries.flatMap(e=>Array.from({length:clamp((e.errors||0)+(e.slow||0),1,5)},()=>e.question));
+  const queue=[];
+  for(let i=0;i<15;i++){
+    const q=JSON.parse(JSON.stringify(pick(items)));
+    if(q.kind==='word'){
+      const w=allWords().find(x=>x.id===q.wordId && 'word:'+x.category===q.levelId);
+      if(w)Object.assign(q,wordQuestion(w,null));
+      else q.choices=shuffle([q.answer,...shuffle(allWords().filter(x=>x.meaning!==q.answer)).slice(0,3).map(x=>x.meaning)]);
+      while(q.choices.length<4)q.choices.push('其他释义 '+q.choices.length);
+    }
+    queue.push(q);
+  }
+  if(runtime.speaking || ('speechSynthesis' in window && window.speechSynthesis.speaking)) stopSpeech();
+  session={mode:'weak',levelId:'weak',title:'智能弱项特训',queue,index:0,correct:0,sumMs:0,combo:0,fastestMs:null,startedAt:Date.now()};
+  state.activeSession=session;persist();beginQuestion();
+}
+function resumeSession(){
+  const item=state.activeSession;
+  if(!item||!Array.isArray(item.queue)||!item.queue.length||item.index>=item.queue.length){toast('没有可恢复的练习');return;}
+  session=item;beginQuestion();
+}
+function stopSpeech(){
+  runtime.token++;
+  if('speechSynthesis' in window){try{window.speechSynthesis.cancel();}catch(e){}}
+  cancelAnimationFrame(runtime.animation);
+}
+function selectSpeechVoice(locale){
+  if(!('speechSynthesis' in window)) return null;
+  let voices=[];
+  try { voices=window.speechSynthesis.getVoices()||[]; } catch(e) {}
+  const target=String(locale||'en-US').toLowerCase();
+  return voices.find(v=>String(v.lang||'').toLowerCase()===target)
+    || voices.find(v=>String(v.lang||'').toLowerCase().startsWith(target.split('-')[0]))
+    || null;
+}
+function speakCurrent(){
+  if(!session||runtime.feedback)return;
+  if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined'){
+    runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
+    toast('当前浏览器不支持系统英语朗读。');return;
+  }
+  const q=session.queue[session.index];
+  const synth=window.speechSynthesis;
+  if(runtime.speaking||synth.speaking){
+    try { synth.cancel(); } catch(e) {}
+  }
+  runtime.token++;
+  const token=runtime.token;
+  cancelAnimationFrame(runtime.animation);
+  runtime.speaking=true;runtime.readyAt=null;runtime.early=false;
+  updateListeningStatus();
+  const utterance=new SpeechSynthesisUtterance(q.audioText);
+  utterance.lang=state.settings.locale;
+  utterance.rate=Number(state.settings.rate);
+  utterance.pitch=1;
+  utterance.volume=1;
+  const voice=selectSpeechVoice(state.settings.locale);
+  if(voice)utterance.voice=voice;
+  let started=false;
+  let watchdog=null;
+  utterance.onstart=()=>{
+    if(token!==runtime.token||!session||runtime.feedback)return;
+    started=true;
+    if(watchdog)clearTimeout(watchdog);
+    runtime.speaking=true;
+    updateListeningStatus();
+  };
+  utterance.onend=()=>{
+    if(token!==runtime.token||!session||runtime.feedback)return;
+    if(watchdog)clearTimeout(watchdog);
+    runtime.speaking=false;
+    runtime.readyAt=performance.now();
+    updateListeningStatus();
+    startTimer();
+  };
+  utterance.onerror=e=>{
+    if(token!==runtime.token||!session||runtime.feedback)return;
+    if(watchdog)clearTimeout(watchdog);
+    runtime.speaking=false;
+    runtime.readyAt=null;
+    updateListeningStatus();
+    if(e.error!=='interrupted'&&e.error!=='canceled')toast('iPhone 语音播放失败，请点击“播放 / 重听”重试，并检查设备音量。');
+  };
+  try {
+    if(synth.paused) synth.resume();
+    synth.speak(utterance);
+    watchdog=setTimeout(()=>{
+      if(token!==runtime.token||!session||runtime.feedback||started)return;
+      if(!synth.speaking){
+        runtime.speaking=false;
+        runtime.readyAt=null;
+        updateListeningStatus();
+        toast('系统语音没有启动，请点击“播放 / 重听”重试。');
+      }
+    },4000);
+  } catch(e) {
+    if(watchdog)clearTimeout(watchdog);
+    runtime.speaking=false;runtime.readyAt=null;updateListeningStatus();
+    toast('无法启动系统语音，请点击“播放 / 重听”重试。');
+  }
+}
+function startTimer(){
+  cancelAnimationFrame(runtime.animation);
+  const loop=()=>{
+    if(!session||runtime.feedback||runtime.readyAt===null)return;
+    const timer=$('timerText'); if(timer)timer.textContent=msText(performance.now()-runtime.readyAt);
+    runtime.animation=requestAnimationFrame(loop);
+  };
+  runtime.animation=requestAnimationFrame(loop);
+}
+function updateListeningStatus(){
+  const timer=$('timerText'),status=$('playStatus'),wave=$('wave');
+  if(timer)timer.textContent=runtime.speaking?'播放中':runtime.readyAt===null?'准备中':'0.00s';
+  if(status)status.textContent=runtime.speaking?'请认真盲听，结束后开始计时':runtime.readyAt===null?'请点击重听，重新开始语音计时':'声音播放结束 · 计时已启动';
+  if(wave)wave.classList.toggle('paused',!runtime.speaking);
+}
+function beginQuestion(){
+  const q=session.queue[session.index];
+  runtime.input='';runtime.selected=-1;runtime.letter=false;runtime.feedback=false;runtime.readyAt=null;
+  showPage('practice');
+  $('practiceTitle').textContent=session.title;
+  $('comboText').textContent='COMBO '+session.combo;
+  $('voiceLocale').value=state.settings.locale;
+  $('voiceRate').value=String(state.settings.rate);
+  $('questionCount').textContent=(session.index+1)+' / '+session.queue.length;
+  $('questionFill').style.width=(session.index/session.queue.length*100)+'%';
+  $('listenCard').innerHTML=`<div class="listen-chip">${q.kind==='word'?'听发音 · 选择中文释义':'盲听模式 · 不显示题面'}</div><div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">准备中</div><div class="timer-hint" id="playStatus">即将播放英语发音</div><button class="btn ghost" data-action="replay" style="margin-top:10px;min-width:142px">▶ 播放 / 重听</button>`;
+  $('answerDisplay').classList.toggle('hidden',q.kind==='word');
+  renderInput();
+  if(session.awaitingNext && session.lastFeedback){
+    runtime.feedback=true;
+    const f=session.lastFeedback;
+    renderFeedback(q,f.correct,f.given,f.elapsed,f.early);
+    renderKeyboard();
+    $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
+  } else { renderKeyboard();speakCurrent(); }
+}
+function renderInput(){
+  if(!session)return;
+  const q=session.queue[session.index];
+  if(q.kind==='word')return;
+  const value=runtime.input;
+  const el=$('answerDisplay');el.classList.toggle('placeholder',!value);
+  el.textContent=value||'使用下方大键盘作答 · 不会弹出系统键盘';
+}
+function renderKeyboard(){
+  if(!session)return;
+  const q=session.queue[session.index],shell=$('keypadShell');
+  if(runtime.feedback){shell.innerHTML='<div class="review-controls"><button class="btn ghost" data-action="replay-feedback">重听原题</button><button class="btn primary" data-action="next">'+(session.index===session.queue.length-1?'查看结算':'下一题 →')+'</button></div>';return;}
+  if(q.kind==='word'){
+    const choices=q.choices || [];
+    shell.innerHTML='<div class="choice-stack">'+choices.map((c,i)=>`<button class="choice ${runtime.selected===i?'selected':''}" data-choice="${i}"><span style="color:var(--green);font-size:11px">${'ABCD'[i]}.</span> ${esc(c)}</button>`).join('')+'</div><div class="self-row"><button class="btn danger" data-action="unknown">不认识 · 记入错题</button><button class="btn primary" data-action="know">认识 / 提交所选</button></div>';
+    return;
+  }
+  if(runtime.letter){
+    const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    const buttons=chars.map(c=>`<button class="key letters" data-key="${c}">${c}</button>`).join('');
+    shell.innerHTML='<div class="keypad-grid letter-grid">'+buttons+'<button class="key alt letters" data-action="toggle">123</button><button class="key alt letters" data-action="backspace">⌫</button></div><div class="letter-actions"><button class="key alt" data-key=" ">空格</button><button class="key alt" data-action="replay">重听</button><button class="key alt" data-action="clear">清空</button><button class="key green" data-action="submit">确认提交</button></div>';
+    return;
+  }
+  const keys=[['1','2','3','退格'],['4','5','6','重听'],['7','8','9','ABC'],[',','0','.',':'],['%','清空','空格','提交']];
+  const action={'退格':'backspace','重听':'replay','ABC':'toggle','清空':'clear','空格':'space','提交':'submit'};
+  shell.innerHTML='<div class="keypad-grid">'+keys.flat().map(k=>{
+    const a=action[k],cls=a?' alt'+(a==='submit'?' green':''):'';
+    return `<button class="key${cls}" ${a?'data-action="'+a+'"':'data-key="'+esc(k)+'"'}>${k==='提交'?'确认提交':esc(k)}</button>`;
+  }).join('')+'</div>';
+}
+function pressKey(key){
+  if(!session||runtime.feedback||session.queue[session.index].kind==='word')return;
+  if(runtime.input.length>=32){toast('最多输入 32 个字符');return;}
+  runtime.input+=key;renderInput();
+}
+function keyboardAction(action){
+  if(!session)return;
+  if(action==='replay' || action==='replay-feedback'){
+    if(action==='replay-feedback'){
+      const q=session.queue[session.index];
+      if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined')return;
+      const synth=window.speechSynthesis;
+      if(synth.speaking){try{synth.cancel();}catch(e){}}
+      const utterance=new SpeechSynthesisUtterance(q.audioText);
+      utterance.lang=state.settings.locale;utterance.rate=Number(state.settings.rate);utterance.volume=1;
+      const voice=selectSpeechVoice(state.settings.locale);if(voice)utterance.voice=voice;
+      try{if(synth.paused)synth.resume();synth.speak(utterance);}catch(e){toast('无法重播原题语音。');}
+    }else speakCurrent();
+    return;
+  }
+  if(runtime.feedback){if(action==='next')nextQuestion();return;}
+  if(action==='backspace')runtime.input=runtime.input.slice(0,-1);
+  if(action==='clear')runtime.input='';
+  if(action==='space')pressKey(' ');
+  if(action==='toggle')runtime.letter=!runtime.letter;
+  if(action==='submit')submitAnswer();
+  if(action==='know'){
+    if(runtime.selected<0){toast('先选择一个中文释义；不认识可直接记录。');return;}
+    submitAnswer(false);
+  }
+  if(action==='unknown')submitAnswer(true);
+  if(['toggle','backspace','clear'].includes(action)){renderInput();renderKeyboard();}
+}
+function normalizeAnswer(q,value){
+  let s=String(value??'').trim();
+  if(q.kind==='word')return s;
+  if(Number(q.levelId)===14){return s.toUpperCase().replace(/[\s-]/g,'');}
+  if(Number(q.levelId)===13)return s.replace(/[\s-]/g,'');
+  if(Number(q.levelId)===11 || (Number(q.levelId)===16 && String(q.answer).includes(':'))){
+    const m=s.match(/^(\d{1,2}):(\d{1,2})$/);
+    return m?String(Number(m[1])).padStart(2,'0')+':'+String(Number(m[2])).padStart(2,'0'):s;
+  }
+  s=s.replace(/,/g,'').replace(/\s+/g,'');
+  if(/^\d+(\.\d+)?%?$/.test(s)){
+    const hasPercent=s.endsWith('%');
+    const base=hasPercent?s.slice(0,-1):s;
+    if(!base.includes('.'))s=String(Number(base))+(hasPercent?'%':'');
+    else {const [int,decimal]=base.split('.');s=String(Number(int))+'.'+decimal+(hasPercent?'%':'');}
+  }
+  return s;
+}
+function questionKey(q){return q.kind==='word'?'word:'+q.levelId+':'+q.wordId:'num:'+q.levelId+':'+q.answer;}
+function captureWeak(q,correct,elapsed){
+  const key=questionKey(q),item=state.errorPool[key];
+  if(!correct || elapsed>2500){
+    const entry=item||{key,errors:0,slow:0,recovered:0};
+    const clone={...q};delete clone.choices;
+    entry.question=clone;entry.updatedAt=Date.now();entry.recovered=0;
+    if(!correct)entry.errors++;else entry.slow++;
+    state.errorPool[key]=entry;
+  }else if(item){
+    item.recovered=(item.recovered||0)+1;
+    if(item.recovered>=2)delete state.errorPool[key];
+    else item.updatedAt=Date.now();
+  }
+}
+function submitAnswer(forceUnknown=false){
+  if(!session||runtime.feedback||session.awaitingNext)return;
+  const q=session.queue[session.index];
+  let given=q.kind==='word'?(runtime.selected<0?'未选择':q.choices[runtime.selected]):runtime.input;
+  if(q.kind==='numeric'&&!given.trim()){toast('请先输入答案');return;}
+  const answer=normalizeAnswer(q,q.answer),input=normalizeAnswer(q,given);
+  const correct=!forceUnknown&&answer===input;
+  const early=runtime.readyAt===null;
+  const elapsed=early?0:Math.max(0,Math.round(performance.now()-runtime.readyAt));
+  runtime.early=early;
+  stopSpeech();runtime.feedback=true;runtime.speaking=false;
+  session.correct+=Number(correct);session.sumMs+=elapsed;
+  session.combo=correct?session.combo+1:0;
+  if(correct)session.fastestMs=session.fastestMs===null?elapsed:Math.min(session.fastestMs,elapsed);
+  state.totalQuestions++;state.totalCorrect+=Number(correct);
+  captureWeak(q,correct,elapsed);
+  session.awaitingNext=true;
+  session.lastFeedback={correct,given,elapsed,early};
+  state.activeSession=session;persist();
+  $('comboText').textContent='COMBO '+session.combo;
+  $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
+  renderFeedback(q,correct,given,elapsed,early);
+  renderKeyboard();
+}
+function highlightDiff(expected,actual){
+  const a=[...String(actual||'')],b=[...String(expected||'')];
+  if(a.length===0)return '<span class="wrong-char">(空)</span>';
+  return a.map((ch,i)=>'<span class="'+(ch.toUpperCase()===String(b[i]||'').toUpperCase()?'right-char':'wrong-char')+'">'+esc(ch===' '?'␣':ch)+'</span>').join('');
+}
+const ipaMap={zero:'ˈzɪroʊ',oh:'oʊ',one:'wʌn',two:'tuː',three:'θriː',four:'fɔːr',five:'faɪv',six:'sɪks',seven:'ˈsevən',eight:'eɪt',nine:'naɪn',ten:'ten',eleven:'ɪˈlevən',twelve:'twelv',thirteen:'ˌθɜːrˈtiːn',fourteen:'ˌfɔːrˈtiːn',fifteen:'ˌfɪfˈtiːn',sixteen:'ˌsɪksˈtiːn',seventeen:'ˌsevənˈtiːn',eighteen:'ˌeɪˈtiːn',nineteen:'ˌnaɪnˈtiːn',twenty:'ˈtwenti',thirty:'ˈθɜːrti',forty:'ˈfɔːrti',fifty:'ˈfɪfti',sixty:'ˈsɪksti',seventy:'ˈsevənti',eighty:'ˈeɪti',ninety:'ˈnaɪnti',hundred:'ˈhʌndrəd',thousand:'ˈθaʊzənd',million:'ˈmɪljən',billion:'ˈbɪljən',point:'pɔɪnt',percent:'pərˈsent',double:'ˈdʌbəl',triple:'ˈtrɪpəl',quarter:'ˈkwɔːrtər',half:'hæf',past:'pæst',to:'tuː',and:'ænd',o:'oʊ',clock:'klɑːk'};
+function phoneticBreakdown(text){
+  const tokens=(text.toLowerCase().match(/[a-z]+/g)||[]);
+  const known=tokens.filter(t=>ipaMap[t]).slice(0,24).map(t=>ipaMap[t]);
+  return known.length?'/'+known.join(' ')+'/':'动态句子：请依据英文读法拆解';
+}
+function renderFeedback(q,correct,given,elapsed,early){
+  const verdict=correct?'回答正确':'需要巩固';
+  const speed=early?'提前提交 · 记为 <0.5s':elapsed<500?'极速反射':elapsed>2500?'反应偏慢 · 已加入特训':'反应正常';
+  const answerShown=q.displayAnswer || (q.kind==='numeric'&&/^\d{4,}$/.test(q.answer)&&Number(q.levelId)!==13&&Number(q.levelId)!==14?integerString(q.answer):q.answer);
+  const reading=q.kind==='word'?(q.word||q.audioText):q.audioText;
+  const ipa=q.kind==='word'?(q.phonetic||'音标未提供'):phoneticBreakdown(reading);
+  const optional=q.kind==='word'&&q.example?`<div class="feedback-line"><span class="k">例句 Example</span>${esc(q.example)}</div>`:'';
+  const timerLabel=early?'&lt;0.5s':msText(elapsed);
+  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">标准答案</span><span class="v">${esc(answerShown)}</span></div><div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">含义与解题提示</span>${esc(q.meaning||'—')}</div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(q.answer),String(given))}</span></div>${optional}</div>`;
+  $('answerDisplay').classList.add('hidden');
+}
+function nextQuestion(){
+  if(!session)return;
+  if(session.index===session.queue.length-1){finishSession();return;}
+  session.index++;session.awaitingNext=false;session.lastFeedback=null;state.activeSession=session;persist();beginQuestion();
+}
+function finishSession(){
+  if(!session)return;
+  stopSpeech();
+  const completed=session;
+  const accuracy=Math.round(completed.correct/completed.queue.length*100);
+  const avg=Math.round(completed.sumMs/completed.queue.length);
+  const passed=accuracy>=80;
+  const stars=!passed?0:accuracy===100 && avg<=1500?3:accuracy>=90 && avg<=2500?2:1;
+  if(completed.mode==='lesson'){
+    const current=state.levels[completed.levelId]||{attempts:0,stars:0,passed:false};
+    current.attempts=(current.attempts||0)+1;
+    current.passed=Boolean(current.passed||passed);
+    current.stars=Math.max(current.stars||0,stars);
+    current.last={accuracy,avgMs:avg,stars,at:Date.now()};
+    if(!current.best || accuracy>current.best.accuracy || (accuracy===current.best.accuracy&&avg<current.best.avgMs))current.best={accuracy,avgMs:avg,stars,at:Date.now()};
+    if(completed.fastestMs!==null)current.fastestMs=current.fastestMs==null?completed.fastestMs:Math.min(current.fastestMs,completed.fastestMs);
+    state.levels[completed.levelId]=current;
+  }
+  state.activeSession=null;persist();
+  session=null;
+  $('summaryPanel').innerHTML=`<div class="summary-title">${passed||completed.mode!=='lesson'?'练习完成':'本关尚未通关'}</div><div class="summary-stars">${completed.mode==='lesson'?('★'.repeat(stars)+'☆'.repeat(3-stars)):'✓'}</div><div class="micro">${completed.mode==='lesson'?(passed?'已达通关标准':'通关需要准确率至少 80%'):'自由/弱项练习不改变关卡通关状态'}</div><div class="summary-grid"><div><strong>${accuracy}%</strong><span>准确率</span></div><div><strong>${msText(avg)}</strong><span>平均反应</span></div><div><strong>${completed.correct}/${completed.queue.length}</strong><span>答对题数</span></div></div><p class="hint" style="text-align:left">三星：全对且均速 ≤1.5s；二星：准确率 ≥90% 且均速 ≤2.5s；一星：准确率 ≥80%。</p><div class="summary-actions"><button class="btn outline" id="summaryHome">返回课程</button><button class="btn primary" id="summaryAgain">再练一次</button></div>`;
+  $('summaryMask').classList.add('visible');
+  $('summaryHome').onclick=()=>{$('summaryMask').classList.remove('visible');refresh();showPage('home');};
+  $('summaryAgain').onclick=()=>{$('summaryMask').classList.remove('visible');if(completed.mode==='weak')startWeak();else startSession(completed.levelId,completed.mode,completed.queue.length);};
+}
+function leavePractice(){
+  stopSpeech();session=null;refresh();showPage('home');
+  if(state.activeSession)toast('本次进度已自动保存，可从首页继续。');
+}
+
+/* 首页、特训台与事件交互。 */
+function renderLessons(){
+  const lessons=allLessons();const complete=lessons.filter(l=>state.levels[l.id]?.passed).length;
+  const percentage=lessons.length?Math.round(complete/lessons.length*100):0;
+  $('progressCard').innerHTML=`<div class="overline">课程总进度</div><div class="big-percent">${percentage}%</div><div class="progress-track"><div class="progress-fill" style="width:${percentage}%"></div></div><div class="progress-caption">已通关 ${complete} / ${lessons.length} 关 · 每关 15 题</div>`;
+  const active=state.activeSession;
+  $('resumeArea').innerHTML=active&&active.queue?.length?`<div class="card" style="margin-top:13px"><div class="row between"><div><strong style="font-size:13px">继续上次练习</strong><div class="micro" style="margin-top:5px">${esc(active.title)} · 第 ${active.index+1}/${active.queue.length} 题</div></div><button class="btn primary" id="resumeBtn">继续</button></div></div>`:'';
+  if($('resumeBtn'))$('resumeBtn').onclick=resumeSession;
+  const stageHtml=stages.map(stage=>renderGroup(stage.title,stage.ids.map(i=>lessons.find(x=>x.id==='num:'+i)))).join('');
+  const wordHtml=renderGroup('第五阶段 · 自定义专业词库',wordGroups());
+  $('lessonList').innerHTML=stageHtml+wordHtml;
+}
+function renderGroup(title,items){
+  return `<div class="section-title">${esc(title)}<small>${items.length} 关</small></div><div class="lesson-group">${items.map((l,i)=>{
+    const record=state.levels[l.id]||{},passed=record.passed;
+    const active=state.activeSession?.levelId===l.id;
+    const stateClass=passed?'passed':active||record.attempts?'started':'';
+    const status=passed?'<span class="status passed">'+('★'.repeat(record.stars||1))+'</span>':active?'<span class="status going">进行中</span>':record.attempts?'<span class="status going">待通关</span>':'<span class="status">未开始</span>';
+    const best=record.best?`最佳: ${msText(record.best.avgMs)} | 准确率 ${record.best.accuracy}%`:'尚无历史成绩';
+    const index=l.kind==='numeric'?String(l.number).padStart(2,'0'):'词';
+    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div></div>${status}</button>`;
+  }).join('')}</div>`;
+}
+function renderLab(){
+  const weak=Object.values(state.errorPool).sort((a,b)=>(b.errors*3+b.slow)-(a.errors*3+a.slow));
+  $('weakCount').textContent=weak.length+' 题待巩固';
+  $('weakList').innerHTML=weak.length?weak.slice(0,16).map(e=>`<div class="weak-row"><div><strong>${esc(e.question.kind==='word'?e.question.word||e.question.audioText:e.question.answer)}</strong><small>答错 ${e.errors} 次 · 超时 ${e.slow} 次 · 巩固 ${e.recovered||0}/2</small></div><button class="btn" data-drop="${esc(e.key)}" style="min-height:30px;padding:6px 9px">移出</button></div>`).join(''):'<p class="micro" style="margin-top:13px">当前没有弱项记录。</p>';
+  const selected=$('freeLevel').value;
+  $('freeLevel').innerHTML=allLessons().map(x=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('');
+  if(allLessons().some(x=>x.id===selected))$('freeLevel').value=selected;
+  $('statsText').textContent=`累计作答 ${state.totalQuestions||0} 题 · 累计正确 ${state.totalCorrect||0} 题 · 已导入 ${state.imports.length} 个自定义词条`;
+}
+function refresh(){renderLessons();renderLab();}
+function selectTab(name){stopSpeech();refresh();showPage(name);}
+function setupEvents(){
+  document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>selectTab(btn.dataset.tab)));
+  $('lessonList').addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(b)startSession(b.dataset.lesson);});
+  $('listenCard').addEventListener('click',e=>{const b=e.target.closest('[data-action="replay"]');if(b)keyboardAction('replay');});
+  $('keypadShell').addEventListener('click',e=>{
+    const choice=e.target.closest('[data-choice]');if(choice){runtime.selected=Number(choice.dataset.choice);renderKeyboard();return;}
+    const key=e.target.closest('[data-key]');if(key){pressKey(key.dataset.key);return;}
+    const action=e.target.closest('[data-action]');if(action)keyboardAction(action.dataset.action);
+  });
+  $('backPractice').addEventListener('click',leavePractice);
+  $('voiceLocale').addEventListener('change',e=>{state.settings.locale=e.target.value;persist();if(session&&!runtime.feedback)speakCurrent();});
+  $('voiceRate').addEventListener('change',e=>{state.settings.rate=Number(e.target.value);persist();if(session&&!runtime.feedback)speakCurrent();});
+  $('weakStart').addEventListener('click',startWeak);
+  $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
+  $('weakList').addEventListener('click',e=>{const b=e.target.closest('[data-drop]');if(!b)return;delete state.errorPool[b.dataset.drop];persist();renderLab();});
+  $('clearWeak').addEventListener('click',()=>{if(!Object.keys(state.errorPool).length)return;if(confirm('确定清空全部错题与超时记录？')){state.errorPool={};persist();renderLab();}});
+  $('importVocab').addEventListener('click',()=>$('vocabFile').click());
+  $('importBackup').addEventListener('click',()=>$('backupFile').click());
+  $('vocabFile').addEventListener('change',async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    try{
+      if(file.size>2*1024*1024)throw Error('文件最大支持 2MB');
+      const text=await file.text();const raw=file.name.toLowerCase().endsWith('.csv')?parseCsv(text):decodeVocabJson(JSON.parse(text.replace(/^\uFEFF/,'')));
+      updateImports(normalizeWords(raw));
+    }catch(error){toast('导入失败：'+error.message);}finally{e.target.value='';}
+  });
+  $('backupFile').addEventListener('change',async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    try{
+      if(file.size>4*1024*1024)throw Error('备份文件最大支持 4MB');
+      const restored=validateBackup(JSON.parse((await file.text()).replace(/^\uFEFF/,'')));
+      if(!confirm('恢复备份将覆盖本浏览器已有的学习记录和导入词库，确定继续？'))return;
+      const old=state;state=restored;
+      if(!persist()){state=old;return;}
+      refresh();toast('学习数据恢复成功');
+    }catch(error){toast('恢复失败：'+error.message);}finally{e.target.value='';}
+  });
+  $('exportVocab').addEventListener('click',()=>downloadFile('英语词库_'+todayStamp()+'.json',JSON.stringify({words:state.imports},null,2)));
+  $('exportBackup').addEventListener('click',()=>downloadFile('声音反射训练_学习备份_'+todayStamp()+'.json',JSON.stringify({...state,backupAt:new Date().toISOString()},null,2)));
+  $('clearHistory').addEventListener('click',()=>{
+    if(!confirm('确定重置全部进度、错题本、设置与导入词库？此操作不可撤销，建议先备份。'))return;
+    const old=state;stopSpeech();state=emptyState();
+    if(!persist()){state=old;return;}session=null;refresh();toast('已重置全部数据');
+  });
+  window.addEventListener('keydown',e=>{
+    if(!session || !$('practicePage').classList.contains('active'))return;
+    if(['SELECT','INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
+    if(e.key==='Enter'){e.preventDefault();keyboardAction(runtime.feedback?'next':session.queue[session.index].kind==='word'?'know':'submit');return;}
+    if(runtime.feedback)return;
+    if(e.key==='Backspace'){e.preventDefault();keyboardAction('backspace');}
+    else if(e.key.toLowerCase()==='r' && e.ctrlKey){e.preventDefault();keyboardAction('replay');}
+    else if(session.queue[session.index].kind==='numeric' && /^[a-z0-9.,:% ]$/i.test(e.key)){e.preventDefault();pressKey(e.key.toUpperCase());}
+    else if(session.queue[session.index].kind==='word' && /^[1-4]$/.test(e.key)){runtime.selected=Number(e.key)-1;renderKeyboard();}
+  });
+  window.addEventListener('pagehide',()=>{try{localStorage.setItem(STORE_KEY,JSON.stringify(state));}catch(e){}writeIndexedState(state).catch(()=>{});});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden && session && !runtime.feedback){stopSpeech();runtime.speaking=false;runtime.readyAt=null;}
+    if(!document.hidden && session && !runtime.feedback){toast('已返回练习，请点击重听重新计时');updateListeningStatus();}
+  });
+}
+function installManifest(){
+  /* 内联 manifest；单文件不包含 Service Worker，因此正式离线安装能力取决于浏览器。 */
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><rect width="192" height="192" rx="44" fill="#07C160"/><path d="M46 98h20m12-28v56m16-79v102m16-65v28m16-42v56m16-28h12" stroke="white" stroke-width="12" stroke-linecap="round"/></svg>';
+  const icon='data:image/svg+xml,'+encodeURIComponent(svg);
+  const manifest={name:'英语数字与专业词汇声音反射训练',short_name:'声音反射训练',start_url:'./index.html',display:'standalone',background_color:'#F7F8FA',theme_color:'#07C160',icons:[{src:icon,sizes:'192x192',type:'image/svg+xml',purpose:'any maskable'}]};
+  const link=document.createElement('link');link.rel='manifest';link.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(manifest));document.head.appendChild(link);
+}
+async function boot(){
+  await hydrateState();
+  installManifest();setupEvents();refresh();
+  if(!('speechSynthesis' in window))toast('当前环境不支持原生 TTS；其他功能可继续使用。');
+}
+boot();
+</script>
+</body>
+</html>
