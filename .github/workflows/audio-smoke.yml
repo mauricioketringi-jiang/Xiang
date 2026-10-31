@@ -41,7 +41,7 @@ jobs:
                 cancel(){clearTimeout(speechTimer);},
                 speak(utterance){
                   window.__nativeSpeechCalls=(window.__nativeSpeechCalls||[]);
-                  window.__nativeSpeechCalls.push({text:utterance.text,voice:utterance.voice.name,local:utterance.voice.localService});
+                  window.__nativeSpeechCalls.push({text:utterance.text,voice:utterance.voice.name,locale:utterance.lang,local:utterance.voice.localService});
                   clearTimeout(speechTimer);
                   speechTimer=setTimeout(()=>{
                     utterance.onstart?.();
@@ -71,7 +71,24 @@ jobs:
             console.log('PASS: Offline app shell service worker activated');
             await context.setOffline(true);
             await page.reload({waitUntil:'domcontentloaded'});
+            const localeUI=await page.evaluate(()=>({
+              badges:[...document.querySelectorAll('.voice-us-label')].map(el=>el.textContent.trim()),
+              ukLabels:document.body.textContent.includes('英音'),
+              localeControl:!!document.querySelector('#voiceLocale')
+            }));
+            if(localeUI.ukLabels||localeUI.localeControl||JSON.stringify(localeUI.badges)!==JSON.stringify(['美音 · US']))
+              throw new Error('American-only selector regression: '+JSON.stringify(localeUI));
+            const beforeCalls=await page.evaluate(()=>(window.__nativeSpeechCalls||[]).length);
             await page.locator('[data-lesson="num:1"]').first().click();
+            const immediate=await page.evaluate(()=>({
+              timer:document.querySelector('#timerText')?.textContent,
+              status:document.querySelector('#playStatus')?.textContent,
+              voiceCalls:(window.__nativeSpeechCalls||[]).length
+            }));
+            if(immediate.timer==='准备中'||immediate.status?.includes('没有可用语音'))
+              throw new Error('Old preparation/voice warnings returned');
+            if(immediate.voiceCalls<=beforeCalls)
+              throw new Error('Lesson click did not immediately invoke local US speech');
             if((await page.locator('#questionCount').textContent()).trim()!=='1 / 10')
               throw new Error('Standard lesson not 10 questions');
             await page.waitForFunction(
@@ -79,14 +96,14 @@ jobs:
               null,{timeout:10000}
             );
             const voiceUse=await page.evaluate(()=>({calls:window.__nativeSpeechCalls||[],fetches:window.__unexpectedFetches||[]}));
-            if(!voiceUse.calls.length||!voiceUse.calls.every(x=>x.local))
+            if(!voiceUse.calls.length||!voiceUse.calls.every(x=>x.local && x.locale==='en-US' && x.voice==='Local English US'))
               throw new Error('The app used a nonlocal voice');
             if(voiceUse.fetches.length)throw new Error('Voice still fetched online resources: '+voiceUse.fetches);
             if(await page.locator('audio').count())throw new Error('Audio asset player still exists');
             await page.locator('[data-key="0"]').click();
             await page.locator('.feedback-card').waitFor({timeout:5000});
             if(errors.length)throw new Error('Uncaught browser errors: '+errors.join(' | '));
-            console.log('PASS: Offline reload, local voice selection, replay timing and automatic answer submission');
+            console.log('PASS: Offline reload, US-only automatic speech on lesson entry, no voice prompt, timer and auto answer');
             await browser.close();
           })().catch(error=>{console.error(error);process.exitCode=1});
           JS
