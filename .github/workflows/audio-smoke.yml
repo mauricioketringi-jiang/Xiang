@@ -15,11 +15,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Build online English audio tokens
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq espeak-ng ffmpeg
+          python3 scripts/build_audio.py
       - name: Install Chromium automation
         run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
-      - name: Verify Piper TTS and answer flow
+      - name: Verify streaming audio and answer flow
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 &
           node <<'JS'
@@ -41,7 +46,7 @@ jobs:
             await page.locator('[data-tab="home"]').first().click();
             await page.locator('[data-lesson="num:1"]').first().click();
             if(await page.locator('#questionCount').textContent()!=='1 / 10') throw new Error('Standard lesson should contain 10 questions');
-            await page.locator('[data-audio-action="enable-media"]').click();
+            if(await page.locator('[data-audio-action="enable-media"]').count())throw new Error('Heavy voice download prompt is still visible');
             await page.waitForFunction(
               () => {
                 const s = document.getElementById('playStatus')?.textContent || '';
@@ -51,13 +56,30 @@ jobs:
               null,
               {timeout:240000}
             );
+            const coverage=await page.evaluate(()=>{
+              const wanted=new Set();
+              const pattern=/[A-Za-z]+(?:'[A-Za-z]+)*/g;
+              const collect=text=>{
+                for(const word of (String(text).match(pattern)||[]))wanted.add(word.toLowerCase().replace(/[^a-z]/g,''));
+              };
+              for(let id=1;id<=16;id++){
+                for(let k=0;k<100;k++)collect(generateNumber(id,'en-US').audioText);
+                for(let k=0;k<40;k++)collect(generateNumber(id,'en-GB').audioText);
+              }
+              for(const w of examples)collect(w.audioText);
+              return [...wanted].sort();
+            });
+            const manifest=await (await page.request.get('http://127.0.0.1:8765/audio/manifest.json')).json();
+            const missing=coverage.filter(word=>!manifest.tokens.includes(word));
+            if(missing.length)throw new Error('Missing online audio tokens: '+missing.join(', '));
+            console.log('ONLINE AUDIO COVERAGE:',coverage.length,'tokens');
             const status = await page.locator('#playStatus').textContent();
             console.log('AUDIO PLAYBACK STATUS:',status);
             const key = await page.locator('[data-key]').filter({hasText:/^[0-9]$/}).first();
             await key.click();
             await page.locator('.feedback-card').waitFor({timeout:5000});
             if(errors.length)throw new Error('Browser JS errors: '+errors.join(' | '));
-            console.log('PASS: Piper generated audio played to completion and auto-submit feedback rendered.');
+            console.log('PASS: Online token audio completed and automatic answer feedback rendered.');
             await browser.close();
           })().catch(e=>{console.error(e);process.exitCode=1});
           JS
