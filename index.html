@@ -81,6 +81,7 @@
     .combo { color:var(--dark); background:var(--soft); padding:6px 9px; border-radius:10px; font-size:12px; font-weight:800; white-space:nowrap; }
     .settings-row { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-top:8px; }
     .settings-row .select { width:auto; min-height:33px; padding:4px 8px; font-size:12px; background:#F5F7F7; border:0; flex:1; }
+    .voice-us-label { flex:1; min-height:33px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#F5F7F7; color:#5E6C74; font-size:12px; font-weight:700; }
     .question-count { font-size:11px; font-weight:700; color:#78838B; white-space:nowrap; font-variant-numeric:tabular-nums; }
     .tiny-track { background:#E8F1EB; height:4px; border-radius:9px; overflow:hidden; margin-top:9px; }
     .tiny-fill { background:var(--green); width:0; height:100%; transition:width .2s; }
@@ -211,7 +212,7 @@
     <header class="practice-top">
       <div class="practice-topline"><button class="back" id="backPractice" aria-label="返回">‹</button><div class="practice-title" id="practiceTitle">练习</div><span class="combo" id="comboText">COMBO 0</span></div>
       <div class="settings-row">
-        <select class="select" id="voiceLocale" aria-label="英语口音"><option value="en-US">美音 · US</option><option value="en-GB">英音 · UK</option></select>
+        <span class="voice-us-label" aria-label="美式英语">美音 · US</span>
         <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
         <span class="question-count" id="questionCount">1 / 10</span>
       </div>
@@ -245,7 +246,7 @@ function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',
 function normalizeState(raw){
   if(!raw || raw.version!==1) return emptyState();
   const base=emptyState();
-  return {...base,...raw,updatedAt:Number(raw.updatedAt)||0,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1},levels:raw.levels&&typeof raw.levels==='object'?raw.levels:{},errorPool:raw.errorPool&&typeof raw.errorPool==='object'?raw.errorPool:{},imports:Array.isArray(raw.imports)?raw.imports:[]};
+  return {...base,...raw,updatedAt:Number(raw.updatedAt)||0,settings:{locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1},levels:raw.levels&&typeof raw.levels==='object'?raw.levels:{},errorPool:raw.errorPool&&typeof raw.errorPool==='object'?raw.errorPool:{},imports:Array.isArray(raw.imports)?raw.imports:[]};
 }
 function loadState(){
   try { return normalizeState(JSON.parse(localStorage.getItem(STORE_KEY)||'null')); }
@@ -295,7 +296,7 @@ async function hydrateState(){
   }
 }
 let session = null;
-let runtime = {input:'',selected:-1,letter:false,feedback:false,speaking:false,generating:false,readyAt:null,early:false,token:0,animation:0,autoSubmitTimer:null,speechWatchdog:null,currentUtterance:null,ttsProgressText:''};
+let runtime = {input:'',selected:-1,letter:false,feedback:false,speaking:false,generating:false,readyAt:null,early:false,token:0,animation:0,autoSubmitTimer:null,speechWatchdog:null,currentUtterance:null,waitingVoice:false,ttsProgressText:''};
 let toastTimer = null;
 let storageWarningShown=false;
 function persist(){
@@ -384,8 +385,8 @@ function timeAnswer(h,m){return String(h).padStart(2,'0')+':'+String(m).padStart
 function question(levelId,answer,audioText,meaning='',extra={}){
   return {kind:'numeric', levelId, answer:String(answer), audioText:String(audioText), meaning, ...extra};
 }
-function generateNumber(id,locale='en-US'){
-  const british=locale==='en-GB'; const words=n=>numWords(n,british);
+function generateNumber(id){
+  const words=n=>numWords(n,false);
   let n,a,text,meaning='听取播报内容并输入准确数字。';
   switch(Number(id)){
     case 1:n=rand(0,9);return question(id,n,words(n),'0 至 9：听音后直接按数字键。');
@@ -509,7 +510,7 @@ function wordQuestion(word,group){
   return {kind:'word',levelId:'word:'+word.category,wordId:word.id,answer:word.meaning,audioText:word.audioText,meaning:word.meaning,phonetic:word.phonetic,example:word.example,word:word.answer,subCategory:word.subCategory,choices};
 }
 function makeQuestion(levelId){
-  if(levelId.startsWith('num:')) return generateNumber(Number(levelId.slice(4)),state.settings.locale);
+  if(levelId.startsWith('num:')) return generateNumber(Number(levelId.slice(4)));
   const group=wordGroups().find(g=>g.id===levelId);
   if(!group || !group.words.length) throw Error('词库为空');
   return wordQuestion(pick(group.words),group);
@@ -587,7 +588,7 @@ function updateImports(words){
 function validateBackup(raw){
   if(!raw||typeof raw!=='object'||raw.version!==1||!raw.levels||!raw.errorPool||!Array.isArray(raw.imports))throw Error('文件不是有效的 V1 学习备份');
   const words=raw.imports.length?normalizeWords(raw.imports):[];
-  return {...emptyState(),...raw,imports:words,settings:{locale:['en-US','en-GB'].includes(raw.settings?.locale)?raw.settings.locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1}, activeSession:null};
+  return {...emptyState(),...raw,imports:words,settings:{locale:'en-US',rate:[.8,1,1.2,1.5].includes(Number(raw.settings?.rate))?Number(raw.settings.rate):1}, activeSession:null};
 }
 
 /* 练习会话：语音结束计时；前置提交记 0ms。 */
@@ -629,47 +630,40 @@ function resumeSession(){
   if(!item||!Array.isArray(item.queue)||!item.queue.length||item.index>=item.queue.length){toast('没有可恢复的练习');return;}
   session=item;beginQuestion();
 }
-function localEnglishVoices(){
-  if(!('speechSynthesis' in window))return [];
+function selectSpeechVoice(){
+  if(!('speechSynthesis' in window))return null;
   try{
-    return window.speechSynthesis.getVoices().filter(voice=>
-      voice && voice.localService===true && /^en(?:-|$)/i.test(voice.lang||'')
-    );
-  }catch(e){return [];}
+    return window.speechSynthesis.getVoices().find(voice=>
+      voice && voice.localService===true && /^en-US(?:-|$)/i.test(voice.lang||'')
+    )||null;
+  }catch(e){return null;}
 }
-function selectSpeechVoice(locale){
-  const voices=localEnglishVoices(),target=String(locale||'en-US').toLowerCase();
-  return voices.find(v=>String(v.lang).toLowerCase()===target)
-    ||voices.find(v=>String(v.lang).toLowerCase().startsWith(target+'-'))
-    ||null;
-}
-function showSpeechError(message){
+function showSpeechError(){
   runtime.generating=false;runtime.speaking=false;runtime.readyAt=null;
   updateListeningStatus();
-  const status=$('playStatus');
-  if(status)status.textContent=message;
 }
 function speakNativeText(text,question=true){
   stopSpeech();
   const token=runtime.token;
   if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined'){
-    showSpeechError('此浏览器不支持系统朗读，请使用 Safari。');return;
+    showSpeechError();return;
   }
-  const voice=selectSpeechVoice(state.settings.locale);
+  const voice=selectSpeechVoice();
   if(!voice){
-    showSpeechError('当前没有可用的本机英语语音。请检查 iPhone 系统语音设置，或选择另一种口音。');
+    runtime.waitingVoice=true;
+    showSpeechError();
     return;
   }
   const synth=window.speechSynthesis;
   const utterance=new SpeechSynthesisUtterance(String(text||''));
-  utterance.lang=voice.lang;
+  utterance.lang='en-US';
   utterance.voice=voice;
   utterance.rate=Number(state.settings.rate)||1;
   utterance.pitch=1;
   utterance.volume=1;
   runtime.currentUtterance=utterance;
+  runtime.waitingVoice=false;
   runtime.generating=true;runtime.speaking=false;runtime.readyAt=null;runtime.early=false;
-  runtime.ttsProgressText='正在启动手机英语朗读…';
   updateListeningStatus();
   const clearWatchdog=()=>{
     if(runtime.speechWatchdog!==null){clearTimeout(runtime.speechWatchdog);runtime.speechWatchdog=null;}
@@ -691,9 +685,10 @@ function speakNativeText(text,question=true){
     if(token!==runtime.token)return;
     clearWatchdog();
     runtime.currentUtterance=null;
-    showSpeechError('手机朗读未能完成。请关闭静音模式，点击“播放 / 重听”。');
-    if(event && event.error && event.error!=='interrupted'&&event.error!=='canceled')
-      console.warn('System speech error:',event.error);
+    showSpeechError();
+    if(event&&event.error&&event.error!=='interrupted'&&event.error!=='canceled'){
+      console.warn('Native speech:',event.error);
+    }
   };
   try{
     if(synth.paused)synth.resume();
@@ -701,11 +696,11 @@ function speakNativeText(text,question=true){
     runtime.speechWatchdog=setTimeout(()=>{
       if(token!==runtime.token||!runtime.generating)return;
       stopSpeech();
-      showSpeechError('系统语音未启动。请确认已切换响铃模式，再点击“播放 / 重听”。');
+      showSpeechError();
     },4500);
-  }catch(error){
+  }catch(e){
     if(token!==runtime.token)return;
-    stopSpeech();showSpeechError('无法启动手机系统语音，请点击“播放 / 重听”重试。');
+    stopSpeech();showSpeechError();
   }
 }
 function speakCurrent(){
@@ -718,6 +713,7 @@ function stopSpeech(){
   clearAutoSubmitTimer();
   if(runtime.speechWatchdog!==null){clearTimeout(runtime.speechWatchdog);runtime.speechWatchdog=null;}
   runtime.currentUtterance=null;
+  runtime.waitingVoice=false;
   runtime.generating=false;runtime.speaking=false;
   if('speechSynthesis' in window){try{window.speechSynthesis.cancel();}catch(e){}}
   cancelAnimationFrame(runtime.animation);
@@ -734,8 +730,8 @@ function startTimer(){
 }
 function updateListeningStatus(){
   const timer=$('timerText'),status=$('playStatus'),wave=$('wave');
-  if(timer)timer.textContent=runtime.generating?'生成中':runtime.speaking?'播放中':runtime.readyAt===null?'准备中':'0.00s';
-  if(status)status.textContent=runtime.generating?(runtime.ttsProgressText||'正在启动手机朗读…'):runtime.speaking?'手机正在朗读 · 播完开始计时':runtime.readyAt===null?'切换至响铃模式，点击播放 / 重听':'朗读结束 · 计时已启动';
+  if(timer)timer.textContent=runtime.readyAt!==null?'0.00s':runtime.generating||runtime.speaking?'播放中':'—';
+  if(status)status.textContent=runtime.readyAt!==null?'朗读结束 · 计时已启动':runtime.generating||runtime.speaking?'请听美式英语发音':'点击播放 / 重听';
   if(wave)wave.classList.toggle('paused',!runtime.speaking);
 }
 function beginQuestion(){
@@ -745,11 +741,10 @@ function beginQuestion(){
   showPage('practice');
   $('practiceTitle').textContent=session.title;
   $('comboText').textContent='COMBO '+session.combo;
-  $('voiceLocale').value=state.settings.locale;
   $('voiceRate').value=String(state.settings.rate);
   $('questionCount').textContent=(session.index+1)+' / '+session.queue.length;
   $('questionFill').style.width=(session.index/session.queue.length*100)+'%';
-  $('listenCard').innerHTML=`<div class="listen-chip">${q.kind==='word'?'听发音 · 选择中文释义':'盲听模式 · 不显示题面'}</div><div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">准备中</div><div class="timer-hint" id="playStatus">准备调用手机系统朗读</div><button class="btn ghost" data-action="replay" style="margin-top:10px;min-width:142px">▶ 播放 / 重听</button><div class="timer-hint" style="margin-top:8px;font-size:11px">使用手机本地英语语音，无需联网。iPhone 请手动关闭静音模式。</div>`;
+  $('listenCard').innerHTML=`<div class="listen-chip">${q.kind==='word'?'听发音 · 选择中文释义':'盲听模式 · 不显示题面'}</div><div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">播放中</div><div class="timer-hint" id="playStatus">请听美式英语发音</div><button class="btn ghost" data-action="replay" style="margin-top:10px;min-width:142px">▶ 播放 / 重听</button>`;
   $('answerDisplay').classList.toggle('hidden',q.kind==='word');
   renderInput();
   if(session.awaitingNext && session.lastFeedback){
@@ -1013,7 +1008,6 @@ function setupEvents(){
     const action=e.target.closest('[data-action]');if(action)keyboardAction(action.dataset.action);
   });
   $('backPractice').addEventListener('click',leavePractice);
-  $('voiceLocale').addEventListener('change',e=>{state.settings.locale=e.target.value;persist();if(session&&!runtime.feedback)speakCurrent();});
   $('voiceRate').addEventListener('change',e=>{state.settings.rate=Number(e.target.value);persist();if(session&&!runtime.feedback)speakCurrent();});
   $('weakStart').addEventListener('click',startWeak);
   $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
@@ -1073,7 +1067,20 @@ function installManifest(){
 async function boot(){
   await hydrateState();
   installManifest();setupEvents();refresh();
-  if(!('speechSynthesis' in window))toast('当前浏览器不支持系统朗读，建议使用 Safari。');
+  if('speechSynthesis' in window){
+    const synth=window.speechSynthesis;
+    try{synth.getVoices();}catch(e){}
+    const onVoicesChanged=()=>{
+      if(runtime.waitingVoice && session && !runtime.feedback && selectSpeechVoice()){
+        speakCurrent();
+      }
+    };
+    if(typeof synth.addEventListener==='function'){
+      synth.addEventListener('voiceschanged',onVoicesChanged);
+    }else if('onvoiceschanged' in synth){
+      synth.onvoiceschanged=onVoicesChanged;
+    }
+  }
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{});
   }
