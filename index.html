@@ -897,7 +897,6 @@ function showMediaError(message){
   if(card)card.querySelectorAll('.media-engine-box').forEach(node=>node.remove());
   const status=$('playStatus');
   if(status)status.textContent=message;
-  const card=$('listenCard');
   if(!card)return;
   const actions=document.createElement('div');
   actions.className='media-engine-box';
@@ -910,7 +909,6 @@ function showMediaTapToPlay(){
   if(card)card.querySelectorAll('[data-audio-action="retry-media"]').forEach(node=>node.remove());
   const status=$('playStatus');
   if(status)status.textContent='语音已生成。iPhone 需要一次明确的播放触摸，请点击下方按钮。';
-  const card=$('listenCard');
   if(!card)return;
   const button=document.createElement('button');
   button.className='btn primary';button.dataset.audioAction='retry-media';button.style.width='100%';button.style.marginTop='12px';button.textContent='点击播放英语语音';
@@ -1414,7 +1412,8 @@ function installManifest(){
 async function boot(){
   await hydrateState();
   installManifest();setupEvents();refresh();
-  if(!('speechSynthesis' in window))toast('当前环境不支持原生 TTS；其他功能可继续使用。');
+  if(!window.Audio||!window.WebAssembly)toast('当前浏览器缺少媒体语音所需能力；可尝试系统语音备用方案。');
+  else if(!('speechSynthesis' in window))toast('系统语音备用不可用；媒体语音引擎仍可启用。');
 }
 boot();
 </script>
