@@ -30,21 +30,22 @@ jobs:
           from pathlib import Path
           html = Path('index.html').read_text(encoding='utf-8')
           required = [
-              'async function playOnlineBlob(',
-              'async function getOnlineToken(',
-              'function combineOnlinePcm(',
-              "navigator.audioSession.type='playback'",
+              'function speakNativeText(',
+              'voice.localService===true',
+              "navigator.serviceWorker.register('./sw.js'",
+              'function scheduleAutoSubmit()',
           ]
           missing = [item for item in required if item not in html]
           if missing:
-              raise SystemExit('Missing online-audio components: ' + ', '.join(missing))
-          if 'data-action="submit"' in html:
-              raise SystemExit('Legacy submit button was reintroduced')
-          if 'PIPER_VOICE_ASSETS' in html:
-              raise SystemExit('Heavy local voice model must not be loaded')
+              raise SystemExit('Missing local offline speech components: ' + ', '.join(missing))
+          for forbidden in ('fetch(', 'ONLINE_AUDIO_BASE', 'PIPER_VOICE_ASSETS', 'playMediaText(', 'data-action="submit"'):
+              if forbidden in html:
+                  raise SystemExit('Removed audio/download behavior returned: ' + forbidden)
+          if not Path('sw.js').is_file():
+              raise SystemExit('Offline service worker is missing')
           speak = re.search(r'function speakCurrent\(\)\s*\{([\s\S]*?)\n\}', html)
-          if not speak or 'playMediaText(' not in speak.group(1):
-              raise SystemExit('Online speech must be the primary playback path')
+          if not speak or 'speakNativeText(' not in speak.group(1):
+              raise SystemExit('Native local speech must be primary')
 
           scripts = re.findall(r'<script\b[^>]*>([\s\S]*?)</script>', html, re.I)
           if len(scripts) != 1:
@@ -52,15 +53,6 @@ jobs:
           Path('/tmp/voice-reflex.js').write_text(scripts[0], encoding='utf-8')
           PY
           node --check /tmp/voice-reflex.js
-      - name: Build lightweight online audio assets
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq espeak-ng ffmpeg
-          python3 scripts/build_audio.py
-          test -s audio/manifest.json
-          test -s audio/en-US/zero.pcm
-          test -s audio/en-GB/zero.pcm
-
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
