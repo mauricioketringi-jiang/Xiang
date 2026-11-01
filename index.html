@@ -49,7 +49,7 @@
     .status { font-size:10px; border-radius:100px; padding:5px 8px; flex:none; background:#F2F4F5; color:#8C959E; white-space:nowrap; }
     .status.going { background:#E7F9EF; color:#079D54; }
     .status.passed { color:#B9821B; background:#FFF6DE; letter-spacing:-1px; }
-    .tabbar { background:#fff; display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--line); padding:7px 8px calc(5px + var(--safe-bottom)); flex:none; }
+    .tabbar { background:#fff; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--line); padding:7px 8px calc(5px + var(--safe-bottom)); flex:none; }
     .tab { color:#939DA5; background:transparent; min-height:48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:11px; font-weight:600; }
     .tab svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
     .tab.active { color:var(--dark); }
@@ -366,11 +366,73 @@
       font-size:15px;font-weight:850;margin-top:14px;border:1px solid #CBECD9;}
     @media(max-height:650px){.ear-playing #listenCard{padding:8px 12px;}.ear-visual{font-size:58px;margin:4px 0;}
       .ear-reveal{padding:9px;gap:4px;margin-top:7px;}.ear-answer{font-size:32px;}.ear-hint{margin-top:4px;}}
+    .tab-emoji{font-size:19px;line-height:21px;display:block;}
+    .tabbar .tab{font-size:10px;min-width:0;padding:2px 0;}
+    .learn-intro{padding:15px 14px;margin-bottom:12px;}
+    .learn-title{font-size:15px;font-weight:850;margin:0 0 9px;}
+    .learn-note{font-size:12px;color:#65756D;line-height:1.7;}
+    .learn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+    .learn-tile{border-radius:13px;border:1px solid #DDECE3;background:#F7FCF9;padding:13px 8px;text-align:left;color:#244035;min-height:91px;}
+    .learn-tile strong{display:block;font-size:13px;line-height:1.4;}
+    .learn-tile small{display:block;color:#667C70;line-height:1.55;margin-top:5px;}
+    .learn-steps{display:grid;gap:7px;font-size:12px;line-height:1.6;}
+    .learn-step{background:#F3F9F5;padding:9px 11px;border-radius:10px;}
+    .learn-module{margin-bottom:12px;}
+    .learn-back{background:transparent;color:#167345;font-weight:800;font-size:13px;margin:0 0 13px;padding:9px 2px;}
+    .learn-stack{display:grid;gap:10px;}
+    .learn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+    .learn-half{border:1px solid #E3ECE6;border-radius:12px;padding:9px;background:white;min-width:0;}
+    .learn-half strong{font-size:21px;display:block;overflow-wrap:anywhere;}
+    .learn-half code{font-size:11px;display:block;margin:5px 0;color:#557164;white-space:normal;overflow-wrap:anywhere;}
+    .learn-half.teen{background:#ECF8F0;border-color:#A9DDC1;}
+    .learn-half.ty{background:#F5F7FA;border-color:#D3DDE1;}
+    .learn-compact-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px;}
+    .learn-mini-btn{font-size:11px;border:1px solid #C9E8D6;color:#087A45;background:white;padding:9px 6px;border-radius:9px;line-height:1.3;font-weight:750;}
+    .learn-big-btn{width:100%;border-radius:12px;min-height:48px;background:#07C160;color:white;font-weight:800;font-size:13px;margin-top:11px;}
+    .learn-accord{margin-bottom:8px;border:1px solid #E1EBE5;border-radius:12px;padding:10px 12px;background:#fff;}
+    .learn-accord summary{font-size:13px;font-weight:800;cursor:pointer;line-height:1.6;}
+    .learn-accord .learn-note{padding:8px 0;}
+    .learn-digits{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center;margin:10px 0;}
+    .learn-digits button{padding:10px 9px;background:#F0F9F5;border:1px solid #B8E7CD;border-radius:10px;font-size:15px;font-weight:800;min-width:54px;}
+    .learn-progress{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:8px 0;}
+    .learn-day{min-height:44px;border-radius:8px;border:1px solid #DFEBE5;background:#FAFCFB;color:#637970;font-size:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;}
+    .learn-day.done{background:#E5F9ED;color:#068A4E;border-color:#8BD6AB;}
+    .learn-search{width:100%;min-height:44px;border:1px solid #D6E9DE;border-radius:11px;font-size:16px;padding:9px;outline:none;background:white;}
+    .learn-filters{display:flex;gap:7px;overflow-x:auto;padding:9px 1px;}
+    .learn-filters button{flex:none;border-radius:999px;font-size:11px;padding:8px 10px;background:#E9F5EF;color:#26724D;}
+    .learn-filters button.active{background:#07C160;color:white;}
+    .learn-word{padding:11px;border-radius:12px;border:1px solid #DFEBE4;background:white;margin-bottom:8px;}
+    .learn-word-title{font-size:15px;font-weight:850;overflow-wrap:anywhere;}
+    .learn-word-ipa{font-size:12px;color:#61746A;margin:5px 0;overflow-wrap:anywhere;}
+    .learn-syll{display:flex;gap:2px;flex-wrap:wrap;margin:6px 0;font-size:13px;}
+    .learn-syll span:nth-child(3n+1){color:#087C45}.learn-syll span:nth-child(3n+2){color:#4076AF}.learn-syll span:nth-child(3n){color:#A07931}
+    .learn-syll span.stressed{font-weight:900;text-decoration:underline;}
+    .learn-word-actions{display:flex;gap:7px;margin-top:7px;}
+    .learn-word-actions button{flex:1;padding:10px 5px;border-radius:9px;background:#E9F7EF;color:#078044;font-weight:800;font-size:11px;}
+    .learn-test-keypad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:320px;margin:12px auto 0;}
+    .learn-test-keypad button{min-height:54px;border-radius:12px;font-size:20px;font-weight:800;background:#F0F8F4;color:#16623F;}
+    .learn-test-keypad .confirm{background:#07C160;color:white;font-size:14px;}
+    .learn-ack{border:0;background:#E6F5EB;color:#16884B;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:750;margin-top:8px;}
+    .learn-check{font-size:10px;color:#A56B33;}
+    @media(max-width:360px){.learn-pair{gap:5px;}.learn-half strong{font-size:17px;}.learn-mini-btn{font-size:10px;}}
   </style>
 </head>
 <body>
 <div class="app" id="app">
-  <section class="page active" id="homePage">
+  <section class="page active" id="learnPage">
+    <div class="page-scroll" id="learnScroll">
+      <h1 class="page-title">基础学习</h1>
+      <p class="subtitle">先认声音，再训练反射 · 固定美音女声</p>
+      <div id="learnBody"></div>
+    </div>
+    <nav class="tabbar" aria-label="底部导航">
+      <button class="tab active" data-tab="learn"><span class="tab-emoji">📖</span>基础学习</button>
+      <button class="tab" data-tab="home"><span class="tab-emoji">🎯</span>课程闯关</button>
+      <button class="tab" data-tab="lab"><span class="tab-emoji">⚡</span>特训与错题台</button>
+    </nav>
+  </section>
+
+  <section class="page" id="homePage">
     <div class="page-scroll" id="homeScroll">
       <h1 class="page-title">声音反射训练</h1>
       <p class="subtitle">数字听写 × 专业词汇 · 听完即答，训练英语声音反射</p>
@@ -379,8 +441,9 @@
       <div id="lessonList"></div>
     </div>
     <nav class="tabbar" aria-label="底部导航">
-      <button class="tab active" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程闯关</button>
-      <button class="tab" data-tab="lab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M8 2v6M16 9v6M8 16v6"/></svg>特训与错题台</button>
+      <button class="tab" data-tab="learn"><span class="tab-emoji">📖</span>基础学习</button>
+      <button class="tab active" data-tab="home"><span class="tab-emoji">🎯</span>课程闯关</button>
+      <button class="tab" data-tab="lab"><span class="tab-emoji">⚡</span>特训与错题台</button>
     </nav>
   </section>
 
@@ -420,17 +483,9 @@
         <div id="confusionTop"></div>
       </article>
       <article class="card lab-card">
-        <h2 class="lab-title">语音多样性设置</h2>
-        <label class="switch-row"><input type="checkbox" id="randomVoices"> 每题随机音色 + ±10% 语速变化</label>
-        <label class="form-label" for="defaultAccent">普通关卡默认英语口音</label>
-        <select class="select" id="defaultAccent">
-          <option value="en-US">美音（US）</option><option value="en-GB">英音（GB）</option>
-          <option value="en-AU">澳音（AU）</option><option value="en-CA">加拿大音（CA）</option>
-          <option value="en-IN">印度音（IN）</option><option value="en-IE">爱尔兰音（IE）</option>
-          <option value="en-ZA">南非音（ZA）</option><option value="en-NZ">新西兰音（NZ）</option>
-        </select>
-        <p class="setting-help" id="voiceAvailability">正在读取本机可用音色…</p>
-        <p class="setting-help">第 19 关始终保留 8 国随机盲盒。实际口音取决于 Safari 已安装的语音，未安装的口音不以假口音冒充。</p>
+        <h2 class="lab-title">固定语音 · 美音女声</h2>
+        <p class="setting-help" id="voiceAvailability">正在读取美音女声音色…</p>
+        <p class="setting-help">所有训练、复盘、磨耳朵和基础学习使用同一选中女声；仅第 19 关按原规则随机 8 国口音。语速只随倍速选项变化。</p>
       </article>
       <article class="card lab-card">
         <h2 class="lab-title">学习记录与备份</h2>
@@ -442,8 +497,9 @@
       </article>
     </div>
     <nav class="tabbar" aria-label="底部导航">
-      <button class="tab" data-tab="home"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3zM9 20v-7h6v7"/></svg>课程闯关</button>
-      <button class="tab active" data-tab="lab"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16M8 2v6M16 9v6M8 16v6"/></svg>特训与错题台</button>
+      <button class="tab" data-tab="learn"><span class="tab-emoji">📖</span>基础学习</button>
+      <button class="tab" data-tab="home"><span class="tab-emoji">🎯</span>课程闯关</button>
+      <button class="tab active" data-tab="lab"><span class="tab-emoji">⚡</span>特训与错题台</button>
     </nav>
   </section>
 
@@ -451,7 +507,7 @@
     <header class="practice-top">
       <div class="practice-topline"><button class="back" id="backPractice" aria-label="返回">‹</button><div class="practice-title" id="practiceTitle">练习</div></div>
       <div class="settings-row">
-        <span class="accent-display" id="currentAccent" aria-live="polite">美音 · US</span>
+        <span class="accent-display" id="currentAccent" aria-live="polite">美音 · US 女声</span>
         <select class="select" id="voiceRate" aria-label="语音速度"><option value="0.8">0.8x</option><option value="1">1.0x</option><option value="1.2">1.2x</option><option value="1.5">1.5x</option></select>
         <select class="select question-count" id="questionCount" aria-label="本轮题量与当前题号" title="选择本轮总题数">
           <option value="10" selected>1 / 10</option><option value="20">1 / 20</option><option value="30">1 / 30</option>
@@ -478,6 +534,7 @@
   <div class="toast" id="toast" role="status"></div>
 </div>
 <script src="./stage-c-data.js"></script>
+<script src="./learn-data.js"></script>
 <script>
 'use strict';
 
@@ -491,7 +548,7 @@ const shuffle = arr => { const a = [...arr]; for(let i = a.length - 1; i > 0; i-
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const msText = ms => (Number(ms) / 1000).toFixed(2) + 's';
 const integerString = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1,randomVoices:true},courseRevision:2, levels:{}, errorPool:{}, totalQuestions:0, totalAnswered:0, totalCorrect:0, activeSession:null,trainingHistory:[],confusionPairs:{},dailyStats:{}}; }
+function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1,voiceName:''},courseRevision:2, levels:{}, errorPool:{}, totalQuestions:0, totalAnswered:0, totalCorrect:0, activeSession:null,trainingHistory:[],confusionPairs:{},dailyStats:{}}; }
 function migrateLegacyCourseIds(raw){
   if(!raw||raw.courseRevision>=2)return raw;
   const mapId=id=>id==='num:15'?'num:17':id==='num:16'?'num:18':id;
@@ -543,7 +600,7 @@ function normalizeStoredState(raw){
     totalAnswered:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),
     totalQuestions:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),
     totalCorrect:Math.max(0,Number(raw.totalCorrect)||0),
-    settings:{...emptyState().settings,...raw.settings,locale:ACCENT_CODES.includes(raw.settings?.locale)?raw.settings.locale:'en-US',randomVoices:raw.settings?.randomVoices!==false},
+    settings:{locale:'en-US',rate:Number(raw.settings?.rate)||1,voiceName:String(raw.settings?.voiceName||'')},
     trainingHistory:Array.isArray(raw.trainingHistory)?raw.trainingHistory.filter(v=>v&&typeof v==='object').slice(-300):[],
     confusionPairs:raw.confusionPairs&&typeof raw.confusionPairs==='object'&&!Array.isArray(raw.confusionPairs)?raw.confusionPairs:{},
     dailyStats:raw.dailyStats&&typeof raw.dailyStats==='object'&&!Array.isArray(raw.dailyStats)?raw.dailyStats:
@@ -890,8 +947,7 @@ const numericLessons=[
   {id:8,title:'万与十万',desc:'五～六位数 · 跨中英文进位差'},
   {id:9,title:'百万与十亿大数',desc:'七～十位数 · million / billion'},
   {id:10,title:'年份听写 Year',desc:'1998、2008 及特殊年份读法'},
-  {id:11,title:'时刻表达 Time',desc:'顺读与 past / to / quarter / half'},
-  {id:12,title:'小数与百分比',desc:'point 逐位发音与百分号'},
+  {id:11,title:'时刻表达 Time',desc:'顺读与 past / to / quarter / half'},  {id:12,title:'小数与百分比',desc:'point 逐位发音与百分号'},
   {id:13,title:'电话与分机号',desc:'7～11 位 · zero / oh / double / triple'},
   {id:14,title:'邮编与航班号',desc:'数字与英文字母混合编码'},
   {id:15,title:'分数与工业度量单位',desc:'1/2、3/4、three and a half 及工程量纲快听'},
@@ -1184,7 +1240,7 @@ const spokenNumberAliases={zero:'0',oh:'0',o:'0',one:'1',won:'1',two:'2',to:'2',
 function currentQuestion(){return session?.queue?.[session.index]||null;}
 function questionAccent(){
   if(session?.levelId==='num:19')return currentQuestion()?.practiceAccent||'en-US';
-  return state.settings.locale||'en-US';
+  return 'en-US';
 }
 const ACCENT_COUNTRIES=[
  {locale:'en-US',label:'🇺🇸 美音 · US'}, {locale:'en-GB',label:'🇬🇧 英音 · UK'},
@@ -1206,35 +1262,56 @@ function setQuestionEnvironments(queue,mode){
 function chooseAccents(queue,mode){
   for(const q of queue)q.practiceAccent=mode==='mixed'?pick(ACCENT_COUNTRIES).locale:mode;
 }
+const FEMALE_VOICE_NAMES=['samantha','ava','allison','joelle','google us english','female'];
+const SELECTED_US_VOICE_KEY='voice_reflex_us_female_voice';
 function installedEnglishVoices(){
   if(!('speechSynthesis' in window))return [];
   try{return (window.speechSynthesis.getVoices?.()||[]).filter(v=>/^en(?:-|$)/i.test(v.lang||''));}
   catch(e){return [];}
 }
+function savedVoiceName(){
+  try{return window.localStorage.getItem(SELECTED_US_VOICE_KEY)||String(state.settings.voiceName||'');}
+  catch(e){return String(state.settings.voiceName||'');}
+}
+function storeVoiceName(name){
+  if(!name)return;
+  try{window.localStorage.setItem(SELECTED_US_VOICE_KEY,name);}catch(e){}
+  if(state.settings.voiceName!==name){state.settings.voiceName=name;try{persist();}catch(e){}}
+}
+function preferredUSVoice(){
+  const voices=installedEnglishVoices().filter(v=>String(v.lang).toLowerCase()==='en-us');
+  if(!voices.length)return null;
+  const preferred=savedVoiceName();
+  let chosen=voices.find(v=>v.name===preferred);
+  if(!chosen){
+    chosen=[...voices].sort((a,b)=>{
+      const rank=v=>{
+        const name=String(v.name||'').toLowerCase();
+        const idx=FEMALE_VOICE_NAMES.findIndex(label=>name.includes(label));
+        return idx===-1?99:idx;
+      };
+      return rank(a)-rank(b);
+    })[0];
+  }
+  storeVoiceName(chosen.name);
+  return chosen;
+}
 function voiceForAccent(accent,q=null){
+  const special=!!(session?.levelId==='num:19'&&accent!=='en-US');
   const voices=installedEnglishVoices();
-  const exact=voices.filter(v=>(v.lang||'').toLowerCase()===accent.toLowerCase());
-  const fallback=voices.filter(v=>(v.lang||'').toLowerCase()==='en-us');
-  const candidates=exact.length?exact:fallback.length?fallback:voices;
-  if(!candidates.length)return null;
-  let chosen;
-  const random=state.settings.randomVoices!==false;
-  if(q&&random){
-    chosen=candidates.find(v=>v.name===q.stageBVoiceName&&v.lang===q.stageBVoiceLocale);
-    if(!chosen){
-      chosen=pick(candidates);
-      q.stageBVoiceName=chosen.name;q.stageBVoiceLocale=chosen.lang;
-      q.stageBRateJitter=Math.round((.9+Math.random()*.2)*1000)/1000;
-    }
-  }else chosen=candidates[0];
-  return {voice:chosen,approximate:!exact.length,actualLocale:chosen.lang||'en-US',
-    jitter:q&&random?(Number(q.stageBRateJitter)||1):1};
+  const preferred=preferredUSVoice();
+  if(!special){
+    return {voice:preferred,approximate:!preferred,actualLocale:'en-US',jitter:1};
+  }
+  const exact=voices.filter(v=>String(v.lang).toLowerCase()===String(accent).toLowerCase());
+  const voice=exact[0]||preferred;
+  return {voice,approximate:!exact.length,actualLocale:voice?.lang||accent,jitter:1};
 }
 function updateVoiceAvailability(){
   const el=$('voiceAvailability');if(!el)return;
-  const vs=installedEnglishVoices();
-  const locales=[...new Set(vs.map(v=>v.lang).filter(Boolean))];
-  el.textContent=vs.length?'本机可用英语音色 '+vs.length+' 个 · '+(locales.join(' / ')||'未标注地区')+'。音色：'+vs.slice(0,12).map(v=>v.name||'未命名').join(' / ')+(vs.length>12?' 等':''):'未检测到英语语音；Safari 可能在首次播放后才加载音色，请以真机为准。';
+  const us=preferredUSVoice();
+  el.textContent=us?'当前美音女声优先音色：'+us.name+' · en-US。'+(FEMALE_VOICE_NAMES.some(x=>String(us.name).toLowerCase().includes(x))?'已匹配女声名称。':'设备未标明性别，使用首个 en-US 音色。'):
+    '尚未列出 en-US 音色，使用浏览器 en-US 默认发声；加载后将自动选择优先女声。';
 }
 function clearFlowTimer(){if(runtime.autoNextTimer){clearTimeout(runtime.autoNextTimer);runtime.autoNextTimer=null;}if(runtime.wrongReplayWatchdog){clearTimeout(runtime.wrongReplayWatchdog);runtime.wrongReplayWatchdog=null;}}
 function clearAutoSubmitTimer(){if(runtime.autoSubmitTimer){clearTimeout(runtime.autoSubmitTimer);runtime.autoSubmitTimer=null;}}
@@ -1285,7 +1362,7 @@ function scheduleWrongAnswerReplay(q){
       const voice=voiceForAccent(questionAccent(),q);
       utterance.lang=voice?.actualLocale||'en-US';
       if(voice)utterance.voice=voice.voice;
-      utterance.rate=clamp((Number(state.settings.rate)||1)*(voice?.jitter||1),.65,1.7);
+      utterance.rate=clamp(Number(state.settings.rate)||1,.6,1.7);
       utterance.onend=advance;
       utterance.onerror=advance;
       synth.cancel();
@@ -1759,13 +1836,13 @@ function earPlay(){
   earState.phase='blind';earState.playing=true;
   renderEarMode();
   let utterance,started=false,finished=false;
-  const accent=session?.levelId==='num:19'?(q.practiceAccent||'en-US'):(state.settings.locale||'en-US');
+  const accent=session?.levelId==='num:19'?(q.practiceAccent||'en-US'):'en-US';
   try{
     utterance=new window.SpeechSynthesisUtterance(String(q.audioText||''));
     const match=voiceForAccent(accent,q);
     utterance.lang=match?.actualLocale||accent;
     if(match?.voice)utterance.voice=match.voice;
-    utterance.rate=clamp((Number(state.settings.rate)||1)*(match?.jitter||1),.65,1.7);
+    utterance.rate=clamp(Number(state.settings.rate)||1,.6,1.7);
     utterance.pitch=1;utterance.volume=1;
     utterance.onstart=()=>{
       if(!earCanRun(generation)||finished)return;
@@ -1819,8 +1896,7 @@ function startEarMode(){
   try{if(runtime.audioContext?.state==='suspended')runtime.audioContext.resume().catch(()=>{});}catch(e){}
   stopSpeech();clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();
   runtime.reviewPlaybackToken++;
-  earState={active:true,paused:false,reason:'',index:Math.min(session.index,session.queue.length-1),
-    cycle:1,repeat:0,phase:'blind',generation:earState.generation+1,timer:null,watchdog:null,monitor:null,wakeLock:null,playing:false};
+  earState={active:true,paused:false,reason:'',index:Math.min(session.index,session.queue.length-1),    cycle:1,repeat:0,phase:'blind',generation:earState.generation+1,timer:null,watchdog:null,monitor:null,wakeLock:null,playing:false};
   renderEarMode();void earAcquireWakeLock();earPlay();
 }
 function resumeEarMode(){
@@ -1925,7 +2001,7 @@ function speakCurrent(){
   clearAutoSubmitTimer();stopSpeech();
   const q=currentQuestion(),token=runtime.token,synth=window.speechSynthesis;
   const accent=questionAccent();
-  $('currentAccent').textContent=session.levelId==='num:19'?accentLabel(accent):session.levelId==='num:20'?noiseLabel(q.practiceNoise):accentLabel(accent);
+  $('currentAccent').textContent=session.levelId==='num:19'?accentLabel(accent):'美音 · US 女声';
   runtime.speaking=true;runtime.audioPhase='starting';runtime.readyAt=null;runtime.timingEstimated=false;
   runtime.early=false;updateListeningStatus();
   if(!synth||typeof SpeechSynthesisUtterance!=='function'){
@@ -1937,8 +2013,8 @@ function speakCurrent(){
   catch(e){speechFallback(token,'语音合成器初始化失败');return;}
   q.actualVoice=voiceMatch.actualLocale;q.approximateAccent=voiceMatch.approximate;
   utterance.lang=voiceMatch.actualLocale;
-  utterance.rate=clamp((Number(state.settings.rate)||1)*(voiceMatch.approximate?({ 'en-IN':.95,'en-IE':1.03,'en-ZA':.97,'en-NZ':1.02,'en-CA':1.01 }[accent]||1):1)*(voiceMatch.jitter||1),.65,1.7);
-  utterance.pitch=voiceMatch.approximate?({'en-IN':1.07,'en-IE':1.04,'en-ZA':.97,'en-NZ':1.03}[accent]||1):1;
+  utterance.rate=clamp(Number(state.settings.rate)||1,.6,1.7);
+  utterance.pitch=1;
   utterance.volume=1;utterance.voice=voiceMatch.voice;
   let completed=false,hasStarted=false;
   const settle=(estimated=false)=>{
@@ -1976,7 +2052,7 @@ function speakCurrent(){
     }catch(e){completed=true;speechFallback(token,'语音播报异常');}
   },80);
 }
-function speakPlain(text,onFinished,accentOverride=null,reviewQuestion=null){
+function speakPlain(text,onFinished,accentOverride=null,reviewQuestion=null,rateOverride=null){
   let done=false;
   const finish=()=>{if(done)return;done=true;if(watchdog)clearTimeout(watchdog);try{onFinished?.();}catch(e){}};
   let watchdog=null;
@@ -1988,9 +2064,9 @@ function speakPlain(text,onFinished,accentOverride=null,reviewQuestion=null){
     if(synth.speaking||synth.pending)synth.cancel();
     if(synth.paused)synth.resume();
     const utterance=new SpeechSynthesisUtterance(String(text||''));
-    utterance.lang=accentOverride||questionAccent();utterance.rate=clamp(Number(state.settings.rate)||1,.8,1.5);
+    utterance.lang=accentOverride||'en-US';utterance.rate=clamp(rateOverride===null?(Number(state.settings.rate)||1):Number(rateOverride),.6,1.7);
     utterance.pitch=1;utterance.volume=1;
-    const match=voiceForAccent(accentOverride||questionAccent(),reviewQuestion);
+    const match=voiceForAccent(accentOverride||'en-US',reviewQuestion);
     if(match){utterance.voice=match.voice;utterance.lang=match.actualLocale;}
     utterance.onend=finish;utterance.onerror=finish;
     synth.speak(utterance);
@@ -2032,7 +2108,7 @@ function beginQuestion(){
   $('voiceRate').value=String(state.settings.rate);
   const accentChallenge=session.levelId==='num:19';
   const environmentChallenge=session.levelId==='num:20';
-  $('currentAccent').textContent=accentChallenge?accentLabel(q.practiceAccent):environmentChallenge?noiseLabel(q.practiceNoise):accentLabel(questionAccent());
+  $('currentAccent').textContent=accentChallenge?accentLabel(q.practiceAccent):'美音 · US 女声';
   updateQuestionCountSelector();
   $('questionFill').style.width=(session.index/session.queue.length*100)+'%';
   document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===$('reflectionMode').value;r.closest('.mode-pill').classList.toggle('active',r.checked);});
@@ -2353,7 +2429,13 @@ function renderFeedback(q,correct,given,elapsed,early){
   const comparison=twin?'<div class="feedback-line"><span class="k">⚡ 易混对比提示</span>'+esc('本题 '+q.answer+'（'+q.audioText+'），注意与 '+(q.confusableBase||twin)+' 区分；留意重音和数量级。')+'</div>':'';
   const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题目标口音</span>'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?' · 使用设备 '+esc(q.actualVoice||'英语语音')+' 近似播报':'')+'</div>':'';
   const environmentReveal=session?.levelId==='num:20'?'<div class="feedback-line"><span class="k">本题环境</span>'+esc(noiseLabel(q.practiceNoise))+'</div>':'';
-  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}${q.feedbackHint?'<div class="stagec-tip">'+esc(q.feedbackHint)+'</div>':''}${q.stageC?'<div class="feedback-line"><span class="k">中文解析</span>'+esc(q.meaning)+(q.acceptedAnswers?.length?' · 允许：'+esc(q.acceptedAnswers.join(' / ')):'')+(q.equivalentReadings?.length?' · 等价读法：'+esc(q.equivalentReadings.join(' / ')):'')+'</div>':''}</div>`;
+  const ps=state.learn?.pairStats?.[String(q.answer)];
+  const firstRate=ps?.recent?.length>=10?Math.round(ps.recent.slice(0,5).reduce((a,b)=>a+b,0)*20):null;
+  const lastRate=ps?.recent?.length>=10?Math.round(ps.recent.slice(-5).reduce((a,b)=>a+b,0)*20):null;
+  const pairEncourage=!correct&&ps&&/^(1[3-9]|[3-9]0)$/.test(String(q.answer))?
+    '<div class="feedback-line"><span class="k">💡 易混对坚持记录</span>本数字累计练 '+ps.attempts+' 次 · 正确率 '+Math.round(ps.correct/ps.attempts*100)+'%'+
+    (firstRate===null?' · 再练几题即可观察变化':' · 最近 5 次 '+lastRate+'%（与较早 5 次相差 '+(lastRate-firstRate)+' 个百分点）')+'</div>':'';
+  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${pairEncourage}${accentReveal}${environmentReveal}${optional}${q.feedbackHint?'<div class="stagec-tip">'+esc(q.feedbackHint)+'</div>':''}${q.stageC?'<div class="feedback-line"><span class="k">中文解析</span>'+esc(q.meaning)+(q.acceptedAnswers?.length?' · 允许：'+esc(q.acceptedAnswers.join(' / ')):'')+(q.equivalentReadings?.length?' · 等价读法：'+esc(q.equivalentReadings.join(' / ')):'')+'</div>':''}</div>`;
   $('answerDisplay').classList.add('hidden');
 }
 function nextQuestion(){
@@ -2464,7 +2546,7 @@ function renderGroup(title,items){
       Math.max(0,90-a.accuracy)-Math.max(0,90-b.accuracy)|| (a.avg??Infinity)-(b.avg??Infinity));
     const gap=passed?'已通关 · '+record.stars+' 星':record.attempts&&candidate.length?gradeGap(candidate[0].accuracy,candidate[0].avg,candidate[0].avg!=null?1:0):'目标：正确率 ≥90% · 均速 <1.5s';
     const index=String(l.number).padStart(2,'0');
-    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div><div class="lesson-score" style="color:${passed?'#078D49':'#BA7850'}">${esc(gap)}</div></div>${status}</button>`;
+    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div><div class="lesson-score" style="color:${passed?'#078D49':'#BA7850'}">${esc(gap)}</div><div class="lesson-score">${typeof learningHintForLesson==='function'?esc(learningHintForLesson(l.id,record)):''}</div></div>${status}</button>`;
   }).join('')}</div>`;
 }
 function trendSvg(rows,field,min,max,color,label){
@@ -2534,12 +2616,10 @@ function renderLab(){
   $('freeLevel').innerHTML=allLessons().map(x=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('');
   if(allLessons().some(x=>x.id===selected))$('freeLevel').value=selected;
   $('statsText').textContent=`累计作答 ${state.totalAnswered||0} 题 · 累计正确 ${state.totalCorrect||0} 题 · 已完成 ${state.trainingHistory?.length||0} 轮`;
-  $('randomVoices').checked=state.settings.randomVoices!==false;
-  $('defaultAccent').value=state.settings.locale||'en-US';
   updateVoiceAvailability();renderStatistics();updateStorageStatus();
 }
-function refresh(){renderLessons();renderLab();}
-function selectTab(name){if(earState.active)stopEarMode();stopSpeech();refresh();showPage(name);}
+function refresh(){renderLessons();renderLab();if(typeof renderLearn==='function')renderLearn();}
+function selectTab(name){if(earState.active)stopEarMode();stopSpeech();refresh();showPage(name);if(name==='learn'&&typeof renderLearn==='function')renderLearn();}
 function setupEvents(){
   document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>selectTab(btn.dataset.tab)));
   $('lessonList').addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(b)startSession(b.dataset.lesson);});
@@ -2611,8 +2691,6 @@ function setupEvents(){
   $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
   $('weakList').addEventListener('click',e=>{const b=e.target.closest('[data-drop]');if(!b)return;delete state.errorPool[b.dataset.drop];persist();renderLab();});
   $('clearWeak').addEventListener('click',()=>{if(!Object.keys(state.errorPool).length)return;if(confirm('确定清空全部错题与超时记录？')){state.errorPool={};persist();renderLab();}});
-  $('randomVoices').addEventListener('change',e=>{state.settings.randomVoices=!!e.target.checked;persist();});
-  $('defaultAccent').addEventListener('change',e=>{if(!ACCENT_CODES.includes(e.target.value))return;state.settings.locale=e.target.value;persist();});
   $('exportProgress').addEventListener('click',exportProgress);
   $('importProgress').addEventListener('click',()=>$('importProgressFile').click());
   $('importProgressFile').addEventListener('change',async e=>{
@@ -2704,8 +2782,8 @@ function boot(){
           $('practicePage').classList.contains('active')&&$('reflectionMode').value!=='speak'&&
           voiceForAccent(questionAccent()))speakCurrent();
       };
-      if(engine.addEventListener)engine.addEventListener('voiceschanged',()=>{updateVoiceAvailability();voiceReady();});
-      else engine.onvoiceschanged=voiceReady;
+      if(engine.addEventListener)engine.addEventListener('voiceschanged',()=>{preferredUSVoice();updateVoiceAvailability();voiceReady();});
+      else engine.onvoiceschanged=()=>{preferredUSVoice();updateVoiceAvailability();voiceReady();};
     }catch(e){}
   }
   restoreIndexedState();
@@ -2713,5 +2791,6 @@ function boot(){
 }
 boot();
 </script>
+<script src="./learn-ui.js"></script>
 </body>
 </html>

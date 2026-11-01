@@ -1,4 +1,4 @@
-name: Deploy stage D voice reflex training PWA
+name: Deploy stage E voice reflex PWA
 on:
   push:
     branches: [main]
@@ -18,25 +18,32 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Validate full stage D app
+      - name: Validate stage E complete app
         run: |
           python3 - <<'PY'
           import json,re
           from pathlib import Path
-          html=Path('index.html').read_text(encoding='utf-8')
-          needed=['function generateNumber(', 'function startSession(', 'function submitAnswer(', 'startEarMode(', 'stopEarMode(', 'stage-c-data.js', 'industrial-23-40']
-          missing=[x for x in needed if x not in html]
-          if missing: raise SystemExit('Stage D feature missing: '+', '.join(missing))
-          for name in ('stage-c-data.js','sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'):
-              if not Path(name).is_file(): raise SystemExit('Missing file: '+name)
+          index=Path('index.html').read_text(encoding='utf-8')
+          data=Path('learn-data.js').read_text(encoding='utf-8')
+          ui=Path('learn-ui.js').read_text(encoding='utf-8')
+          required=['function generateNumber(','function startSession(','function submitAnswer(','startEarMode(','stopEarMode(','learn-data.js','learn-ui.js','industrial-23-40']
+          missing=[x for x in required if x not in index]
+          if missing: raise SystemExit('Missing existing features: '+', '.join(missing))
+          for f in ['stage-c-data.js','learn-data.js','learn-ui.js','sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png']:
+              if not Path(f).is_file():raise SystemExit('Missing app asset: '+f)
+          assert 'LEARN_DATA' in data and 'industrial-23-40' in data
+          assert 'initLearnUI' in ui and 'learnTestPlay' in ui
+          scripts=re.findall(r'<script\b([^>]*)>([\s\S]*?)</script>',index,re.I)
+          inline=[content for attrs,content in scripts if not re.search(r'\bsrc\s*=',attrs,re.I)]
+          if len(inline)!=1:raise SystemExit('Expected exactly one main inline script')
+          Path('/tmp/stage-e-inline.js').write_text(inline[0],encoding='utf-8')
           json.loads(Path('manifest.webmanifest').read_text(encoding='utf-8'))
-          scripts=re.findall(r'<script\b([^>]*)>([\s\S]*?)</script>',html,re.I)
-          inline=[body for attrs,body in scripts if not re.search(r'\bsrc\s*=',attrs,re.I)]
-          if len(inline)!=1: raise SystemExit('Expected one complete inline JavaScript block')
-          Path('/tmp/stage-d-check.js').write_text(inline[0],encoding='utf-8')
           PY
-          node --check /tmp/stage-d-check.js
+          node --check /tmp/stage-e-inline.js
           node --check stage-c-data.js
+          node --check learn-data.js
+          node --check learn-ui.js
+          node --check sw.js
       - uses: actions/configure-pages@v5
         with:
           enablement: true
