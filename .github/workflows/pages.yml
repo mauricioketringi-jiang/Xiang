@@ -1,4 +1,4 @@
-name: Deploy stage E voice reflex PWA
+name: Deploy VF Voice Reflex PWA
 on:
   push:
     branches: [main]
@@ -18,28 +18,33 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Validate stage E complete app
+      - name: Validate complete source and lesson counts
         run: |
           python3 - <<'PY'
-          import json,re
           from pathlib import Path
-          index=Path('index.html').read_text(encoding='utf-8')
-          data=Path('learn-data.js').read_text(encoding='utf-8')
-          ui=Path('learn-ui.js').read_text(encoding='utf-8')
-          required=['function generateNumber(','function startSession(','function submitAnswer(','startEarMode(','stopEarMode(','learn-data.js','learn-ui.js','industrial-23-40']
-          missing=[x for x in required if x not in index]
-          if missing: raise SystemExit('Missing existing features: '+', '.join(missing))
-          for f in ['stage-c-data.js','learn-data.js','learn-ui.js','sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png']:
-              if not Path(f).is_file():raise SystemExit('Missing app asset: '+f)
-          assert 'LEARN_DATA' in data and 'industrial-23-40' in data
-          assert 'initLearnUI' in ui and 'learnTestPlay' in ui
-          scripts=re.findall(r'<script\b([^>]*)>([\s\S]*?)</script>',index,re.I)
-          inline=[content for attrs,content in scripts if not re.search(r'\bsrc\s*=',attrs,re.I)]
-          if len(inline)!=1:raise SystemExit('Expected exactly one main inline script')
-          Path('/tmp/stage-e-inline.js').write_text(inline[0],encoding='utf-8')
+          import json,re
+          h=Path('index.html').read_text(encoding='utf-8')
+          c=Path('stage-c-data.js').read_text(encoding='utf-8')
+          l=Path('learn-data.js').read_text(encoding='utf-8')
+          for x in ('function generateNumber(', 'function startSession(', 'function submitAnswer(', 'startEarMode(', 'stopEarMode(', 'industrial-23-40', 'pairedStart', 'learn-ui.js?v=vf2'):
+            assert x in h, x
+          assert len(re.findall(r'\{id:\d+,title:',h))>=20
+          assert len(re.findall(r'"id":"industrial-2[123]-\d{2}"',h))==116
+          assert h.count('class="card lab-card"')==3
+          assert 'exam:' not in h and '考试专项' not in h
+          s=json.loads(re.search(r'window.STAGE_C_DATA\s*=\s*(\{[\s\S]*\});\s*',c).group(1))
+          assert 'exams' not in s and len(s['minimum'])==14 and len(s['scenarios'])>=20
+          data=json.loads(re.search(r'window.LEARN_DATA\s*=\s*(\{[\s\S]*\});\s*',l).group(1))
+          assert [len(data[k]) for k in ('base','extra','pairs','large','terms','rules')]==[10,4,7,6,10,4]
+          for f in ('learn-ui.js','sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','standalone.html'):
+            assert Path(f).is_file(),f
+          tags=re.findall(r'<script\b([^>]*)>([\s\S]*?)</script>',h,re.I)
+          inline=[body for attrs,body in tags if not re.search(r'\bsrc\s*=',attrs,re.I)]
+          assert len(inline)==1
+          Path('/tmp/vf-main.js').write_text(inline[0],encoding='utf-8')
           json.loads(Path('manifest.webmanifest').read_text(encoding='utf-8'))
           PY
-          node --check /tmp/stage-e-inline.js
+          node --check /tmp/vf-main.js
           node --check stage-c-data.js
           node --check learn-data.js
           node --check learn-ui.js

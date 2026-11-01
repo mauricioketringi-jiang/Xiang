@@ -1,4 +1,4 @@
-name: Stage D regression smoke
+name: VF Source Smoke Check
 on:
   push:
     branches: [main]
@@ -6,30 +6,21 @@ on:
 permissions:
   contents: read
 jobs:
-  check:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Validate entrypoint, content and scripts
+      - name: Verify original training source
         run: |
           python3 - <<'PY'
+          import re
           from pathlib import Path
-          import re,json
-          html=Path('index.html').read_text(encoding='utf-8')
-          data=Path('stage-c-data.js').read_text(encoding='utf-8')
-          assert '<script src="./stage-c-data.js"></script>' in html or 'src="stage-c-data.js"' in html
-          for token in ['startEarMode', 'stopEarMode', 'resumeEarMode', 'allLessons', 'startSession', 'earState']:
-              assert token in html, token
-          for token in ['STAGE_C_DATA','IELTS','TOEIC','BEC']:
-              assert token in data, token
-          for name in ('sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'):
-              assert Path(name).is_file(),name
-          json.loads(Path('manifest.webmanifest').read_text(encoding='utf-8'))
-          blocks=re.findall(r'<script\b([^>]*)>([\s\S]*?)</script>',html,re.I)
-          content=[body for attrs,body in blocks if not re.search(r'\bsrc\s*=',attrs,re.I)]
-          assert len(content)==1
-          Path('/tmp/stage-d.js').write_text(content[0],encoding='utf-8')
+          h=Path('index.html').read_text(encoding='utf-8')
+          assert len(re.findall(r'\{id:\d+,title:',h))>=20
+          assert len(re.findall(r'"id":"industrial-2[123]-\d{2}"',h))==116
+          assert 'exam:' not in h
+          assert 'pairedStart' in h
+          assert 'function renderLearn(' in Path('learn-ui.js').read_text(encoding='utf-8')
           PY
-          node --check /tmp/stage-d.js
-          node --check stage-c-data.js
+          node --check learn-ui.js
+          node --check learn-data.js

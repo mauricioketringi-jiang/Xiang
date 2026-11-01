@@ -327,8 +327,6 @@
     .summary-actions{position:sticky;bottom:-17px;padding:11px 0 calc(3px + env(safe-area-inset-bottom,0px));background:white;}
     @media(max-height:650px){.summary-panel{max-height:calc(100dvh - 16px);}}
     /* Stage C: new course groups, exam entry and explicit answer confirmation. */
-    .stagec-exams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0;}
-    .stagec-exams .btn{min-width:0;min-height:50px;padding:8px 3px;font-size:12px;line-height:1.3;}
     .stagec-tip{padding:9px 10px;margin-top:8px;border-radius:9px;background:#EFFAF3;color:#247748;font-size:12px;line-height:1.6;text-align:left;}
     .stagec-tip.error{background:#FFF1E9;color:#9D512A;}
     .stagec-confirm-row{display:flex;gap:8px;margin-top:6px;padding-bottom:env(safe-area-inset-bottom,0px);}
@@ -368,53 +366,57 @@
       .ear-reveal{padding:9px;gap:4px;margin-top:7px;}.ear-answer{font-size:32px;}.ear-hint{margin-top:4px;}}
     .tab-emoji{font-size:19px;line-height:21px;display:block;}
     .tabbar .tab{font-size:10px;min-width:0;padding:2px 0;}
-    .learn-intro{padding:15px 14px;margin-bottom:12px;}
-    .learn-title{font-size:15px;font-weight:850;margin:0 0 9px;}
-    .learn-note{font-size:12px;color:#65756D;line-height:1.7;}
-    .learn-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
-    .learn-tile{border-radius:13px;border:1px solid #DDECE3;background:#F7FCF9;padding:13px 8px;text-align:left;color:#244035;min-height:91px;}
-    .learn-tile strong{display:block;font-size:13px;line-height:1.4;}
-    .learn-tile small{display:block;color:#667C70;line-height:1.55;margin-top:5px;}
-    .learn-steps{display:grid;gap:7px;font-size:12px;line-height:1.6;}
-    .learn-step{background:#F3F9F5;padding:9px 11px;border-radius:10px;}
-    .learn-module{margin-bottom:12px;}
-    .learn-back{background:transparent;color:#167345;font-weight:800;font-size:13px;margin:0 0 13px;padding:9px 2px;}
-    .learn-stack{display:grid;gap:10px;}
-    .learn-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
-    .learn-half{border:1px solid #E3ECE6;border-radius:12px;padding:9px;background:white;min-width:0;}
-    .learn-half strong{font-size:21px;display:block;overflow-wrap:anywhere;}
-    .learn-half code{font-size:11px;display:block;margin:5px 0;color:#557164;white-space:normal;overflow-wrap:anywhere;}
-    .learn-half.teen{background:#ECF8F0;border-color:#A9DDC1;}
-    .learn-half.ty{background:#F5F7FA;border-color:#D3DDE1;}
-    .learn-compact-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px;}
-    .learn-mini-btn{font-size:11px;border:1px solid #C9E8D6;color:#087A45;background:white;padding:9px 6px;border-radius:9px;line-height:1.3;font-weight:750;}
-    .learn-big-btn{width:100%;border-radius:12px;min-height:48px;background:#07C160;color:white;font-weight:800;font-size:13px;margin-top:11px;}
-    .learn-accord{margin-bottom:8px;border:1px solid #E1EBE5;border-radius:12px;padding:10px 12px;background:#fff;}
-    .learn-accord summary{font-size:13px;font-weight:800;cursor:pointer;line-height:1.6;}
-    .learn-accord .learn-note{padding:8px 0;}
-    .learn-digits{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center;margin:10px 0;}
-    .learn-digits button{padding:10px 9px;background:#F0F9F5;border:1px solid #B8E7CD;border-radius:10px;font-size:15px;font-weight:800;min-width:54px;}
-    .learn-progress{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;margin:8px 0;}
-    .learn-day{min-height:44px;border-radius:8px;border:1px solid #DFEBE5;background:#FAFCFB;color:#637970;font-size:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;}
-    .learn-day.done{background:#E5F9ED;color:#068A4E;border-color:#8BD6AB;}
-    .learn-search{width:100%;min-height:44px;border:1px solid #D6E9DE;border-radius:11px;font-size:16px;padding:9px;outline:none;background:white;}
-    .learn-filters{display:flex;gap:7px;overflow-x:auto;padding:9px 1px;}
-    .learn-filters button{flex:none;border-radius:999px;font-size:11px;padding:8px 10px;background:#E9F5EF;color:#26724D;}
-    .learn-filters button.active{background:#07C160;color:white;}
-    .learn-word{padding:11px;border-radius:12px;border:1px solid #DFEBE4;background:white;margin-bottom:8px;}
-    .learn-word-title{font-size:15px;font-weight:850;overflow-wrap:anywhere;}
-    .learn-word-ipa{font-size:12px;color:#61746A;margin:5px 0;overflow-wrap:anywhere;}
-    .learn-syll{display:flex;gap:2px;flex-wrap:wrap;margin:6px 0;font-size:13px;}
-    .learn-syll span:nth-child(3n+1){color:#087C45}.learn-syll span:nth-child(3n+2){color:#4076AF}.learn-syll span:nth-child(3n){color:#A07931}
-    .learn-syll span.stressed{font-weight:900;text-decoration:underline;}
-    .learn-word-actions{display:flex;gap:7px;margin-top:7px;}
-    .learn-word-actions button{flex:1;padding:10px 5px;border-radius:9px;background:#E9F7EF;color:#078044;font-weight:800;font-size:11px;}
-    .learn-test-keypad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:320px;margin:12px auto 0;}
-    .learn-test-keypad button{min-height:54px;border-radius:12px;font-size:20px;font-weight:800;background:#F0F8F4;color:#16623F;}
-    .learn-test-keypad .confirm{background:#07C160;color:white;font-size:14px;}
-    .learn-ack{border:0;background:#E6F5EB;color:#16884B;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:750;margin-top:8px;}
-    .learn-check{font-size:10px;color:#A56B33;}
-    @media(max-width:360px){.learn-pair{gap:5px;}.learn-half strong{font-size:17px;}.learn-mini-btn{font-size:10px;}}
+
+    /* 基础学习 V2：宽度优先，触摸目标 44px+，图表纯 CSS */
+    #learnScroll{scroll-behavior:smooth;scroll-padding-top:12px}
+    #learnBody{padding-bottom:12px}
+    .lr-head{background:linear-gradient(145deg,#E9FAF0,#F9FFFB);border:1px solid #CDEEDC;border-radius:16px;margin:12px 0;padding:16px 14px}
+    .lr-kicker{color:#087944;font-size:11px;font-weight:850;letter-spacing:.3px}
+    .lr-head h2{margin:5px 0 8px;font-size:19px}
+    .lr-head p{font-size:12px;color:#587566;line-height:1.7;margin:0}
+    .lr-speed{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px}
+    .lr-speed>span{font-size:11px;color:#4D6F5E;margin-right:auto;font-weight:800}
+    .lr-speed button{border:1px solid #B6DFC7;border-radius:999px;padding:8px 9px;min-height:39px;background:white;color:#23714A;font-size:11px;font-weight:850}
+    .lr-speed button.active{background:#07C160;color:white;border-color:#07C160}
+    .lr-jump{display:flex;gap:7px;overflow-x:auto;margin:10px 0 14px;scrollbar-width:none}
+    .lr-jump button{flex:none;min-height:40px;border-radius:999px;border:1px solid #D8EAE0;background:#fff;padding:8px 11px;font-size:11px;font-weight:780;color:#168353}
+    .lr-block-title{font-size:14px;font-weight:900;margin:18px 2px 10px;line-height:1.6}
+    .lr-block-title small{font-size:10px;color:#869C8E;font-weight:650}
+    .lr-section{padding:14px 12px!important;margin:0 0 12px}
+    .lr-section h2{margin:0;font-size:15px;line-height:1.55}
+    .lr-desc{font-size:11px;color:#778F80;line-height:1.7;margin:6px 0 13px}
+    .lr-list{display:grid;gap:7px}
+    .lr-card{border:1px solid #E2EDE6;background:#FCFEFD;border-radius:12px;min-height:76px;padding:10px 9px;display:grid;grid-template-columns:minmax(38px,58px) minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;text-align:left}
+    .lr-card:active,.lr-twin-side:active,.lr-chip:active{background:#DFF7E8}
+    .lr-num{font-size:18px;text-align:center;font-variant-numeric:tabular-nums;color:#0C9855;overflow-wrap:anywhere}
+    .lr-word{display:flex;flex-direction:column;gap:3px;min-width:0}
+    .lr-word>strong{font-size:14px;color:#1B3440;overflow-wrap:anywhere;line-height:1.3}
+    .lr-ipa{font-size:11px;color:#52786D;overflow-wrap:anywhere}
+    .lr-hint,.lr-example{font-size:10px;line-height:1.4;color:#8A968C;overflow-wrap:anywhere}
+    .lr-play{white-space:nowrap;color:#07834D;font-size:10px;font-weight:850;border:1px solid #CBEAD9;background:#F0FBF4;border-radius:999px;padding:8px 5px}
+    .lr-tip{padding:11px;border-left:3px solid #08B55D;background:#E9F8F0;border-radius:8px;font-size:11px;line-height:1.8;margin:12px 0}
+    .lr-pairs{display:grid;gap:9px}
+    .lr-twin{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+    .lr-twin-side{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;border:1px solid #D3E9DD;border-radius:12px;padding:12px 9px;min-height:113px;min-width:0;background:#ECF9F1}
+    .lr-twin-side.lr-ty{background:#F5F8FB;border-color:#DCE5F0}
+    .lr-mini-tag{font-size:10px;color:#168B51;font-weight:800}
+    .lr-ty .lr-mini-tag{color:#446F9D}
+    .lr-twin-side>strong{font-size:13px;line-height:1.4;overflow-wrap:anywhere;color:#253E35}
+    .lr-twin-side>small{font-size:11px;color:#58796C;overflow-wrap:anywhere}
+    .lr-twin-side .lr-play{margin-top:auto}
+    .lr-rule-tag{display:inline-block;color:#0A8749;font-size:10px;font-weight:800;background:#E7F9EE;border-radius:999px;padding:5px 9px}
+    .lr-rule-content{font-size:12px;color:#415C4F;line-height:1.85}
+    .lr-rule-content p{padding:8px 9px;background:#F7FAF8;border-left:2px solid #B6E6C8;border-radius:7px;margin:8px 0}
+    .lr-rule-examples{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+    .lr-chip{border-radius:11px;background:#ECF8F1;border:1px solid #D2ECD9;text-align:left;padding:10px;min-height:58px;color:#19754A;display:flex;flex-direction:column;gap:5px;min-width:0}
+    .lr-chip span{font-size:11px;font-weight:850;overflow-wrap:anywhere}
+    .lr-chip small{font-size:10px;color:#718A7C}
+    .lr-finish .btn{margin-top:10px}
+    @media(max-width:375px){.lr-card{grid-template-columns:40px minmax(0,1fr) auto;gap:5px;padding:8px 7px}.lr-num{font-size:16px}.lr-word>strong{font-size:13px}.lr-play{font-size:9px}.lr-twin-side>strong{font-size:12px}}
+
+    .lr-row{display:flex;flex-direction:column;gap:0}
+    .lr-row:has(.lr-example-btn) .lr-card{border-bottom-left-radius:5px;border-bottom-right-radius:5px}
+    .lr-example-btn{display:block;width:100%;text-align:left;min-height:36px;padding:8px 12px;border:1px solid #DBEEE2;border-top:0;background:#F4FCF7;color:#13834B;font-size:11px;font-weight:760;border-radius:0 0 11px 11px;overflow-wrap:anywhere}
   </style>
 </head>
 <body>
@@ -422,7 +424,7 @@
   <section class="page active" id="learnPage">
     <div class="page-scroll" id="learnScroll">
       <h1 class="page-title">基础学习</h1>
-      <p class="subtitle">先认声音，再训练反射 · 固定美音女声</p>
+      <p class="subtitle">数字读音对照 · 0.7x 慢速 / 1.0x 常速点读</p>
       <div id="learnBody"></div>
     </div>
     <nav class="tabbar" aria-label="底部导航">
@@ -450,45 +452,28 @@
   <section class="page" id="labPage">
     <div class="page-scroll">
       <h1 class="page-title">特训与错题台</h1>
-      <p class="subtitle">慢反应与错误自动归档，针对薄弱点重复巩固</p>
+      <p class="subtitle">只练弱项、自由练习、查看与管理学习记录</p>
       <article class="card lab-card">
         <div class="row between"><h2 class="lab-title">智能弱项特训</h2><span class="pill" id="weakCount">0 题待巩固</span></div>
-        <p class="hint">答错或答对但反应超过 1800ms 的题目，自动进入特训池。连续快速答对 2 次即可移出。</p>
-        <button class="btn primary full" id="weakStart">开始弱项强化（10 题）</button>
+        <p class="hint">错题与反应缓慢题自动归档，连续快速答对两次可移出。</p>
+        <button class="btn primary full" id="weakStart">智能弱项强化（10 题）</button>
+        <button class="btn outline full" id="pairedStart" style="margin-top:10px">13/30～19/90 成对易混特训</button>
         <div class="weak-list" id="weakList"></div>
         <button class="btn danger full" id="clearWeak" style="margin-top:9px">清空特训池</button>
       </article>
       <article class="card lab-card">
         <h2 class="lab-title">自定义自由练习器</h2>
-        <p class="hint">自由指定数字题型或词库、题量，不影响关卡通关记录。</p>
+        <p class="hint">指定课程范围与题量，独立练习，不影响关卡通关结果。</p>
         <label class="form-label" for="freeLevel">练习范围</label>
         <select class="select" id="freeLevel"></select>
         <label class="form-label" for="freeCount">每次题量</label>
-        <select class="select" id="freeCount"><option value="10" selected>10 题</option><option value="20">20 题</option><option value="30">30 题</option></select>
+        <select class="select" id="freeCount">
+          <option value="10" selected>10 题</option><option value="20">20 题</option><option value="30">30 题</option>
+        </select>
         <button class="btn primary full" id="freeStart" style="margin-top:14px">开始自由练习</button>
       </article>
       <article class="card lab-card">
-        <h2 class="lab-title">考试专项 · IELTS / TOEIC / BEC</h2>
-        <p class="hint">固定题库独立维护。每类至少 15 题；选择后在准备页可切换听音、开口、拼写模式及 10/20/30 题。</p>
-        <div class="stagec-exams"><button class="btn outline" data-exam="ielts">雅思<br>IELTS</button><button class="btn outline" data-exam="toeic">托业<br>TOEIC</button><button class="btn outline" data-exam="bec">商务英语<br>BEC</button></div>
-        <p class="setting-help">考试内容包括电话/邮编/日期、更正数字、会议/预订、报价/数据与趋势。</p>
-      </article>
-      <article class="card lab-card">
-        <h2 class="lab-title">训练数据分析 · 近 30 次</h2>
-        <p class="hint">每次完成的练习单独记录，反应时间仅统计有效计时题。</p>
-        <div class="dash-metrics"><div class="dash-metric"><strong id="streakDays">0</strong><span>连续打卡天数</span></div><div class="dash-metric"><strong id="todayDuration">0 分钟</strong><span>今日有效训练时长</span></div></div>
-        <div class="chart-box"><div class="chart-label">平均反应时间趋势</div><div id="latencyChart"></div></div>
-        <div class="chart-box"><div class="chart-label">正确率趋势</div><div id="accuracyChart"></div></div>
-        <h3 class="lab-title" style="margin:17px 0 8px">易混数字 Top 10</h3>
-        <div id="confusionTop"></div>
-      </article>
-      <article class="card lab-card">
-        <h2 class="lab-title">固定语音 · 美音女声</h2>
-        <p class="setting-help" id="voiceAvailability">正在读取美音女声音色…</p>
-        <p class="setting-help">所有训练、复盘、磨耳朵和基础学习使用同一选中女声；仅第 19 关按原规则随机 8 国口音。语速只随倍速选项变化。</p>
-      </article>
-      <article class="card lab-card">
-        <h2 class="lab-title">学习记录与备份</h2>
+        <h2 class="lab-title">学习记录</h2>
         <div class="micro" id="statsText"></div>
         <div class="micro" id="storageStatus" aria-live="polite"></div>
         <div class="backup-row"><button class="btn ghost" id="exportProgress">导出进度 JSON</button><button class="btn outline" id="importProgress">导入进度 JSON</button></div>
@@ -533,8 +518,8 @@
   </div>
   <div class="toast" id="toast" role="status"></div>
 </div>
-<script src="./stage-c-data.js"></script>
-<script src="./learn-data.js"></script>
+<script src="./stage-c-data.js?v=vf2"></script>
+<script src="./learn-data.js?v=vf2"></script>
 <script>
 'use strict';
 
@@ -947,7 +932,8 @@ const numericLessons=[
   {id:8,title:'万与十万',desc:'五～六位数 · 跨中英文进位差'},
   {id:9,title:'百万与十亿大数',desc:'七～十位数 · million / billion'},
   {id:10,title:'年份听写 Year',desc:'1998、2008 及特殊年份读法'},
-  {id:11,title:'时刻表达 Time',desc:'顺读与 past / to / quarter / half'},  {id:12,title:'小数与百分比',desc:'point 逐位发音与百分号'},
+  {id:11,title:'时刻表达 Time',desc:'顺读与 past / to / quarter / half'},
+  {id:12,title:'小数与百分比',desc:'point 逐位发音与百分号'},
   {id:13,title:'电话与分机号',desc:'7～11 位 · zero / oh / double / triple'},
   {id:14,title:'邮编与航班号',desc:'数字与英文字母混合编码'},
   {id:15,title:'分数与工业度量单位',desc:'1/2、3/4、three and a half 及工程量纲快听'},
@@ -958,13 +944,10 @@ const numericLessons=[
   {id:20,title:'环境训练模式',desc:'全随机实战底噪（车间设备/电话分机/候机厅/咖啡厅）'}
 ];
 // Stage C: 23 existing lessons remain unchanged; five additional specialist lessons.
-const STAGE_C=window.STAGE_C_DATA||{minimum:[],scenarios:[],industrial:[],exams:{}};
+const STAGE_C=window.STAGE_C_DATA||{minimum:[],scenarios:[],industrial:[]};
 const stageCSpecialLessons=[
   {id:'special:minimal',number:24,kind:'special',title:'最小对立体 · Teen / Ty',desc:'13/30 至 19/90 · 混淆加权重复'},
-  {id:'special:scene',number:25,kind:'special',title:'场景听力 · 关键信息提取',desc:'报价 / 电话 / 会议 / 航班 / 工程参数 · 25 句'},
-  {id:'exam:ielts',number:26,kind:'special',title:'考试专项 · IELTS 雅思',desc:'电话、街道、邮编、日期、数字更正'},
-  {id:'exam:toeic',number:27,kind:'special',title:'考试专项 · TOEIC 托业',desc:'航班、会议、折扣与订房变更'},
-  {id:'exam:bec',number:28,kind:'special',title:'考试专项 · BEC 商务英语',desc:'报价、百分比、报表及趋势'}
+  {id:'special:scene',number:25,kind:'special',title:'场景听力 · 关键信息提取',desc:'报价 / 电话 / 会议 / 航班 / 工程参数 · 25 句'}
 ];
 function stageCQuestion(sample,levelId,sourceLevelId=null){
   if(!sample?.id)throw Error('阶段 C 题库缺少题目');
@@ -983,7 +966,7 @@ function stageCMinimalWeight(q){
 }
 function stageCQueue(levelId,count){
   let pool=levelId==='special:minimal'?STAGE_C.minimum:
-    levelId==='special:scene'?STAGE_C.scenarios:STAGE_C.exams?.[levelId.slice(5)];
+    levelId==='special:scene'?STAGE_C.scenarios:null;
   if(!Array.isArray(pool)||!pool.length)throw Error('阶段 C 独立题库未加载，请将 stage-c-data.js 一并上传');
   const queue=[];
   if(levelId==='special:minimal'){
@@ -1047,14 +1030,14 @@ function wordQuestion(word,group){
   return {kind:'word',levelId:'word:'+word.category,wordId:word.id,answer:word.meaning,audioText:word.audioText,meaning:word.meaning,phonetic:word.phonetic,example:word.example,word:word.answer,subCategory:word.subCategory,choices};
 }
 function makeQuestion(levelId){
-  if(levelId.startsWith('special:')||levelId.startsWith('exam:'))return stageCQueue(levelId,1)[0];
+  if(levelId.startsWith('special:'))return stageCQueue(levelId,1)[0];
   if(levelId.startsWith('num:')) return generateNumber(Number(levelId.slice(4)),state.settings.locale);
   const group=wordGroups().find(g=>g.id===levelId);
   if(!group || !group.words.length) throw Error('词库为空');
   return wordQuestion(pick(group.words),group);
 }
 function assembleQueue(levelId,count){
-  if(levelId.startsWith('special:')||levelId.startsWith('exam:'))return stageCQueue(levelId,count);
+  if(levelId.startsWith('special:'))return stageCQueue(levelId,count);
   // Short vocabulary sets cycle through separately shuffled decks, never leave a slot empty.
   if(levelId.startsWith('word:')){
     const group=wordGroups().find(g=>g.id===levelId);
@@ -1306,12 +1289,6 @@ function voiceForAccent(accent,q=null){
   const exact=voices.filter(v=>String(v.lang).toLowerCase()===String(accent).toLowerCase());
   const voice=exact[0]||preferred;
   return {voice,approximate:!exact.length,actualLocale:voice?.lang||accent,jitter:1};
-}
-function updateVoiceAvailability(){
-  const el=$('voiceAvailability');if(!el)return;
-  const us=preferredUSVoice();
-  el.textContent=us?'当前美音女声优先音色：'+us.name+' · en-US。'+(FEMALE_VOICE_NAMES.some(x=>String(us.name).toLowerCase().includes(x))?'已匹配女声名称。':'设备未标明性别，使用首个 en-US 音色。'):
-    '尚未列出 en-US 音色，使用浏览器 en-US 默认发声；加载后将自动选择优先女声。';
 }
 function clearFlowTimer(){if(runtime.autoNextTimer){clearTimeout(runtime.autoNextTimer);runtime.autoNextTimer=null;}if(runtime.wrongReplayWatchdog){clearTimeout(runtime.wrongReplayWatchdog);runtime.wrongReplayWatchdog=null;}}
 function clearAutoSubmitTimer(){if(runtime.autoSubmitTimer){clearTimeout(runtime.autoSubmitTimer);runtime.autoSubmitTimer=null;}}
@@ -1896,7 +1873,8 @@ function startEarMode(){
   try{if(runtime.audioContext?.state==='suspended')runtime.audioContext.resume().catch(()=>{});}catch(e){}
   stopSpeech();clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();
   runtime.reviewPlaybackToken++;
-  earState={active:true,paused:false,reason:'',index:Math.min(session.index,session.queue.length-1),    cycle:1,repeat:0,phase:'blind',generation:earState.generation+1,timer:null,watchdog:null,monitor:null,wakeLock:null,playing:false};
+  earState={active:true,paused:false,reason:'',index:Math.min(session.index,session.queue.length-1),
+    cycle:1,repeat:0,phase:'blind',generation:earState.generation+1,timer:null,watchdog:null,monitor:null,wakeLock:null,playing:false};
   renderEarMode();void earAcquireWakeLock();earPlay();
 }
 function resumeEarMode(){
@@ -2530,8 +2508,7 @@ function renderLessons(){
   const stageHtml=stages.map((stage,i)=>renderGroup(stage.title,stage.ids.map(id=>lessons.find(x=>x.id==='num:'+id)).concat(i===0?[stageCSpecialLessons[0]]:[]))).join('');
   const wordHtml=renderGroup('第五阶段 · 工业自动化与实战句型',wordGroups());
   const specialHtml=renderGroup('第六阶段 · 真实场景听力专项',stageCSpecialLessons.slice(1,2));
-  const examHtml=renderGroup('第七阶段 · IELTS / TOEIC / BEC 考试专项',stageCSpecialLessons.slice(2));
-  $('lessonList').innerHTML=stageHtml+wordHtml+specialHtml+examHtml;
+  $('lessonList').innerHTML=stageHtml+wordHtml+specialHtml;
 }
 function renderGroup(title,items){
   return `<div class="section-title">${esc(title)}<small>${items.length} 关</small></div><div class="lesson-group">${items.map((l,i)=>{
@@ -2546,45 +2523,8 @@ function renderGroup(title,items){
       Math.max(0,90-a.accuracy)-Math.max(0,90-b.accuracy)|| (a.avg??Infinity)-(b.avg??Infinity));
     const gap=passed?'已通关 · '+record.stars+' 星':record.attempts&&candidate.length?gradeGap(candidate[0].accuracy,candidate[0].avg,candidate[0].avg!=null?1:0):'目标：正确率 ≥90% · 均速 <1.5s';
     const index=String(l.number).padStart(2,'0');
-    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div><div class="lesson-score" style="color:${passed?'#078D49':'#BA7850'}">${esc(gap)}</div><div class="lesson-score">${typeof learningHintForLesson==='function'?esc(learningHintForLesson(l.id,record)):''}</div></div>${status}</button>`;
+    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div><div class="lesson-score" style="color:${passed?'#078D49':'#BA7850'}">${esc(gap)}</div></div>${status}</button>`;
   }).join('')}</div>`;
-}
-function trendSvg(rows,field,min,max,color,label){
-  const items=rows.slice(-30);
-  if(!items.length)return '<p class="micro">暂无完成的训练记录，完成一轮后显示趋势。</p>';
-  const width=320,height=124,left=34,right=10,top=12,bottom=22;
-  const px=i=>left+(items.length===1?.5:i/(items.length-1))*(width-left-right);
-  const py=v=>top+(max-v)/(max-min)*(height-top-bottom);
-  const segments=[];let current=[];
-  items.forEach((r,i)=>{
-    const val=r[field];
-    if(val===null||val===undefined||!Number.isFinite(Number(val))){if(current.length)segments.push(current);current=[];return;}
-    current.push([px(i),py(clamp(Number(val),min,max)),val]);
-  });if(current.length)segments.push(current);
-  const guides=[min,(min+max)/2,max].map(v=>`<line x1="${left}" x2="${width-right}" y1="${py(v)}" y2="${py(v)}" stroke="#E7EEE9" stroke-dasharray="3 4"/><text x="${left-5}" y="${py(v)+3}" text-anchor="end">${esc(field==='avgMs'?(v/1000).toFixed(1):Math.round(v)+'%')}</text>`).join('');
-  const lines=segments.map(points=>`<polyline fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" points="${points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>`+points.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${color}"/>`).join('')).join('');
-  return `<svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(label)}，${items.length} 次训练">${guides}${lines}<text x="${left}" y="${height-5}">较早</text><text x="${width-right}" y="${height-5}" text-anchor="end">最近</text></svg><div class="chart-legend">${esc(label)} · 共 ${items.length} 次（无有效反应计时的轮次留空）</div>`;
-}
-function currentStreak(history){
-  const days=new Set(history.map(x=>x.date||localDateKey(x.at)).filter(Boolean));
-  for(const [day,value] of Object.entries(state.dailyStats||{}))if((Number(value.durationMs)||0)>0)days.add(day);
-  let base=days.has(offsetDateKey(0))?0:-1,streak=0;
-  while(days.has(offsetDateKey(base))){streak++;base--;if(streak>300)break;}
-  return streak;
-}
-function renderStatistics(){
-  const history=Array.isArray(state.trainingHistory)?state.trainingHistory:[];
-  const recent=history.slice(-30);
-  $('streakDays').textContent=String(currentStreak(history));
-  const ms=state.dailyStats?.[offsetDateKey(0)]?.durationMs??history.filter(x=>(x.date||localDateKey(x.at))===offsetDateKey(0)).reduce((sum,x)=>sum+(Number(x.durationMs)||0),0);
-  $('todayDuration').textContent=ms>=60000?(ms/60000).toFixed(1)+' 分钟':Math.round(ms/1000)+' 秒';
-  $('latencyChart').innerHTML=trendSvg(recent,'avgMs',0,3000,'#09A75A','平均反应时间（0–3 秒，超出按 3 秒显示）');
-  $('accuracyChart').innerHTML=trendSvg(recent,'accuracy',0,100,'#387DB7','正确率（0–100%）');
-  const pairs=Object.entries(state.confusionPairs||{}).filter(([key,v])=>
-    /^[-0-9.:+]+→[-0-9.:+]+$/.test(key)&&Number.isFinite(Number(v))&&Number(v)>0)
-    .sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,10);
-  const max=pairs.length?Number(pairs[0][1]):1;
-  $('confusionTop').innerHTML=pairs.length?pairs.map(([key,count],i)=>`<div class="confusion-row"><div class="confusion-head"><span>${i+1}. ${esc(key.replace('→',' → '))}</span><span class="confusion-count">${Number(count)} 次</span></div><div class="confusion-track"><div class="confusion-fill" style="width:${clamp(Math.round(count/max*100),3,100)}%"></div></div></div>`).join(''):'<p class="micro">尚无数字误听记录。答错数字后将自动积累混淆对。</p>';
 }
 function exportProgress(){
   try{downloadFile('声音反射训练_进度_'+todayStamp()+'.json',JSON.stringify({format:'voice-reflex-backup',exportedAt:new Date().toISOString(),state},null,2));toast('进度备份已导出');}
@@ -2616,14 +2556,13 @@ function renderLab(){
   $('freeLevel').innerHTML=allLessons().map(x=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('');
   if(allLessons().some(x=>x.id===selected))$('freeLevel').value=selected;
   $('statsText').textContent=`累计作答 ${state.totalAnswered||0} 题 · 累计正确 ${state.totalCorrect||0} 题 · 已完成 ${state.trainingHistory?.length||0} 轮`;
-  updateVoiceAvailability();renderStatistics();updateStorageStatus();
+  updateStorageStatus();
 }
 function refresh(){renderLessons();renderLab();if(typeof renderLearn==='function')renderLearn();}
 function selectTab(name){if(earState.active)stopEarMode();stopSpeech();refresh();showPage(name);if(name==='learn'&&typeof renderLearn==='function')renderLearn();}
 function setupEvents(){
   document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>selectTab(btn.dataset.tab)));
   $('lessonList').addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(b)startSession(b.dataset.lesson);});
-  $('labPage').addEventListener('click',e=>{const b=e.target.closest('[data-exam]');if(b)startSession('exam:'+b.dataset.exam);});
   $('listenCard').addEventListener('click',e=>{
     const b=e.target.closest('[data-action]');if(!b)return;
     if(b.dataset.action==='start-training')startSelectedTraining();
@@ -2688,6 +2627,7 @@ function setupEvents(){
   $('voiceRate').addEventListener('change',e=>{state.settings.rate=Number(e.target.value);persist();if(session&&!runtime.feedback)resetToReadyState();});
   $('questionCount').addEventListener('change',e=>changeTrainingQuestionCount(e.target.value));
   $('weakStart').addEventListener('click',startWeak);
+  $('pairedStart').addEventListener('click',()=>startSession('special:minimal'));
   $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
   $('weakList').addEventListener('click',e=>{const b=e.target.closest('[data-drop]');if(!b)return;delete state.errorPool[b.dataset.drop];persist();renderLab();});
   $('clearWeak').addEventListener('click',()=>{if(!Object.keys(state.errorPool).length)return;if(confirm('确定清空全部错题与超时记录？')){state.errorPool={};persist();renderLab();}});
@@ -2700,7 +2640,7 @@ function setupEvents(){
     if(earState.active)stopEarMode();
     if(!confirm('确定重置全部练习进度、错题与设置？此操作不可撤销。'))return;
     const old=state;stopSpeech();state=emptyState();
-    if(!persist()){state=old;return;}session=null;$('reflectionMode').value='listen';document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value==='listen';r.closest('.mode-pill').classList.toggle('active',r.checked);});refresh();toast('已重置全部数据');
+    if(!persist()){state=old;return;}try{localStorage.removeItem('voice_reflex_learn_rate_v2');if(typeof learnRate!=='undefined')learnRate=1;}catch(e){}session=null;$('reflectionMode').value='listen';document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value==='listen';r.closest('.mode-pill').classList.toggle('active',r.checked);});refresh();toast('已重置全部数据');
   });
   window.addEventListener('keydown',e=>{
     if(earState.active){if(e.key==='Escape'){e.preventDefault();stopEarMode();}return;}
@@ -2782,8 +2722,8 @@ function boot(){
           $('practicePage').classList.contains('active')&&$('reflectionMode').value!=='speak'&&
           voiceForAccent(questionAccent()))speakCurrent();
       };
-      if(engine.addEventListener)engine.addEventListener('voiceschanged',()=>{preferredUSVoice();updateVoiceAvailability();voiceReady();});
-      else engine.onvoiceschanged=()=>{preferredUSVoice();updateVoiceAvailability();voiceReady();};
+      if(engine.addEventListener)engine.addEventListener('voiceschanged',()=>{preferredUSVoice();voiceReady();});
+      else engine.onvoiceschanged=()=>{preferredUSVoice();voiceReady();};
     }catch(e){}
   }
   restoreIndexedState();
@@ -2791,6 +2731,6 @@ function boot(){
 }
 boot();
 </script>
-<script src="./learn-ui.js"></script>
+<script src="./learn-ui.js?v=vf2"></script>
 </body>
 </html>
