@@ -267,6 +267,105 @@
       .keypad-shell.spelling-layout .spell-row .key {height:45px;min-height:45px;}
       .keypad-shell.spelling-layout .spell-actions .key {height:46px;min-height:46px;}
     }
+
+
+    /* Stage A: ready layout, transcription and visual/haptic feedback. */
+    .keypad-shell.ready-collapsed{display:none!important;}
+    .ready-audio-note{max-width:310px;margin-top:15px;font-size:11px;line-height:1.65;color:#7C8C83;text-align:center;}
+    .timer-label{font-size:12px;font-weight:750;color:#668478;margin:1px 0 1px;}
+    .reaction-benchmark{margin:4px 0 11px;padding:10px 8px;border-radius:10px;background:#F1F8F3;color:#2C6D47;font-size:11px;line-height:1.6;text-align:center;}
+    .speech-bottom-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+    .speech-bottom-actions .btn{min-width:0;min-height:55px;padding:8px 3px;border-radius:13px;font-size:clamp(11px,3.1vw,14px);white-space:nowrap;}
+    .speaking-help{font-size:12px;color:#7A8B83;line-height:1.5;margin:9px 0;}
+    .speaking-result{display:flex;align-items:center;justify-content:center;max-width:100%;min-height:42px;padding:9px 13px;border:1px solid #D8EAE0;background:#F2F8F4;border-radius:999px;color:#216A44;font-size:clamp(12px,3.8vw,16px);font-weight:750;line-height:1.4;word-break:break-word;}
+    .speaking-result.matched{background:#D8F7E5;box-shadow:0 0 0 4px rgba(7,193,96,.12);color:#067C40;}
+    .speech-demo{margin:10px 0 3px;}
+    .answer-display.spell-entry{font-size:24px;font-weight:850;color:#176B42;text-align:center;min-height:57px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:1px;}
+    .spelled-value{min-width:0;overflow-wrap:anywhere;color:#1A5F3F;}
+    .spelled-caret{height:26px;width:2px;display:inline-block;background:#07C160;animation:caret-blink .85s step-end infinite;vertical-align:middle;}
+    @keyframes caret-blink{50%{opacity:0;}}
+    .feedback-flash-correct{animation:stageA-correct .5s ease-out;}
+    .feedback-flash-wrong{animation:stageA-wrong .5s ease-out;}
+    @keyframes stageA-correct{0%,60%{box-shadow:inset 0 0 0 4px rgba(7,193,96,.45);background:#E0F9EA;}100%{box-shadow:none;background:#fff;}}
+    @keyframes stageA-wrong{0%,55%{box-shadow:inset 0 0 0 4px rgba(223,65,65,.43);background:#FFF0EF;}100%{box-shadow:none;background:#fff;}}
+    .wrong-fast{font-size:24px;font-weight:850;color:#CE4242;}
+    .wrong-correct-answer{font-size:clamp(22px,7vw,32px);font-weight:900;margin:18px 0 9px;color:#AD3232;overflow-wrap:anywhere;}
+    .wrong-reading{font-size:15px;font-weight:700;color:#3C4742;line-height:1.5;overflow-wrap:anywhere;}
+    .wrong-next-note{margin-top:14px;color:#758279;font-size:12px;line-height:1.45;}
+    @media(max-height:680px){.speaking-target{font-size:clamp(36px,10vw,56px);}.speech-bottom-actions .btn{min-height:47px;}.ready-audio-note{margin-top:7px;}}
+
+    /* Stage B: statistics, grading, backups and review. */
+    .summary-mask{padding:12px;align-items:center;}
+    .summary-panel{max-height:calc(100dvh - 36px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:21px 17px 17px;}
+    .stageb-stars{font-size:17px;color:#B9821B;white-space:nowrap;letter-spacing:0;}
+    .pass-gap{font-size:11px;color:#7A5F42;background:#FFF7E9;padding:9px 10px;border-radius:10px;line-height:1.6;text-align:left;margin:8px 0;}
+    .pass-gap.passed{background:#F1F9F4;color:#267446;}
+    .chart-box{margin-top:12px;padding:10px;border:1px solid #ECF2EF;border-radius:12px;background:#FCFEFD;}
+    .chart-label{font-size:12px;font-weight:750;color:#34443C;margin-bottom:4px;}
+    .trend-chart{display:block;width:100%;height:auto;min-height:115px;}
+    .trend-chart text{font-size:9px;fill:#839087;}
+    .chart-legend{font-size:10px;color:#78867E;line-height:1.5;}
+    .dash-metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px;}
+    .dash-metric{padding:13px 9px;background:#F4F9F6;border-radius:11px;text-align:center;}
+    .dash-metric strong{display:block;font-size:24px;color:#078D49;}
+    .dash-metric span{font-size:11px;color:#68796F;}
+    .confusion-row{padding:9px 0;border-top:1px solid #EDF0EE;}
+    .confusion-head{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:12px;font-weight:700;}
+    .confusion-count{font-size:11px;color:#9B6042;white-space:nowrap;}
+    .confusion-track{height:7px;border-radius:99px;background:#F3EEE9;overflow:hidden;margin-top:6px;}
+    .confusion-fill{height:100%;background:linear-gradient(90deg,#E8B67D,#D96A57);border-radius:99px;}
+    .review-title{font-size:13px;font-weight:800;text-align:left;margin:12px 0 7px;}
+    .review-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:9px 0;border-top:1px solid #EDF1ED;text-align:left;align-items:center;}
+    .review-detail{min-width:0;overflow-wrap:anywhere;}
+    .review-detail strong{font-size:12px;color:#24372C;}
+    .review-detail small{display:block;font-size:11px;color:#89918D;line-height:1.55;margin-top:3px;}
+    .review-item .btn{padding:7px 8px;min-height:34px;font-size:11px;}
+    .backup-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+    .setting-help{font-size:11px;color:#7A8881;line-height:1.6;margin:7px 0 0;}
+    .switch-row{display:flex;align-items:center;gap:9px;font-size:13px;margin:12px 0;}
+    .switch-row input{width:19px;height:19px;accent-color:#07C160;}
+    .summary-actions{position:sticky;bottom:-17px;padding:11px 0 calc(3px + env(safe-area-inset-bottom,0px));background:white;}
+    @media(max-height:650px){.summary-panel{max-height:calc(100dvh - 16px);}}
+    /* Stage C: new course groups, exam entry and explicit answer confirmation. */
+    .stagec-exams{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0;}
+    .stagec-exams .btn{min-width:0;min-height:50px;padding:8px 3px;font-size:12px;line-height:1.3;}
+    .stagec-tip{padding:9px 10px;margin-top:8px;border-radius:9px;background:#EFFAF3;color:#247748;font-size:12px;line-height:1.6;text-align:left;}
+    .stagec-tip.error{background:#FFF1E9;color:#9D512A;}
+    .stagec-confirm-row{display:flex;gap:8px;margin-top:6px;padding-bottom:env(safe-area-inset-bottom,0px);}
+    .stagec-confirm-row .btn{min-height:42px;width:100%;}
+    .stagec-entry{width:100%;border:0;background:transparent;font-size:23px;font-weight:800;color:#244334;text-align:center;outline:none;min-width:0;}
+    .stagec-entry::placeholder{color:#A1ABA4;font-size:13px;font-weight:500;}
+    .stagec-answer-help{font-size:11px;color:#6C8072;margin-top:7px;line-height:1.4;}
+    @media(max-width:360px){.stagec-exams{gap:5px;}.stagec-exams .btn{font-size:11px;}}
+
+
+
+    /* Stage D: auto listen-only mode, safe-area aware single-thumb stop control. */
+    .ready-ear{display:block;width:min(286px,100%);margin:12px auto 0;min-height:44px;
+      padding:10px 12px;border:1px solid #CFE8DB;border-radius:999px;background:#EDF9F2;
+      color:#147946;font-weight:790;font-size:13px;line-height:1.35;box-shadow:none;}
+    .ready-ear:active{background:#DDF4E7;transform:scale(.985);}
+    .ear-playing .practice-top .settings-row,.ear-playing .practice-top .training-controls,.ear-playing .tiny-track{display:none!important;}
+    .ear-playing .practice-body{padding:12px 13px;}
+    .ear-playing #listenCard{gap:0;padding:20px 15px;min-height:0;}
+    .ear-label{font-size:12px;color:#138450;font-weight:800;line-height:1.6;}
+    .ear-count{font-size:12px;color:#81938A;margin-top:9px;}
+    .ear-visual{font-size:clamp(66px,18vw,105px);line-height:1.25;margin:12px 0 7px;}
+    .ear-phase{font-size:17px;font-weight:800;color:#26483A;line-height:1.6;}
+    .ear-hint{font-size:12px;color:#85958B;line-height:1.7;margin-top:8px;max-width:320px;}
+    .ear-reveal{margin-top:15px;width:100%;background:#F0FBF5;border:1px solid #D7F1E2;border-radius:16px;
+      padding:15px 10px;display:flex;flex-direction:column;gap:8px;overflow-wrap:anywhere;}
+    .ear-answer{font-size:clamp(33px,9vw,52px);font-weight:900;color:#087E43;line-height:1.3;letter-spacing:-.8px;}
+    .ear-english{font-size:15px;color:#254436;line-height:1.5;font-weight:750;}
+    .ear-meaning{font-size:13px;color:#667D70;line-height:1.6;}
+    .ear-playing .keypad-shell{display:block!important;flex:none;width:100%;padding:9px 13px calc(11px + var(--safe-bottom));
+      background:#fff;border-top:1px solid #E8F1EB;}
+    .ear-stop{display:block;width:100%;height:56px;min-height:56px;border:1px solid #F5CACA;
+      background:#FFF0F0;color:#B83535;border-radius:999px;font-size:17px;font-weight:850;}
+    .ear-resume{padding:12px 18px;border-radius:999px;background:#E4F8ED;color:#087B46;
+      font-size:15px;font-weight:850;margin-top:14px;border:1px solid #CBECD9;}
+    @media(max-height:650px){.ear-playing #listenCard{padding:8px 12px;}.ear-visual{font-size:58px;margin:4px 0;}
+      .ear-reveal{padding:9px;gap:4px;margin-top:7px;}.ear-answer{font-size:32px;}.ear-hint{margin-top:4px;}}
   </style>
 </head>
 <body>
@@ -291,7 +390,7 @@
       <p class="subtitle">慢反应与错误自动归档，针对薄弱点重复巩固</p>
       <article class="card lab-card">
         <div class="row between"><h2 class="lab-title">智能弱项特训</h2><span class="pill" id="weakCount">0 题待巩固</span></div>
-        <p class="hint">答错或答对但反应超过 2500ms 的题目，自动进入特训池。连续快速答对 2 次即可移出。</p>
+        <p class="hint">答错或答对但反应超过 1800ms 的题目，自动进入特训池。连续快速答对 2 次即可移出。</p>
         <button class="btn primary full" id="weakStart">开始弱项强化（10 题）</button>
         <div class="weak-list" id="weakList"></div>
         <button class="btn danger full" id="clearWeak" style="margin-top:9px">清空特训池</button>
@@ -306,9 +405,40 @@
         <button class="btn primary full" id="freeStart" style="margin-top:14px">开始自由练习</button>
       </article>
       <article class="card lab-card">
-        <div class="row between"><h2 class="lab-title">学习记录</h2><button class="btn danger" id="clearHistory">重置全部学习数据</button></div>
+        <h2 class="lab-title">考试专项 · IELTS / TOEIC / BEC</h2>
+        <p class="hint">固定题库独立维护。每类至少 15 题；选择后在准备页可切换听音、开口、拼写模式及 10/20/30 题。</p>
+        <div class="stagec-exams"><button class="btn outline" data-exam="ielts">雅思<br>IELTS</button><button class="btn outline" data-exam="toeic">托业<br>TOEIC</button><button class="btn outline" data-exam="bec">商务英语<br>BEC</button></div>
+        <p class="setting-help">考试内容包括电话/邮编/日期、更正数字、会议/预订、报价/数据与趋势。</p>
+      </article>
+      <article class="card lab-card">
+        <h2 class="lab-title">训练数据分析 · 近 30 次</h2>
+        <p class="hint">每次完成的练习单独记录，反应时间仅统计有效计时题。</p>
+        <div class="dash-metrics"><div class="dash-metric"><strong id="streakDays">0</strong><span>连续打卡天数</span></div><div class="dash-metric"><strong id="todayDuration">0 分钟</strong><span>今日有效训练时长</span></div></div>
+        <div class="chart-box"><div class="chart-label">平均反应时间趋势</div><div id="latencyChart"></div></div>
+        <div class="chart-box"><div class="chart-label">正确率趋势</div><div id="accuracyChart"></div></div>
+        <h3 class="lab-title" style="margin:17px 0 8px">易混数字 Top 10</h3>
+        <div id="confusionTop"></div>
+      </article>
+      <article class="card lab-card">
+        <h2 class="lab-title">语音多样性设置</h2>
+        <label class="switch-row"><input type="checkbox" id="randomVoices"> 每题随机音色 + ±10% 语速变化</label>
+        <label class="form-label" for="defaultAccent">普通关卡默认英语口音</label>
+        <select class="select" id="defaultAccent">
+          <option value="en-US">美音（US）</option><option value="en-GB">英音（GB）</option>
+          <option value="en-AU">澳音（AU）</option><option value="en-CA">加拿大音（CA）</option>
+          <option value="en-IN">印度音（IN）</option><option value="en-IE">爱尔兰音（IE）</option>
+          <option value="en-ZA">南非音（ZA）</option><option value="en-NZ">新西兰音（NZ）</option>
+        </select>
+        <p class="setting-help" id="voiceAvailability">正在读取本机可用音色…</p>
+        <p class="setting-help">第 19 关始终保留 8 国随机盲盒。实际口音取决于 Safari 已安装的语音，未安装的口音不以假口音冒充。</p>
+      </article>
+      <article class="card lab-card">
+        <h2 class="lab-title">学习记录与备份</h2>
         <div class="micro" id="statsText"></div>
         <div class="micro" id="storageStatus" aria-live="polite"></div>
+        <div class="backup-row"><button class="btn ghost" id="exportProgress">导出进度 JSON</button><button class="btn outline" id="importProgress">导入进度 JSON</button></div>
+        <input id="importProgressFile" type="file" accept=".json,application/json" hidden>
+        <button class="btn danger full" id="clearHistory" style="margin-top:12px">重置全部学习数据</button>
       </article>
     </div>
     <nav class="tabbar" aria-label="底部导航">
@@ -347,10 +477,12 @@
   </div>
   <div class="toast" id="toast" role="status"></div>
 </div>
+<script src="./stage-c-data.js"></script>
 <script>
 'use strict';
 
 const STORE_KEY = 'voice_reflex_app_v1';
+const ACCENT_CODES=['en-US','en-GB','en-AU','en-CA','en-IN','en-IE','en-ZA','en-NZ'];
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -359,7 +491,7 @@ const shuffle = arr => { const a = [...arr]; for(let i = a.length - 1; i > 0; i-
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const msText = ms => (Number(ms) / 1000).toFixed(2) + 's';
 const integerString = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1},courseRevision:2, levels:{}, errorPool:{}, totalQuestions:0, totalAnswered:0, totalCorrect:0, activeSession:null}; }
+function emptyState(){ return {version:1, updatedAt:0, settings:{locale:'en-US',rate:1,randomVoices:true},courseRevision:2, levels:{}, errorPool:{}, totalQuestions:0, totalAnswered:0, totalCorrect:0, activeSession:null,trainingHistory:[],confusionPairs:{},dailyStats:{}}; }
 function migrateLegacyCourseIds(raw){
   if(!raw||raw.courseRevision>=2)return raw;
   const mapId=id=>id==='num:15'?'num:17':id==='num:16'?'num:18':id;
@@ -395,7 +527,13 @@ function normalizeStoredState(raw){
     'word:电工与电气工程核心词','word:自动化与智能控制核心词','word:高频工程短句、词组与句型'
   ]);
   const isAvailable=id=>!String(id||'').startsWith('word:')||availableWordIds.has(String(id));
-  const levels=Object.fromEntries(Object.entries(raw.levels||{}).filter(([id])=>isAvailable(id)));
+  const levels=Object.fromEntries(Object.entries(raw.levels||{}).filter(([id])=>isAvailable(id)).map(([id,item])=>{
+    if(!item||typeof item!=='object')return [id,{}];
+    const results=[item.best,item.last,...(item.gradeEvidence||[])].filter(Boolean);
+    const qualified=results.map(v=>({...roundGrade(Number(v.accuracy),Number.isFinite(v.avgMs)?v.avgMs:null),accuracy:v.accuracy,avgMs:v.avgMs}));
+    const stars=Math.max(0,...qualified.map(v=>v.stars));
+    return [id,{...item,passed:stars>0,stars,gradeEvidence:results.slice(-10)}];
+  }));
   const errorPool=Object.fromEntries(Object.entries(raw.errorPool||{}).filter(([,entry])=>
     entry&&entry.question&&isAvailable(entry.question.levelId)));
   const activeSession=raw.activeSession&&isAvailable(raw.activeSession.levelId)?raw.activeSession:null;
@@ -405,7 +543,11 @@ function normalizeStoredState(raw){
     totalAnswered:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),
     totalQuestions:Math.max(0,Number(raw.totalAnswered)||0,Number(raw.totalQuestions)||0),
     totalCorrect:Math.max(0,Number(raw.totalCorrect)||0),
-    settings:{...emptyState().settings,...raw.settings,locale:'en-US'},
+    settings:{...emptyState().settings,...raw.settings,locale:ACCENT_CODES.includes(raw.settings?.locale)?raw.settings.locale:'en-US',randomVoices:raw.settings?.randomVoices!==false},
+    trainingHistory:Array.isArray(raw.trainingHistory)?raw.trainingHistory.filter(v=>v&&typeof v==='object').slice(-300):[],
+    confusionPairs:raw.confusionPairs&&typeof raw.confusionPairs==='object'&&!Array.isArray(raw.confusionPairs)?raw.confusionPairs:{},
+    dailyStats:raw.dailyStats&&typeof raw.dailyStats==='object'&&!Array.isArray(raw.dailyStats)?raw.dailyStats:
+      Object.fromEntries([...new Set((raw.trainingHistory||[]).map(h=>h?.date).filter(Boolean))].map(day=>[day,{durationMs:(raw.trainingHistory||[]).filter(h=>h?.date===day).reduce((n,h)=>n+(Number(h.durationMs)||0),0)}])),
     levels,errorPool,activeSession};
 }
 let storageSource='未检测';
@@ -427,7 +569,9 @@ function loadState(){
 }
 let state = loadState();
 let session = null;
-let runtime = {input:'',selected:-1,letter:false,feedback:false,speaking:false,readyAt:null,early:false,token:0,animation:0,autoSubmitTimer:null,autoNextTimer:null,recognition:null,recognitionActive:false,speechText:'',audioContext:null,noiseNodes:[],noiseBuffer:null,audioPhase:'idle',timingEstimated:false,firstKeyAt:null,replayCount:0};
+let earState = {active:false,paused:false,reason:'',index:0,cycle:1,repeat:0,phase:'blind',generation:0,
+  timer:null,watchdog:null,monitor:null,wakeLock:null,playing:false};
+let runtime = {reviewPlaybackToken:0,input:'',selected:-1,letter:false,feedback:false,speaking:false,readyAt:null,early:false,token:0,animation:0,autoSubmitTimer:null,autoNextTimer:null,recognition:null,recognitionActive:false,speechText:'',audioContext:null,noiseNodes:[],noiseBuffer:null,audioPhase:'idle',timingEstimated:false,firstKeyAt:null,replayCount:0};
 let toastTimer = null;
 let dbPromise=null;
 let dbWriteQueue=Promise.resolve();
@@ -523,6 +667,41 @@ function downloadFile(filename, content, type='application/json;charset=utf-8'){
 function todayStamp(){ const d=new Date();return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`; }
 
 
+// Stage B: strict grading and foreground-only training clock.
+function roundGrade(accuracy,avg){
+  const passed=accuracy>=90 && avg!==null && Number.isFinite(avg) && avg<1500;
+  return {passed,stars:!passed?0:(accuracy>=95 && avg<1000?3:accuracy>=95?2:1)};
+}
+function gradeGap(accuracy,avg,validCount=0){
+  const missingAccuracy=Math.max(0,90-accuracy);
+  const milliseconds=avg===null?null:Math.max(0,Math.floor(avg)-1499);
+  const parts=[];
+  if(missingAccuracy)parts.push('正确率还差 '+missingAccuracy+' 个百分点');
+  if(!validCount)parts.push('还没有有效反应时间记录');
+  else if(milliseconds>0)parts.push('平均反应需再快 '+msText(milliseconds)+'（目标 <1.50s）');
+  return parts.length?'距离通关：'+parts.join('；'):'已满足通关条件';
+}
+function clockBegin(s){if(s&&!document.hidden&&!s.activeStartedAt)s.activeStartedAt=Date.now();}
+function clockPause(s){
+  if(!s||!s.activeStartedAt)return;
+  const start=s.activeStartedAt,end=Date.now(),duration=Math.max(0,Math.min(1800000,end-start));
+  s.activeMs=(Number(s.activeMs)||0)+duration;
+  if(duration){
+    if(!state.dailyStats||typeof state.dailyStats!=='object')state.dailyStats={};
+    const day=localDateKey(end),entry=state.dailyStats[day]||{durationMs:0};
+    entry.durationMs=(Number(entry.durationMs)||0)+duration;
+    state.dailyStats[day]=entry;
+  }
+  s.activeStartedAt=null;
+}
+function localDateKey(ms){const d=new Date(ms);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function offsetDateKey(days){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+days);return localDateKey(d.getTime());}
+function summaryReviewItems(completed){
+  const rows=Array.isArray(completed.answers)?completed.answers:[];
+  return rows.map((row,index)=>({...row,index})).sort((a,b)=>
+    Number(a.correct)-Number(b.correct) ||
+    (b.elapsed??-1)-(a.elapsed??-1) || a.index-b.index).slice(0,3);
+}
 const ones=['zero','one','two','three','four','five','six','seven','eight','nine'];
 const teens=['ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
 const tens=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
@@ -622,6 +801,11 @@ function generateNumber(id,locale='en-US'){
       return question(id,a,text,'邮编由字母与数字构成，空格可省略。');
     }
     case 15:{
+      // Stage C extension: retain all original fractions/units, and add 30 independent industrial samples.
+      if(STAGE_C.industrial?.length && rand(0,99)<65){
+        const sample=pick(STAGE_C.industrial);
+        return stageCQuestion(sample,'num:15',15);
+      }
       const fractionSet=[
         ['a half','0.5'],['a quarter','0.25'],['three quarters','0.75'],
         ['one and a half','1.5'],['two and a quarter','2.25'],
@@ -714,9 +898,71 @@ const numericLessons=[
   {id:16,title:'序数词与日期连读',desc:'1st/2nd/3rd/-th 与月份日期极速抓取'},
   {id:17,title:'自我修正陷阱',desc:'排除干扰，只抓最终生效数字'},
   {id:18,title:'算术与时间推算',desc:'听懂条件并计算最终结果'},
-  {id:19,title:'多口音训练模式',desc:'美音 / 英音 / 澳音 / 随机盲盒混播辨析'},
-  {id:20,title:'环境训练模式',desc:'纯净标准 / 电话电流音 / 候机厅嘈杂环境音实战'}
+  {id:19,title:'多口音训练模式',desc:'8 国口音随机盲盒（美/英/澳/加/印/爱/南非/新西兰）'},
+  {id:20,title:'环境训练模式',desc:'全随机实战底噪（车间设备/电话分机/候机厅/咖啡厅）'}
 ];
+// Stage C: 23 existing lessons remain unchanged; five additional specialist lessons.
+const STAGE_C=window.STAGE_C_DATA||{minimum:[],scenarios:[],industrial:[],exams:{}};
+const stageCSpecialLessons=[
+  {id:'special:minimal',number:24,kind:'special',title:'最小对立体 · Teen / Ty',desc:'13/30 至 19/90 · 混淆加权重复'},
+  {id:'special:scene',number:25,kind:'special',title:'场景听力 · 关键信息提取',desc:'报价 / 电话 / 会议 / 航班 / 工程参数 · 25 句'},
+  {id:'exam:ielts',number:26,kind:'special',title:'考试专项 · IELTS 雅思',desc:'电话、街道、邮编、日期、数字更正'},
+  {id:'exam:toeic',number:27,kind:'special',title:'考试专项 · TOEIC 托业',desc:'航班、会议、折扣与订房变更'},
+  {id:'exam:bec',number:28,kind:'special',title:'考试专项 · BEC 商务英语',desc:'报价、百分比、报表及趋势'}
+];
+function stageCQuestion(sample,levelId,sourceLevelId=null){
+  if(!sample?.id)throw Error('阶段 C 题库缺少题目');
+  return {kind:'numeric',levelId:sourceLevelId||levelId,stageCId:sample.id,
+    answer:String(sample.answer),audioText:String(sample.audioText),meaning:String(sample.meaning||''),
+    acceptedAnswers:Array.isArray(sample.acceptedAnswers)?[...sample.acceptedAnswers]:[],
+    equivalentReadings:Array.isArray(sample.equivalentReadings)?[...sample.equivalentReadings]:[],
+    answerType:sample.answerType||'number',spellingTarget:String(sample.englishAnswer||sample.audioText),
+    feedbackHint:sample.feedbackHint||'',minimalPair:sample.pairKey||null,
+    stageC:true,displayAnswer:String(sample.answer),formatHint:'听后输入关键答案，按「确认 ✓」提交'};
+}
+function stageCMinimalWeight(q){
+  const teen=String(q.pairKey||''),ty=String((Number(teen)-10)*10);
+  const pairs=state.confusionPairs||{};
+  return Math.max(1,Math.min(8,1+(Number(pairs[teen+'→'+ty])||0)*2+(Number(pairs[ty+'→'+teen])||0)*2));
+}
+function stageCQueue(levelId,count){
+  let pool=levelId==='special:minimal'?STAGE_C.minimum:
+    levelId==='special:scene'?STAGE_C.scenarios:STAGE_C.exams?.[levelId.slice(5)];
+  if(!Array.isArray(pool)||!pool.length)throw Error('阶段 C 独立题库未加载，请将 stage-c-data.js 一并上传');
+  const queue=[];
+  if(levelId==='special:minimal'){
+    const pairs=[...new Set(pool.map(x=>x.pairKey))];
+    const round=shuffle(pairs);
+    while(queue.length<count){
+      const weighted=pairs.flatMap(key=>Array.from({length:stageCMinimalWeight(pool.find(x=>x.pairKey===key))},()=>key));
+      const pair=round.length?round.shift():pick(weighted);
+      const variants=pool.filter(x=>x.pairKey===pair);
+      const last=queue.at(-1);
+      const options=last?.minimalPair===pair?variants.filter(x=>x.answer!==last.answer):variants;
+      queue.push(stageCQuestion(pick(options.length?options:variants),levelId));
+    }
+  }else{
+    let deck=[];
+    while(queue.length<count){
+      if(!deck.length)deck=shuffle(pool);
+      queue.push(stageCQuestion(deck.pop(),levelId));
+    }
+  }
+  return queue;
+}
+function stageCNormalize(q,value){
+  const raw=String(value??'').trim(),type=q.answerType||'number';
+  if(type==='code'||type==='text')return raw.toUpperCase().replace(/[\s‐‑–—-]/g,'');
+  if(type==='time'){
+    const t=raw.match(/^(\d{1,2}):(\d{1,2})$/);
+    return t?String(Number(t[1])).padStart(2,'0')+':'+String(Number(t[2])).padStart(2,'0'):raw;
+  }
+  const valueText=raw.replace(/,/g,'').replace(/%$/,'').replace(/\s+/g,'');
+  return /^[-+]?\d+(?:\.\d+)?$/.test(valueText)?String(Number(valueText)):valueText;
+}
+function stageCMatches(q,given){
+  return [q.answer,...(q.acceptedAnswers||[])].some(x=>stageCNormalize(q,x)===stageCNormalize(q,given));
+}
 const stages=[
   {title:'第一阶段 · 基础发音与易混攻坚',ids:[1,2,3,4,5]},
   {title:'第二阶段 · 进位突破与大数反应',ids:[6,7,8,9]},
@@ -736,7 +982,7 @@ function wordGroups(){
   }
   return [...groups.values()];
 }
-function allLessons(){return numericLessons.map(x=>({...x,id:'num:'+x.id,kind:'numeric',number:x.id})).concat(wordGroups());}
+function allLessons(){return numericLessons.map(x=>({...x,id:'num:'+x.id,kind:'numeric',number:x.id})).concat(wordGroups(),stageCSpecialLessons);}
 function wordQuestion(word,group){
   const pool=allWords().filter(x=>x.id!==word.id && x.meaning!==word.meaning);
   let wrong=shuffle(pool).slice(0,3).map(x=>x.meaning);
@@ -745,12 +991,14 @@ function wordQuestion(word,group){
   return {kind:'word',levelId:'word:'+word.category,wordId:word.id,answer:word.meaning,audioText:word.audioText,meaning:word.meaning,phonetic:word.phonetic,example:word.example,word:word.answer,subCategory:word.subCategory,choices};
 }
 function makeQuestion(levelId){
+  if(levelId.startsWith('special:')||levelId.startsWith('exam:'))return stageCQueue(levelId,1)[0];
   if(levelId.startsWith('num:')) return generateNumber(Number(levelId.slice(4)),state.settings.locale);
   const group=wordGroups().find(g=>g.id===levelId);
   if(!group || !group.words.length) throw Error('词库为空');
   return wordQuestion(pick(group.words),group);
 }
 function assembleQueue(levelId,count){
+  if(levelId.startsWith('special:')||levelId.startsWith('exam:'))return stageCQueue(levelId,count);
   // Short vocabulary sets cycle through separately shuffled decks, never leave a slot empty.
   if(levelId.startsWith('word:')){
     const group=wordGroups().find(g=>g.id===levelId);
@@ -788,15 +1036,16 @@ function normalizedTrainingCount(count){
   return TRAINING_COUNTS.includes(n)?n:10;
 }
 function startSession(levelId,mode='lesson',count=10){
+  if(earState.active)stopEarMode();
   try{
     const level=allLessons().find(x=>x.id===levelId);
     if(!level)throw Error('该关卡不存在');
-    stopSpeech();
+    stopSpeech();finishSpeechRecognition();
     const queue=assembleQueue(levelId,normalizedTrainingCount(count));
     const accentMode=levelId==='num:19'?'mixed':'en-US';
     const noiseMode=levelId==='num:20'?'random':'clean';
     chooseAccents(queue,accentMode);setQuestionEnvironments(queue,noiseMode);
-    session={mode,levelId,title:mode==='weak'?'智能弱项特训':mode==='free'?'自由练习 · '+level.title:level.title,queue,index:0,correct:0,sumMs:0,fastestMs:null,startedAt:null,isStarted:false,accentMode,noiseMode};
+    session={mode,levelId,title:mode==='weak'?'智能弱项特训':mode==='free'?'自由练习 · '+level.title:level.title,queue,index:0,correct:0,sumMs:0,fastestMs:null,startedAt:null,isStarted:false,activeMs:0,activeStartedAt:null,answers:[],accentMode,noiseMode};
     state.activeSession=session;persist();
     beginQuestion();
   }catch(e){toast(e.message||'无法生成试题');}
@@ -862,6 +1111,12 @@ function makeConfusableTwin(q){
   const clone={...q,answer,audioText:numberSpeechForTwin(answer),
     meaning:'易混镜像对照：'+q.answer+' ↔ '+answer+'。抓住重音、进位与数位的区别。',
     confusableBase:String(q.answer),confusableTwin:answer};
+  if(q.stageC){
+    clone.spellingTarget=numberSpeechForTwin(answer);
+    clone.answerType=answer.includes(':')?'time':answer.includes('.')?'decimal':'number';
+    clone.acceptedAnswers=[];clone.equivalentReadings=[];
+    clone.stageCId=q.stageCId+'-twin-'+answer;
+  }
   delete clone.displayAnswer;
   return clone;
 }
@@ -893,16 +1148,18 @@ function assembleWeakQueue(count,fallback=[]){
   return queue;
 }
 function startWeak(count=10){
+  if(earState.active)stopEarMode();
   try{
     const queue=assembleWeakQueue(normalizedTrainingCount(count));
-    stopSpeech();
+    stopSpeech();finishSpeechRecognition();
     session={mode:'weak',levelId:'weak',title:'成对易混镜像特训',queue,index:0,correct:0,
-      sumMs:0,fastestMs:null,startedAt:null,isStarted:false,accentMode:'en-US',noiseMode:'clean'};
+      sumMs:0,fastestMs:null,startedAt:null,isStarted:false,activeMs:0,activeStartedAt:null,answers:[],accentMode:'en-US',noiseMode:'clean'};
     state.activeSession=session;persist();beginQuestion();
   }catch(e){toast(e.message||'无法生成弱项练习');}
 }
 
 function resumeSession(){
+  if(earState.active)stopEarMode();
   const item=state.activeSession;
   if(!item||!Array.isArray(item.queue)||!item.queue.length||item.index>=item.queue.length){toast('没有可恢复的练习');return;}
   session=item;
@@ -911,7 +1168,7 @@ function resumeSession(){
     if(session.index>=session.queue.length-1){finishSession();return;}
     session.index++;session.awaitingNext=false;session.lastFeedback=null;
   }
-  session.isStarted=false;
+  session.isStarted=false;session.activeStartedAt=null;
   // Legacy free-practice rounds of 50 cannot be represented in the 10/20/30 selector.
   if(!TRAINING_COUNTS.includes(session.queue.length)){
     changeTrainingQuestionCount(30);
@@ -926,8 +1183,8 @@ const SPELL_NEXT_DELAY_MS=600; // Spelling: manual confirm, then automatic trans
 const spokenNumberAliases={zero:'0',oh:'0',o:'0',one:'1',won:'1',two:'2',to:'2',too:'2',three:'3',four:'4',for:'4',five:'5',six:'6',seven:'7',eight:'8',ate:'8',nine:'9'};
 function currentQuestion(){return session?.queue?.[session.index]||null;}
 function questionAccent(){
-  if(!session||session.levelId!=='num:19')return 'en-US';
-  return currentQuestion()?.practiceAccent||'en-US';
+  if(session?.levelId==='num:19')return currentQuestion()?.practiceAccent||'en-US';
+  return state.settings.locale||'en-US';
 }
 const ACCENT_COUNTRIES=[
  {locale:'en-US',label:'🇺🇸 美音 · US'}, {locale:'en-GB',label:'🇬🇧 英音 · UK'},
@@ -949,37 +1206,111 @@ function setQuestionEnvironments(queue,mode){
 function chooseAccents(queue,mode){
   for(const q of queue)q.practiceAccent=mode==='mixed'?pick(ACCENT_COUNTRIES).locale:mode;
 }
-function voiceForAccent(accent){
-  if(!('speechSynthesis' in window))return null;
-  const voices=window.speechSynthesis.getVoices?.()||[];
-  // Use installed English voices only; pitch and rate cannot generate an authentic regional accent.
-  const local=voices.filter(v=>v.localService!==false&&/^en(?:-|$)/i.test(v.lang||''));
-  const exact=local.find(v=>(v.lang||'').toLowerCase()===accent.toLowerCase());
-  const fallback=exact||local.find(v=>(v.lang||'').toLowerCase()==='en-us')||local[0]||null;
-  return fallback?{voice:fallback,approximate:!exact,actualLocale:fallback.lang||'en-US'}:null;
+function installedEnglishVoices(){
+  if(!('speechSynthesis' in window))return [];
+  try{return (window.speechSynthesis.getVoices?.()||[]).filter(v=>/^en(?:-|$)/i.test(v.lang||''));}
+  catch(e){return [];}
 }
-function clearFlowTimer(){if(runtime.autoNextTimer){clearTimeout(runtime.autoNextTimer);runtime.autoNextTimer=null;}}
+function voiceForAccent(accent,q=null){
+  const voices=installedEnglishVoices();
+  const exact=voices.filter(v=>(v.lang||'').toLowerCase()===accent.toLowerCase());
+  const fallback=voices.filter(v=>(v.lang||'').toLowerCase()==='en-us');
+  const candidates=exact.length?exact:fallback.length?fallback:voices;
+  if(!candidates.length)return null;
+  let chosen;
+  const random=state.settings.randomVoices!==false;
+  if(q&&random){
+    chosen=candidates.find(v=>v.name===q.stageBVoiceName&&v.lang===q.stageBVoiceLocale);
+    if(!chosen){
+      chosen=pick(candidates);
+      q.stageBVoiceName=chosen.name;q.stageBVoiceLocale=chosen.lang;
+      q.stageBRateJitter=Math.round((.9+Math.random()*.2)*1000)/1000;
+    }
+  }else chosen=candidates[0];
+  return {voice:chosen,approximate:!exact.length,actualLocale:chosen.lang||'en-US',
+    jitter:q&&random?(Number(q.stageBRateJitter)||1):1};
+}
+function updateVoiceAvailability(){
+  const el=$('voiceAvailability');if(!el)return;
+  const vs=installedEnglishVoices();
+  const locales=[...new Set(vs.map(v=>v.lang).filter(Boolean))];
+  el.textContent=vs.length?'本机可用英语音色 '+vs.length+' 个 · '+(locales.join(' / ')||'未标注地区')+'。音色：'+vs.slice(0,12).map(v=>v.name||'未命名').join(' / ')+(vs.length>12?' 等':''):'未检测到英语语音；Safari 可能在首次播放后才加载音色，请以真机为准。';
+}
+function clearFlowTimer(){if(runtime.autoNextTimer){clearTimeout(runtime.autoNextTimer);runtime.autoNextTimer=null;}if(runtime.wrongReplayWatchdog){clearTimeout(runtime.wrongReplayWatchdog);runtime.wrongReplayWatchdog=null;}}
 function clearAutoSubmitTimer(){if(runtime.autoSubmitTimer){clearTimeout(runtime.autoSubmitTimer);runtime.autoSubmitTimer=null;}}
 function initializeAudioContext(){
   const API=window.AudioContext||window.webkitAudioContext;
   if(!API)return null;
   try{runtime.audioContext=runtime.audioContext||new API();if(runtime.audioContext.state==='suspended')runtime.audioContext.resume().catch(()=>{});return runtime.audioContext;}catch(e){return null;}
 }
+function primeSpeechVoices(){
+  // Web Speech cannot preload synthesized audio bytes. Prime voice metadata and
+  // initialize the audio graph on a user gesture, while measuring only from onend.
+  try{
+    const engine=window.speechSynthesis;
+    if(!engine)return;
+    engine.getVoices?.();
+    if(engine.paused)engine.resume();
+  }catch(e){console.warn('Speech voice warmup unavailable',e);}
+}
+function safeVibrate(pattern=16){
+  try{if(typeof navigator!=='undefined'&&typeof navigator.vibrate==='function')navigator.vibrate(pattern);}catch(e){}
+}
+function showRoundFlash(correct){
+  const card=$('listenCard');
+  card?.classList.remove('feedback-flash-correct','feedback-flash-wrong');
+  // Force a CSS restart without layout dependency on a viewport transition.
+  void card?.offsetWidth;
+  card?.classList.add(correct?'feedback-flash-correct':'feedback-flash-wrong');
+}
+function scheduleWrongAnswerReplay(q){
+  // A2: show the answer, replay it ONCE, then move on. Keep a manual Next fallback.
+  if(!session||!session.isStarted)return;
+  const token=runtime.token;
+  const isCurrent=()=>!!session&&session.isStarted&&runtime.token===token&&runtime.feedback&&session.awaitingNext;
+  let done=false;
+  const advance=()=>{
+    if(done||!isCurrent())return;
+    done=true;
+    if(runtime.wrongReplayWatchdog){clearTimeout(runtime.wrongReplayWatchdog);runtime.wrongReplayWatchdog=null;}
+    runtime.autoNextTimer=setTimeout(()=>{runtime.autoNextTimer=null;if(isCurrent())nextQuestion();},350);
+  };
+  runtime.autoNextTimer=setTimeout(()=>{
+    runtime.autoNextTimer=null;
+    if(!isCurrent())return;
+    const synth=window.speechSynthesis;
+    if(!synth||typeof SpeechSynthesisUtterance!=='function'){advance();return;}
+    try{
+      const utterance=new SpeechSynthesisUtterance('. '+String(q.audioText||''));
+      const voice=voiceForAccent(questionAccent(),q);
+      utterance.lang=voice?.actualLocale||'en-US';
+      if(voice)utterance.voice=voice.voice;
+      utterance.rate=clamp((Number(state.settings.rate)||1)*(voice?.jitter||1),.65,1.7);
+      utterance.onend=advance;
+      utterance.onerror=advance;
+      synth.cancel();
+      synth.speak(utterance);
+      runtime.wrongReplayWatchdog=setTimeout(advance,Math.min(16000,Math.max(4500,String(q.audioText||'').length*180)));
+    }catch(e){advance();}
+  },180);
+}
 function correctTone(){
+  try{
   const ctx=initializeAudioContext();if(!ctx)return;
   const now=ctx.currentTime,osc=ctx.createOscillator(),gain=ctx.createGain();
   osc.type='sine';osc.frequency.setValueAtTime(784,now);osc.frequency.setValueAtTime(1047,now+.07);
   gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.13,now+.008);gain.gain.exponentialRampToValueAtTime(.0001,now+.17);
   osc.connect(gain).connect(ctx.destination);osc.start(now);osc.stop(now+.18);
+  }catch(e){} // AudioContext may exist without oscillator output support.
 }
 function stopNoise(){
   for(const node of runtime.noiseNodes){try{node.stop?.();}catch(e){}try{node.disconnect?.();}catch(e){}}
   runtime.noiseNodes=[];
 }
-function startNoise(){
+function startNoise(questionOverride=null){
   stopNoise();
   if(!session||session.levelId!=='num:20'||$('reflectionMode').value==='speak')return;
-  const type=currentQuestion()?.practiceNoise||'clean';if(type==='clean')return;
+  const type=(questionOverride||currentQuestion())?.practiceNoise||'clean';if(type==='clean')return;
   const ctx=initializeAudioContext();if(!ctx)return;
   const duration=2*ctx.sampleRate;
   const buf=ctx.createBuffer(1,duration,ctx.sampleRate),arr=buf.getChannelData(0);
@@ -1001,8 +1332,16 @@ function speechStartForQuestion(){
   runtime.readyAt=performance.now();runtime.early=false;runtime.audioPhase='ready';runtime.timingEstimated=false;startTimer();
 }
 function finishSpeechRecognition(){
-  const recognition=runtime.recognition;runtime.recognition=null;runtime.recognitionActive=false;
-  if(recognition){try{recognition.onresult=null;recognition.onerror=null;recognition.onend=null;recognition.abort();}catch(e){}}
+  if(runtime.recognitionRetryTimer){clearTimeout(runtime.recognitionRetryTimer);runtime.recognitionRetryTimer=null;}
+  const recognizer=runtime.recognition;
+  runtime.recognition=null;
+  runtime.recognitionActive=false;
+  runtime.recognitionAllowed=false;
+  runtime.recognitionUnavailable=false;
+  runtime.demoPlaying=false;
+  if(recognizer){
+    try{recognizer.onresult=null;recognizer.onerror=null;recognizer.onend=null;recognizer.onstart=null;recognizer.abort();}catch(e){}
+  }
 }
 function normalizeSpoken(text){
   return String(text||'').toLowerCase().replace(/[^a-z0-9.%: ]+/g,' ').split(/\s+/).filter(Boolean)
@@ -1146,6 +1485,12 @@ function spokenCodeToValue(text){
 function spokenAnswerMatches(q,spoken){
   const raw=String(spoken||'').trim();
   if(!raw)return false;
+  if(q.stageC){
+    if(stageCMatches(q,raw)||normalizeSpelling(q.spellingTarget)===normalizeSpelling(raw)||
+      (q.equivalentReadings||[]).some(x=>normalizeSpelling(x)===normalizeSpelling(raw)))return true;
+    const values=[numericWordsToValue(raw),spokenDigitsToValue(raw),spokenCodeToValue(raw),spokenTimeToValue(raw),spokenDateToValue(raw)];
+    return values.some(v=>v!==null && stageCMatches(q,v));
+  }
   const actual=normalizeSpoken(raw),target=normalizeSpoken(q.audioText),answer=normalizeSpoken(q.kind==='word'?q.word||q.audioText:q.answer);
   if(actual===target||actual===answer)return true;
   if(q.kind==='word')return normalizeSpelling(raw)===normalizeSpelling(q.word||q.audioText);
@@ -1164,36 +1509,96 @@ function spokenAnswerMatches(q,spoken){
   return false;
 }
 
+function speechManualFallback(message){
+  runtime.recognitionUnavailable=true;
+  runtime.recognitionAllowed=false;
+  if(runtime.recognitionRetryTimer){clearTimeout(runtime.recognitionRetryTimer);runtime.recognitionRetryTimer=null;}
+  if($('speechHelp'))$('speechHelp').textContent=message||'语音识别不可用，请使用底部“自检通过 / 未能说对”。';
+  if($('speechTranscript'))$('speechTranscript').textContent='手动自检模式 · 仍可完整训练';
+}
 function startSpeechRecognition(){
   if(!session||!session.isStarted||runtime.feedback||$('reflectionMode').value!=='speak')return;
-  finishSpeechRecognition();
   const API=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!API){
-    $('speechHelp').textContent='当前浏览器不支持自动语音识别，可使用下面的自检按钮。';return;
+  if(!API){speechManualFallback('当前 Safari 不支持自动语音识别，请使用底部自检按钮。');return;}
+  if(runtime.recognitionUnavailable)return;
+  if(runtime.recognition){
+    // Continuous recognition owns one recognizer across the full round.
+    if(!runtime.recognitionActive&&!runtime.recognitionRetryTimer)restartSpeechRecognition();
+    return;
   }
-  let recognition;
-  try{recognition=new API();recognition.lang='en-US';recognition.interimResults=true;recognition.continuous=false;
-    recognition.maxAlternatives=3;runtime.recognition=recognition;
-    recognition.onstart=()=>{runtime.recognitionActive=true;if($('speechHelp'))$('speechHelp').textContent='正在听你说英文…';};
-    recognition.onresult=event=>{
-      if(!session||runtime.feedback||runtime.recognition!==recognition)return;
-      let transcript='',final=false;
-      for(let i=event.resultIndex;i<event.results.length;i++){
-        transcript+=event.results[i][0]?.transcript||'';final=final||event.results[i].isFinal;
-      }
-      if($('speechTranscript'))$('speechTranscript').textContent=transcript;
-      if(final&&transcript.trim()){
-        const q=currentQuestion();const correct=spokenAnswerMatches(q,transcript);
-        runtime.speechText=transcript;submitAnswer(!correct,transcript);
+  try{
+    const recognizer=new API();
+    recognizer.lang='en-US';recognizer.continuous=true;recognizer.interimResults=true;recognizer.maxAlternatives=3;
+    runtime.recognition=recognizer;runtime.recognitionAllowed=true;
+    runtime.recognitionLastSeen=0;runtime.recognitionFloor=0;runtime.recognitionRetryCount=0;
+    recognizer.onstart=()=>{
+      if(runtime.recognition!==recognizer)return;
+      runtime.recognitionActive=true;runtime.recognitionStartedAt=performance.now();
+      if($('speechHelp'))$('speechHelp').textContent='正在持续监听；说出屏幕内容即可判题';
+    };
+    recognizer.onresult=event=>{
+      if(runtime.recognition!==recognizer||!session||!session.isStarted||$('reflectionMode').value!=='speak')return;
+      const length=event.results?.length||0;
+      runtime.recognitionLastSeen=Math.max(runtime.recognitionLastSeen||0,length);
+      if(runtime.feedback||session.awaitingNext||runtime.demoPlaying)return;
+      if(performance.now()<(runtime.speechMinValidAt||0))return;
+      const q=currentQuestion();
+      for(let i=Math.max(event.resultIndex||0,runtime.recognitionFloor||0);i<length;i++){
+        const result=event.results[i];if(!result)continue;
+        const transcript=String(result[0]?.transcript||'').trim();
+        if(!transcript)continue;
+        runtime.speechText=transcript;
+        const matched=spokenAnswerMatches(q,transcript);
+        if($('speechTranscript')){
+          $('speechTranscript').textContent='🎙️ 听到：'+transcript;
+          $('speechTranscript').classList.toggle('matched',matched);
+        }
+        // Interim matches are accepted immediately; non-matching interim/final
+        // phrases are NOT scored wrong to avoid ASR transient errors.
+        if(matched){
+          runtime.recognitionFloor=length;
+          submitAnswer(false,transcript);
+          return;
+        }
       }
     };
-    recognition.onerror=event=>{
+    recognizer.onerror=event=>{
+      if(runtime.recognition!==recognizer)return;
       runtime.recognitionActive=false;
-      if($('speechHelp'))$('speechHelp').textContent='语音识别不可用（'+(event.error||'浏览器限制')+'），可以使用自检按钮。';
+      const reason=event?.error||'unknown';
+      if(['not-allowed','service-not-allowed','audio-capture'].includes(reason)){
+        speechManualFallback('麦克风权限不可用或被拒绝，已切换为手动自检模式。');
+      }else if($('speechHelp')){
+        $('speechHelp').textContent='识别服务短暂中断，正在尝试恢复；也可使用手动自检';
+      }
     };
-    recognition.onend=()=>{runtime.recognitionActive=false;};
-    recognition.start();
-  }catch(e){runtime.recognition=null;if($('speechHelp'))$('speechHelp').textContent='请点击开始录音；若浏览器不支持，请使用自检按钮。';}
+    recognizer.onend=()=>{
+      if(runtime.recognition!==recognizer)return;
+      runtime.recognitionActive=false;
+      if(performance.now()-(runtime.recognitionStartedAt||0)>15000)runtime.recognitionRetryCount=0;
+      if(runtime.recognitionAllowed&&!runtime.recognitionUnavailable)restartSpeechRecognition();
+    };
+    recognizer.start();
+  }catch(e){
+    speechManualFallback('语音识别未能启动，请使用底部自检按钮。');
+  }
+}
+function restartSpeechRecognition(){
+  if(!runtime.recognition||runtime.recognitionActive||runtime.recognitionRetryTimer||runtime.recognitionUnavailable)return;
+  if(!session||!session.isStarted||$('reflectionMode').value!=='speak'||document.hidden)return;
+  const retries=runtime.recognitionRetryCount||0;
+  if(retries>=5){speechManualFallback('自动识别多次中断，已转为手动自检，避免反复请求权限。');return;}
+  const recognizer=runtime.recognition;
+  const delay=Math.min(3200,350*Math.pow(1.7,retries));
+  runtime.recognitionRetryCount=retries+1;
+  runtime.recognitionRetryTimer=setTimeout(()=>{
+    runtime.recognitionRetryTimer=null;
+    if(runtime.recognition!==recognizer||!session?.isStarted||document.hidden||runtime.recognitionUnavailable)return;
+    try{recognizer.start();}catch(e){
+      if(e?.name==='InvalidStateError'){runtime.recognitionActive=true;return;}
+      restartSpeechRecognition();
+    }
+  },delay);
 }
 function updateQuestionCountSelector(){
   if(!session)return;
@@ -1205,6 +1610,7 @@ function updateQuestionCountSelector(){
   selector.value=String(session.queue.length);
 }
 function changeTrainingQuestionCount(count){
+  if(earState.active)stopEarMode();
   if(!session)return;
   const next=Number(count);
   if(!TRAINING_COUNTS.includes(next)){
@@ -1222,7 +1628,7 @@ function changeTrainingQuestionCount(count){
     chooseAccents(fresh,session.accentMode||'en-US');
     setQuestionEnvironments(fresh,session.noiseMode||'clean');
     Object.assign(session,{queue:fresh,index:0,correct:0,sumMs:0,fastestMs:null,
-      startedAt:null,isStarted:false,awaitingNext:false,lastFeedback:null});
+      startedAt:null,isStarted:false,activeMs:0,activeStartedAt:null,answers:[],validLatencyCount:0,unmeasuredCount:0,earlyCount:0,replayedQuestions:0,awaitingNext:false,lastFeedback:null});
     runtime.readyAt=null;runtime.feedback=false;runtime.input='';runtime.selected=-1;
     runtime.speechText='';runtime.lastZeroTapAt=0;
     state.activeSession=session;persist();
@@ -1233,9 +1639,10 @@ function changeTrainingQuestionCount(count){
   }
 }
 function resetToReadyState(){
+  if(earState.active)stopEarMode();
   if(!session)return;
   stopSpeech();finishSpeechRecognition();stopNoise();clearFlowTimer();clearAutoSubmitTimer();
-  session.isStarted=false;
+  clockPause(session);session.isStarted=false;
   runtime.readyAt=null;runtime.feedback=false;runtime.input='';runtime.selected=-1;
   runtime.speechText='';runtime.lastZeroTapAt=0;
   state.activeSession=session;persist();
@@ -1248,20 +1655,196 @@ function renderReadyState(){
   if(!session)return;
   // Strictly no target number, audio, recognition or reaction timer in ready state.
   $('listenCard').classList.add('ready-card');
-  $('listenCard').innerHTML='<div class="ready-kicker">请先在上方选择训练模式、倍速与题量</div>'+ 
-    '<div class="ready-mode">当前模式：'+esc(selectedTrainingModeLabel())+'</div>'+ 
-    '<button type="button" class="ready-start" data-action="start-training" aria-label="开始训练">▶ 开始训练</button>';
+  $('listenCard').innerHTML='<div class="ready-kicker">选好模式后，点击下方按钮开始</div>'+
+    '<div class="ready-mode">当前模式：'+esc(selectedTrainingModeLabel())+'</div>'+
+    '<button type="button" class="ready-start" data-action="start-training" aria-label="开始训练">▶ 开始训练</button>'+
+    '<button type="button" class="ready-ear" data-action="start-ear" aria-label="开启免按键自动磨耳朵连播">🎧 自动磨耳朵连播（免手按）</button>'+
+    '<div class="ready-audio-note">iPhone 静音开关可能影响系统语音；若无声，请关闭静音并调高媒体音量。</div>';
   $('answerDisplay').classList.add('hidden');
-  renderKeyboard();
   const shell=$('keypadShell');
-  if($('reflectionMode').value==='speak')shell.innerHTML='<div class="ready-mic-preview">🎙️ 麦克风将在开始训练后启用</div>';
-  shell.classList.add('ready-locked');
+  shell.innerHTML='';
+  shell.classList.remove('spelling-layout','ready-locked');
+  shell.classList.add('ready-collapsed');
 }
+
+// Stage D: independent state machine. No answer submission, scoring, timer, mic or storage writes.
+// Audio progresses ONLY on the real synthesis onend callback; watchdogs pause rather than skip.
+function earClearTimers(){
+  if(earState.timer!==null){clearTimeout(earState.timer);earState.timer=null;}
+  if(earState.watchdog!==null){clearTimeout(earState.watchdog);earState.watchdog=null;}
+  if(earState.monitor!==null){clearInterval(earState.monitor);earState.monitor=null;}
+}
+function earInvalidateAudio(){
+  earState.generation++;
+  earClearTimers();earState.playing=false;stopNoise();
+  try{window.speechSynthesis?.cancel();}catch(e){}
+}
+async function earReleaseWakeLock(){
+  const sentinel=earState.wakeLock;
+  earState.wakeLock=null;
+  if(sentinel){try{await sentinel.release();}catch(e){}}
+}
+async function earAcquireWakeLock(){
+  if(!earState.active||earState.paused||document.hidden)return;
+  try{
+    if(!navigator.wakeLock?.request)return;
+    const sentinel=await navigator.wakeLock.request('screen');
+    if(!earState.active||earState.paused||document.hidden){try{await sentinel.release();}catch(e){}return;}
+    const previous=earState.wakeLock;
+    earState.wakeLock=sentinel;
+    if(previous&&previous!==sentinel){try{await previous.release();}catch(e){}}
+    sentinel.addEventListener?.('release',()=>{if(earState.wakeLock===sentinel)earState.wakeLock=null;});
+  }catch(e){/* Wake Lock is optional; do not block training. */}
+}
+function earCanRun(generation){
+  return earState.active&&!earState.paused&&!document.hidden&&earState.generation===generation&&
+    !!session&&!!session.queue?.length&&$('practicePage').classList.contains('active');
+}
+function earSchedule(ms,callback){
+  earClearTimers();
+  const generation=earState.generation;
+  earState.timer=setTimeout(()=>{
+    earState.timer=null;
+    if(earCanRun(generation))callback();
+  },ms);
+}
+function earAnswerText(q){
+  return String(q?.displayAnswer??q?.answer??'—');
+}
+function earChineseText(q){
+  const value=String(q?.meaning??'').trim();
+  if(value)return value;
+  if(q?.kind==='word')return String(q.answer||'');
+  return '数字 / 信息：'+earAnswerText(q);
+}
+function renderEarMode(){
+  if(!earState.active||!session?.queue?.length)return;
+  const q=session.queue[earState.index];
+  if(!q){earPause('当前试题无法读取，请停止后重新进入');return;}
+  const reveal=earState.phase==='reveal';
+  const phaseLabel=earState.paused?'播放已暂停':reveal?'✓ 标准答案':earState.phase==='think'?'请在心里回答':'🎧 磨耳朵盲听中...';
+  const detail=earState.paused?earState.reason||'点击恢复继续播放':reveal?'看清标准答案后自动播放下一题':
+    earState.phase==='think'?'暂停 1.5 秒，回想刚才听到的信息':
+    '第 '+Math.min(earState.repeat+1,2)+' / 2 遍 · 每遍结束后自动衔接';
+  $('practicePage').classList.add('ear-playing');
+  $('practiceTitle').textContent=session.title+' · 自动磨耳朵';
+  $('listenCard').classList.remove('ready-card','feedback-flash-correct','feedback-flash-wrong');
+  $('listenCard').innerHTML='<div class="ear-label">'+esc(phaseLabel)+'</div>'+ 
+    '<div class="ear-count">第 '+(earState.index+1)+' / '+session.queue.length+' 题 · 第 '+earState.cycle+' 轮（无限循环）</div>'+ 
+    (!reveal?'<div class="ear-visual" aria-hidden="true">🎧</div>':'')+
+    '<div class="ear-phase">'+esc(reveal?'听懂了吗？':earState.paused?'已安全暂停':'先听，不看答案')+'</div>'+ 
+    '<div class="ear-hint">'+esc(detail)+'</div>'+ 
+    (reveal?'<div class="ear-reveal"><div class="ear-answer">'+esc(earAnswerText(q))+'</div>'+ 
+      '<div class="ear-english">'+esc(q.audioText||'')+'</div><div class="ear-meaning">'+esc(earChineseText(q))+'</div></div>':'')+
+    (earState.paused?'<button type="button" class="ear-resume" data-action="resume-ear">▶ 点击恢复播放</button>':'');
+  $('answerDisplay').classList.add('hidden');
+  const shell=$('keypadShell');shell.classList.remove('ready-collapsed','ready-locked','spelling-layout');
+  shell.innerHTML='<button type="button" class="ear-stop" data-action="stop-ear">⏹ 停止磨耳朵</button>';
+}
+function earPause(reason='系统播放被中断；点击恢复'){ 
+  if(!earState.active)return;
+  earInvalidateAudio();earState.paused=true;earState.reason=reason;
+  void earReleaseWakeLock();
+  renderEarMode();
+}
+function earPlay(){
+  if(!earState.active||earState.paused||document.hidden)return;
+  const q=session?.queue?.[earState.index];
+  if(!q){earPause('题目无效，请退出重新选择');return;}
+  if(!window.speechSynthesis||typeof window.SpeechSynthesisUtterance!=='function'){
+    earPause('浏览器不支持英语语音合成，请使用 Safari 正常标签页');return;
+  }
+  earInvalidateAudio();
+  const generation=earState.generation;
+  earState.phase='blind';earState.playing=true;
+  renderEarMode();
+  let utterance,started=false,finished=false;
+  const accent=session?.levelId==='num:19'?(q.practiceAccent||'en-US'):(state.settings.locale||'en-US');
+  try{
+    utterance=new window.SpeechSynthesisUtterance(String(q.audioText||''));
+    const match=voiceForAccent(accent,q);
+    utterance.lang=match?.actualLocale||accent;
+    if(match?.voice)utterance.voice=match.voice;
+    utterance.rate=clamp((Number(state.settings.rate)||1)*(match?.jitter||1),.65,1.7);
+    utterance.pitch=1;utterance.volume=1;
+    utterance.onstart=()=>{
+      if(!earCanRun(generation)||finished)return;
+      started=true;earState.playing=true;
+      if(session?.levelId==='num:20'){try{startNoise(q);}catch(e){stopNoise();}}
+      if(earState.watchdog!==null)clearTimeout(earState.watchdog);
+      earState.watchdog=setTimeout(()=>{
+        if(earCanRun(generation)&&!finished)earPause('语音播放超时，已暂停以防重叠播放');
+      },Math.min(120000,Math.max(14000,String(q.audioText||'').length*300/utterance.rate+6000)));
+    };
+    utterance.onend=()=>{
+      if(!earCanRun(generation)||finished)return;
+      finished=true;earClearTimers();stopNoise();earState.playing=false;
+      if(earState.repeat===0){
+        earState.repeat=1;renderEarMode();
+        earSchedule(600,earPlay);
+      }else{
+        earState.phase='think';renderEarMode();
+        earSchedule(1500,()=>{
+          earState.phase='reveal';renderEarMode();
+          earSchedule(1200,()=>{
+            earState.index++;
+            if(earState.index>=session.queue.length){earState.index=0;earState.cycle++;}
+            earState.repeat=0;earState.phase='blind';renderEarMode();earPlay();
+          });
+        });
+      }
+    };
+    utterance.onerror=event=>{
+      if(!earCanRun(generation)||finished)return;
+      finished=true;
+      earPause('语音被系统中断'+(event?.error?'（'+event.error+'）':'')+'，点击恢复');
+    };
+    const synth=window.speechSynthesis;
+    if(synth.paused)synth.resume();
+    // Register timeouts before speak(): some engines can fire onstart synchronously.
+    earState.monitor=setInterval(()=>{
+      if(earCanRun(generation)&&synth.paused)earPause('系统语音暂停，点击恢复播放');
+    },450);
+    // Some Safari builds never emit onstart/onend: pause safely, never fake onend.
+    earState.watchdog=setTimeout(()=>{
+      if(earCanRun(generation)&&!started&&!finished)earPause('语音未启动，请点击恢复播放');
+    },Math.min(16000,Math.max(6500,String(q.audioText||'').length*145/utterance.rate+3500)));
+    synth.speak(utterance);
+  }catch(e){earPause('语音播放失败，请点击恢复');}
+}
+function startEarMode(){
+  if(!session||session.isStarted||earState.active||!session.queue?.length||session.awaitingNext)return;
+  // Called synchronously from the user's tap to satisfy iOS audio-start policies.
+  initializeAudioContext();primeSpeechVoices();
+  try{if(runtime.audioContext?.state==='suspended')runtime.audioContext.resume().catch(()=>{});}catch(e){}
+  stopSpeech();clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();
+  runtime.reviewPlaybackToken++;
+  earState={active:true,paused:false,reason:'',index:Math.min(session.index,session.queue.length-1),
+    cycle:1,repeat:0,phase:'blind',generation:earState.generation+1,timer:null,watchdog:null,monitor:null,wakeLock:null,playing:false};
+  renderEarMode();void earAcquireWakeLock();earPlay();
+}
+function resumeEarMode(){
+  if(!earState.active||!earState.paused||document.hidden)return;
+  // Replay the interrupted current item from its beginning, not the next item.
+  earState.paused=false;earState.reason='';earState.repeat=0;earState.phase='blind';
+  primeSpeechVoices();void earAcquireWakeLock();renderEarMode();earPlay();
+}
+function stopEarMode(){
+  if(!earState.active)return;
+  earState.active=false;earState.paused=false;
+  earInvalidateAudio();void earReleaseWakeLock();
+  $('practicePage').classList.remove('ear-playing');
+  // Session index and historical statistics were deliberately never changed.
+  if(session){session.isStarted=false;beginQuestion();}
+}
+
 function startSelectedTraining(){
+  if(earState.active)return;
   if(!session||session.isStarted||runtime.feedback||session.awaitingNext)return;
   // This synchronous call is directly inside a real tap/click; unlock audio on iOS.
   try{
-    if(session.levelId==='num:20')initializeAudioContext();
+    initializeAudioContext(); // A1: unlock on the genuine start tap, not during background playback
+    primeSpeechVoices();
     const ctx=runtime.audioContext;
     if(ctx?.state==='suspended')ctx.resume().catch(()=>{});
     const synth=window.speechSynthesis;
@@ -1270,11 +1853,12 @@ function startSelectedTraining(){
   }catch(error){console.warn('Audio unlock:',error);}
   session.isStarted=true;
   if(!session.startedAt)session.startedAt=Date.now();
-  state.activeSession=session;persist();
-  $('keypadShell').classList.remove('ready-locked');
+  clockBegin(session);state.activeSession=session;persist();
+  $('keypadShell').classList.remove('ready-locked','ready-collapsed');
   renderQuestionView();
 }
 function setReflectionMode(mode){
+  if(earState.active)stopEarMode();
   if(!session||!['listen','speak','spell'].includes(mode))return;
   if(runtime.feedback){
     document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===$('reflectionMode').value;r.closest('.mode-pill').classList.toggle('active',r.checked);});
@@ -1288,22 +1872,35 @@ function setReflectionMode(mode){
 function renderQuestionView(){
   if(!session)return;
   if(!session.isStarted){renderReadyState();return;}
-  $('listenCard').classList.remove('ready-card');
-  $('keypadShell').classList.remove('ready-locked');
+  $('listenCard').classList.remove('ready-card','feedback-flash-correct','feedback-flash-wrong');
+  $('keypadShell').classList.remove('ready-locked','ready-collapsed');
   const q=currentQuestion(),mode=$('reflectionMode').value,speaking=mode==='speak',spelling=mode==='spell';
   if(speaking){
-    $('listenCard').innerHTML='<div class="listen-chip">🎙️ 口语反射 · 看数字说英文</div><div class="speaking-target">'+esc(q.kind==='word'?(q.word||q.audioText):q.displayAnswer||q.answer)+'</div><div class="speaking-help" id="speechHelp">请朗读屏幕上的目标内容</div><div class="speaking-result" id="speechTranscript"></div><div class="speaking-actions"><button class="btn ghost" data-action="mic-start">开始录音</button><button class="btn primary" data-action="self-pass">自检通过</button><button class="btn danger" data-action="self-fail">未能说对</button></div>';
-    $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
-    speechStartForQuestion();startSpeechRecognition();
+    $('listenCard').innerHTML='<div class="listen-chip">🎙️ 口语反射 · 看数字说英文</div>'+ 
+      '<div class="speaking-target">'+esc(q.kind==='word'?(q.word||q.audioText):q.displayAnswer||q.answer)+'</div>'+ 
+      '<button type="button" class="play-audio-btn speech-demo" data-action="speak-demo">🔊 听标准发音</button>'+ 
+      '<div class="speaking-help" id="speechHelp">请开口朗读，实时转写会显示在下方</div>'+ 
+      '<div class="speaking-result" id="speechTranscript" role="status" aria-live="polite">🎙️ 等待听到你的声音…</div>';
+    $('answerDisplay').classList.add('hidden');
+    renderKeyboard();
+    speechStartForQuestion();
+    runtime.speechText='';
+    runtime.recognitionFloor=runtime.recognitionLastSeen||0;
+    runtime.speechMinValidAt=performance.now()+160;
+    startSpeechRecognition();
   }else{
     const hint=spelling?'⌨️ 听音拼写英文':q.kind==='word'?'听发音 · 选择中文释义':q.formatHint||'盲听模式 · 不显示题面';
-    const chinese=spelling&&q.kind==='word'?'<div class="spell-hint">中文释义：'+esc(q.meaning||q.answer)+'</div>':'';
-    $('listenCard').innerHTML='<div class="listen-chip">'+esc(hint)+'</div>'+chinese+'<div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="timer" id="timerText">播放中</div><div class="timer-hint" id="playStatus">请认真盲听</div><button class="play-audio-btn" id="playAudio" data-action="play">▶ 播放 / 重听</button>';
+    const chinese=spelling&&q.kind==='word'?'<div class="spell-hint">中文释义：'+esc(q.meaning||q.answer)+'</div>':
+      spelling&&q.stageC?'<div class="spell-hint">仅拼写关键答案的英文表达（非整句）：'+esc(q.meaning||'')+'</div>':'';
+    $('listenCard').innerHTML='<div class="listen-chip">'+esc(hint)+'</div>'+chinese+
+      '<div class="sound-wave" id="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>'+ 
+      '<div class="timer-label">反应时间</div><div class="timer" id="timerText">播放中</div>'+ 
+      '<div class="timer-hint" id="playStatus">从朗读真正结束后开始计时</div>'+ 
+      '<button class="play-audio-btn" id="playAudio" data-action="play">▶ 播放 / 重听</button>';
     $('answerDisplay').classList.toggle('hidden',q.kind==='word'&&!spelling);
     renderInput();renderKeyboard();speakCurrent();
   }
 }
-
 let speechWatchdog=null;
 let speechWakeTimer=null;
 let speechStartedAt=0;
@@ -1328,18 +1925,19 @@ function speakCurrent(){
   clearAutoSubmitTimer();stopSpeech();
   const q=currentQuestion(),token=runtime.token,synth=window.speechSynthesis;
   const accent=questionAccent();
-  $('currentAccent').textContent=session.levelId==='num:19'?accentLabel(accent):session.levelId==='num:20'?noiseLabel(q.practiceNoise):'美音 · US';
+  $('currentAccent').textContent=session.levelId==='num:19'?accentLabel(accent):session.levelId==='num:20'?noiseLabel(q.practiceNoise):accentLabel(accent);
   runtime.speaking=true;runtime.audioPhase='starting';runtime.readyAt=null;runtime.timingEstimated=false;
   runtime.early=false;updateListeningStatus();
   if(!synth||typeof SpeechSynthesisUtterance!=='function'){
     speechFallback(token,'当前设备不支持系统英语语音');return;
   }
-  const voiceMatch=voiceForAccent(accent);
+  const voiceMatch=voiceForAccent(accent,q);
   if(!voiceMatch){speechFallback(token,'没有找到可用的英语语音');return;}
-  const utterance=new SpeechSynthesisUtterance('. '+String(q.audioText||''));
+  let utterance;try{utterance=new SpeechSynthesisUtterance('. '+String(q.audioText||''));}
+  catch(e){speechFallback(token,'语音合成器初始化失败');return;}
   q.actualVoice=voiceMatch.actualLocale;q.approximateAccent=voiceMatch.approximate;
   utterance.lang=voiceMatch.actualLocale;
-  utterance.rate=clamp((Number(state.settings.rate)||1)*(voiceMatch.approximate?({ 'en-IN':.95,'en-IE':1.03,'en-ZA':.97,'en-NZ':1.02,'en-CA':1.01 }[accent]||1):1),.8,1.5);
+  utterance.rate=clamp((Number(state.settings.rate)||1)*(voiceMatch.approximate?({ 'en-IN':.95,'en-IE':1.03,'en-ZA':.97,'en-NZ':1.02,'en-CA':1.01 }[accent]||1):1)*(voiceMatch.jitter||1),.65,1.7);
   utterance.pitch=voiceMatch.approximate?({'en-IN':1.07,'en-IE':1.04,'en-ZA':.97,'en-NZ':1.03}[accent]||1):1;
   utterance.volume=1;utterance.voice=voiceMatch.voice;
   let completed=false,hasStarted=false;
@@ -1347,7 +1945,8 @@ function speakCurrent(){
     if(completed||token!==runtime.token||!session||runtime.feedback)return;
     completed=true;clearSpeechTimers();stopNoise();runtime.speaking=false;
     runtime.audioPhase='ready';runtime.timingEstimated=estimated;
-    runtime.readyAt=performance.now();updateListeningStatus();startTimer();
+    // A1: Only SpeechSynthesisUtterance.onend establishes a verified timer origin.
+    runtime.readyAt=estimated?null:performance.now();updateListeningStatus();if(!estimated)startTimer();
   };
   utterance.onstart=()=>{
     if(token!==runtime.token||completed)return;
@@ -1377,21 +1976,26 @@ function speakCurrent(){
     }catch(e){completed=true;speechFallback(token,'语音播报异常');}
   },80);
 }
-function speakPlain(text){
+function speakPlain(text,onFinished,accentOverride=null,reviewQuestion=null){
+  let done=false;
+  const finish=()=>{if(done)return;done=true;if(watchdog)clearTimeout(watchdog);try{onFinished?.();}catch(e){}};
+  let watchdog=null;
   if(!('speechSynthesis' in window)||typeof window.SpeechSynthesisUtterance!=='function'){
-    toast('当前浏览器不支持系统语音。');return;
+    toast('当前浏览器不支持系统语音。');finish();return;
   }
   const synth=window.speechSynthesis;
   try{
     if(synth.speaking||synth.pending)synth.cancel();
-    synth.resume();
+    if(synth.paused)synth.resume();
     const utterance=new SpeechSynthesisUtterance(String(text||''));
-    utterance.lang=questionAccent();utterance.rate=clamp(Number(state.settings.rate)||1,.8,1.5);utterance.pitch=1;utterance.volume=1;
-    const voices=synth.getVoices?synth.getVoices():[];
-    const match=voiceForAccent(questionAccent());
+    utterance.lang=accentOverride||questionAccent();utterance.rate=clamp(Number(state.settings.rate)||1,.8,1.5);
+    utterance.pitch=1;utterance.volume=1;
+    const match=voiceForAccent(accentOverride||questionAccent(),reviewQuestion);
     if(match){utterance.voice=match.voice;utterance.lang=match.actualLocale;}
+    utterance.onend=finish;utterance.onerror=finish;
     synth.speak(utterance);
-  }catch(e){toast('系统语音播放失败，请重试。');}
+    watchdog=setTimeout(finish,Math.min(15000,Math.max(4000,String(text||'').length*210)));
+  }catch(e){toast('系统语音播放失败，请重试。');finish();}
 }
 function startTimer(){
   cancelAnimationFrame(runtime.animation);
@@ -1405,13 +2009,14 @@ function startTimer(){
 function updateListeningStatus(){
   const timer=$('timerText'),status=$('playStatus'),wave=$('wave');
   if(timer)timer.textContent=runtime.readyAt!==null?'0.00s':runtime.audioPhase==='failed'?'播报失败':runtime.speaking?'播放中':'—';
-  if(status)status.textContent=runtime.audioPhase==='failed'?'语音未播出，请点击“重听”重试':runtime.speaking?'请认真盲听':runtime.timingEstimated?'播报结束时间为估算值，不计入速度成绩':'朗读结束后开始计时';
+  if(status)status.textContent=runtime.audioPhase==='failed'?'语音未播出，请点击“重听”重试':runtime.speaking?'正在朗读 · 结束后才开始计时':runtime.timingEstimated?'未收到真实朗读结束事件，时间不计分':'从朗读结束事件开始计算反应时间';
   if(wave)wave.classList.toggle('paused',!runtime.speaking);
   const playButton=$('playAudio');
   if(playButton)playButton.textContent=runtime.speaking?'正在播放 · 点击可重播':'▶ 播放 / 重听';
 }
 function beginQuestion(){
-  clearAutoSubmitTimer();clearFlowTimer();stopNoise();finishSpeechRecognition();
+  clearAutoSubmitTimer();clearFlowTimer();stopNoise();
+  if($('reflectionMode').value!=='speak')finishSpeechRecognition();
   // Never resurrect a detailed review for a correct answer after iOS/PWA resume.
   if(session?.awaitingNext&&session.lastFeedback?.correct){
     if(session.index>=session.queue.length-1){finishSession();return;}
@@ -1427,7 +2032,7 @@ function beginQuestion(){
   $('voiceRate').value=String(state.settings.rate);
   const accentChallenge=session.levelId==='num:19';
   const environmentChallenge=session.levelId==='num:20';
-  $('currentAccent').textContent=accentChallenge?accentLabel(q.practiceAccent):environmentChallenge?noiseLabel(q.practiceNoise):'美音 · US';
+  $('currentAccent').textContent=accentChallenge?accentLabel(q.practiceAccent):environmentChallenge?noiseLabel(q.practiceNoise):accentLabel(questionAccent());
   updateQuestionCountSelector();
   $('questionFill').style.width=(session.index/session.queue.length*100)+'%';
   document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value===$('reflectionMode').value;r.closest('.mode-pill').classList.toggle('active',r.checked);});
@@ -1441,7 +2046,7 @@ function beginQuestion(){
   else renderReadyState();
 }
 function spellingTarget(q){
-  return String(q?.audioText||q?.word||'').trim();
+  return String(q?.spellingTarget||q?.audioText||q?.word||'').trim();
 }
 function normalizeSpelling(value){
   return String(value??'').toLowerCase().replace(/[^a-z]/g,'');
@@ -1455,10 +2060,14 @@ function renderInput(){
   el.classList.toggle('placeholder',!value);
   if(mode==='spell'){
     el.classList.add('spell-entry');
-    el.textContent=value||'用下方字母键盘拼写英文';
+    if(value){el.innerHTML='<span class="spelled-value">'+esc(value)+'</span><span class="spelled-caret" aria-hidden="true"></span>';}
+    else el.textContent='点击字母键开始拼写';
     return;
   }
-  if(effectiveLevel(q)===14){
+  if(q.stageC && ['code','text'].includes(q.answerType)){
+    const isCode=q.answerType==='code';
+    el.innerHTML='<input id="stageCEntry" class="stagec-entry" type="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="40" placeholder="'+(isCode?'输入完整号码 / 字母数字':'输入听到的英文拼写')+'" value="'+esc(value)+'"><div class="stagec-answer-help">请确认完整输入；允许规定的等价答案</div>';
+  }else if(effectiveLevel(q)===14){
     el.innerHTML='<input id="codeEntry" class="code-entry" type="text" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="航班号 / 邮编：输入英文字母及数字" value="'+esc(value)+'">';
   }else{
     const mark=inlineNumericSeparator(q);
@@ -1498,14 +2107,24 @@ function renderKeyboard(){
     shell.innerHTML='<div class="review-controls"><button class="btn ghost" data-action="replay-feedback">重听原题</button><button class="btn primary" data-action="next">'+(session.index===session.queue.length-1?'查看结算':'下一题 →')+'</button></div>';
     return;
   }
-  if(mode==='speak'){shell.innerHTML='';return;}
+  if(mode==='speak'){
+    shell.innerHTML='<div class="speech-bottom-actions">'+
+      '<button type="button" class="btn ghost" data-action="speak-demo">🔊 听示范</button>'+
+      '<button type="button" class="btn primary" data-action="self-pass">✓ 自检通过</button>'+
+      '<button type="button" class="btn danger" data-action="self-fail">✗ 未能说对</button></div>';
+    return;
+  }
   if(mode==='spell'){
     const key=char=>'<button type="button" class="key spell-key" data-key="'+char+'" aria-label="字母 '+char+'">'+char+'</button>';
     shell.innerHTML='<div class="spell-board" aria-label="26键拼写键盘">'+
       '<div class="spell-row">'+[...'qwertyuiop'].map(key).join('')+'</div>'+
       '<div class="spell-row row9">'+[...'asdfghjkl'].map(key).join('')+'</div>'+
-      '<div class="spell-row spell-third"><button type="button" class="key spell-special" data-action="replay" title="重听本题" aria-label="重听本题">🔊</button>'+[...'zxcvbnm'].map(key).join('')+'<button type="button" class="key spell-special" data-action="backspace" aria-label="退格，长按清空">⌫</button></div>'+
-      '<div class="spell-actions"><button type="button" class="key alt" data-action="clear">清空</button><button type="button" class="key alt" data-action="space" aria-label="空格，长按连字符">空格 / -</button><button type="button" class="key green spell-confirm" data-action="confirm-spelling" aria-label="确认并提交拼写">确认 ✓</button></div></div>';
+      '<div class="spell-row spell-third"><button type="button" class="key spell-special" data-action="hyphen" aria-label="连字符">-</button>'+[...'zxcvbnm'].map(key).join('')+'<button type="button" class="key spell-special" data-action="backspace" aria-label="退格，长按清空">⌫</button></div>'+
+      '<div class="spell-actions"><button type="button" class="key alt" data-action="clear">清空</button><button type="button" class="key alt" data-action="space" aria-label="空格">空格</button><button type="button" class="key green spell-confirm" data-action="confirm-spelling" aria-label="确认并提交拼写">确认 ✓</button></div></div>';
+    return;
+  }
+  if(q.stageC && ['code','text'].includes(q.answerType)){
+    shell.innerHTML='<div class="speech-bottom-actions"><button class="btn ghost" data-action="replay">🔊 重听</button><button class="btn outline" data-action="clear">清空</button><button class="btn primary" data-action="confirm-number">确认 ✓</button></div>';
     return;
   }
   if(q.kind==='word'){
@@ -1517,11 +2136,12 @@ function renderKeyboard(){
     if(k==='backspace')return '<button type="button" class="key alt" data-action="backspace" aria-label="退格，长按清空">退格</button>';
     if(k==='replay')return '<button type="button" class="key alt" data-action="replay">重听</button>';
     return '<button type="button" class="key" data-key="'+k+'"'+(k==='0'?' aria-label="0，双击或长按输入小数点或冒号"':'')+'>'+k+'</button>';
-  }).join('')+'</div>';
+  }).join('')+'</div>'+(q.stageC?'<div class="stagec-confirm-row"><button type="button" class="btn primary" data-action="confirm-number">确认 ✓</button></div>':'');
 }
 
 function inputLooksComplete(q,typed){
   const v=String(typed||'').trim(),expected=String(q.answer||'');
+  if(q.stageC)return false; // Explicit confirmation avoids prefix/leading-zero mistakes.
   if(!v)return false;
   if($('reflectionMode').value==='spell')return false; // Spelling is submitted ONLY via explicit confirmation.
   const level=effectiveLevel(q);
@@ -1576,6 +2196,11 @@ function keyboardAction(action){
   if(runtime.feedback){if(action==='next')nextQuestion();return;}
   if(action==='confirm-spelling'){if($('reflectionMode').value==='spell')submitAnswer();return;}
   if(action==='confirm-number'){if($('reflectionMode').value==='listen'&&currentQuestion()?.kind==='numeric')submitAnswer();return;}
+  if(action==='speak-demo'){
+    runtime.demoPlaying=true;
+    speakPlain(currentQuestion().audioText,()=>{runtime.demoPlaying=false;runtime.recognitionFloor=runtime.recognitionLastSeen||0;runtime.speechMinValidAt=performance.now()+180;});
+    return;
+  }
   if(action==='mic-start'){startSpeechRecognition();return;}
   if(action==='self-pass'){submitAnswer(false,'自检通过');return;}
   if(action==='self-fail'){submitAnswer(true,'自检未通过');return;}
@@ -1589,7 +2214,10 @@ function keyboardAction(action){
     return;
   }
   if(action==='backspace')runtime.input=runtime.input.slice(0,-1);
-  if(action==='clear')runtime.input='';
+  if(action==='clear'){
+    runtime.input='';
+    const native=$('stageCEntry');if(native)native.value='';
+  }
   if(action==='unknown'){submitAnswer(true);return;}
   if(['backspace','clear'].includes(action)){
     runtime.lastZeroTapAt=0;
@@ -1618,7 +2246,7 @@ function normalizeAnswer(q,value){
   }
   return s;
 }
-function questionKey(q){return q.kind==='word'?'word:'+q.levelId+':'+q.wordId:'num:'+q.levelId+':'+q.answer;}
+function questionKey(q){return q.stageC?'stagec:'+q.levelId+':'+q.stageCId:q.kind==='word'?'word:'+q.levelId+':'+q.wordId:'num:'+q.levelId+':'+q.answer;}
 function captureWeak(q,correct,elapsed){
   const key=questionKey(q),item=state.errorPool[key];
   if(!correct || (elapsed!==null&&elapsed>1800)){
@@ -1641,14 +2269,14 @@ function submitAnswer(forceUnknown=false,spokenResult){
   }
   let given=speaking?String((spokenResult??runtime.speechText)||''):spelling?runtime.input:q.kind==='word'?(runtime.selected<0?'未选择':q.choices[runtime.selected]):runtime.input;
   if(!speaking&&(spelling||q.kind==='numeric')&&!String(given).trim()){toast('请先输入答案');return;}
-  const correct=spelling?!forceUnknown&&normalizeSpelling(spellingTarget(q))===normalizeSpelling(given):speaking?!forceUnknown&&((spokenResult==='自检通过')||spokenAnswerMatches(q,given)):!forceUnknown&&normalizeAnswer(q,q.answer)===normalizeAnswer(q,given);
+  const correct=spelling?!forceUnknown&&normalizeSpelling(spellingTarget(q))===normalizeSpelling(given):speaking?!forceUnknown&&((spokenResult==='自检通过')||spokenAnswerMatches(q,given)):!forceUnknown&&(q.stageC?stageCMatches(q,given):normalizeAnswer(q,q.answer)===normalizeAnswer(q,given));
   const early=!speaking&&runtime.readyAt===null;
   const estimated=!speaking&&runtime.timingEstimated;
   const eligible=!early&&!estimated&&runtime.readyAt!==null;
   const elapsed=eligible?Math.max(0,Math.round(performance.now()-runtime.readyAt)):null;
   const firstMs=eligible&&runtime.firstKeyAt!==null?Math.max(0,Math.round(runtime.firstKeyAt-runtime.readyAt)):null;
   runtime.early=early;
-  stopSpeech();finishSpeechRecognition();clearAutoSubmitTimer();clearFlowTimer();
+  stopSpeech();if(!speaking)finishSpeechRecognition();clearAutoSubmitTimer();clearFlowTimer();
   runtime.feedback=true;runtime.speaking=false;
   session.correct+=Number(correct);
   if(eligible){session.sumMs=(Number(session.sumMs)||0)+elapsed;session.validLatencyCount=(session.validLatencyCount||0)+1;}
@@ -1660,20 +2288,45 @@ function submitAnswer(forceUnknown=false,spokenResult){
   state.totalQuestions=state.totalAnswered;
   state.totalCorrect=(Number(state.totalCorrect)||0)+Number(correct);
   captureWeak(q,correct,elapsed);
+  if(!Array.isArray(session.answers))session.answers=[];
+  const entry={correct,elapsed,answer:String(q.displayAnswer||q.answer),english:String(q.audioText||''),
+    given:String(given),kind:q.kind,accent:q.practiceAccent||questionAccent(),at:Date.now(),mode};
+  session.answers.push(entry);
+  if(!correct&&q.kind==='numeric'&&mode==='listen'){
+    const target=String(q.answer).trim(),guess=String(given).trim();
+    if(guess&&guess!==target&&/^[0-9.:+-]+$/.test(target)&&/^[0-9.:+-]+$/.test(guess)){
+      const key=target+'→'+guess;
+      state.confusionPairs[key]=Math.min(100000,(Number(state.confusionPairs[key])||0)+1);
+    }
+  }
   session.awaitingNext=true;session.lastFeedback={correct,given,elapsed,early,estimated,mode};
   state.activeSession=session;persist();
   $('questionFill').style.width=((session.index+1)/session.queue.length*100)+'%';
   renderLab();
   if(correct){
-    correctTone();
+    correctTone();safeVibrate(18);
     const speedText=early?'提前作答 · 不计反应时':estimated?'时间估算 · 不计速度':msText(elapsed);
     $('listenCard').innerHTML='<div class="fast-feedback">✓ 正确 · '+speedText+'</div>'+
+      (q.feedbackHint?'<div class="stagec-tip">'+esc(q.feedbackHint)+'</div>':'')+
       (session.levelId==='num:19'?'<div class="micro" style="text-align:center;margin:8px">'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?'（近似播报）':'')+'</div>':'');
     $('answerDisplay').classList.add('hidden');$('keypadShell').innerHTML='';
-    const nextDelay=spelling?SPELL_NEXT_DELAY_MS:FLOW_NEXT_DELAY_MS;
+    showRoundFlash(true);
+    const nextDelay=speaking?400:spelling?SPELL_NEXT_DELAY_MS:FLOW_NEXT_DELAY_MS;
     runtime.autoNextTimer=setTimeout(()=>{runtime.autoNextTimer=null;if(session&&runtime.feedback&&session.awaitingNext)nextQuestion();},nextDelay);
   }else{
-    renderFeedback(q,correct,given,elapsed,early);renderKeyboard();
+    if(mode==='listen'){
+      const shown=q.displayAnswer||q.answer;
+      $('listenCard').innerHTML='<div class="wrong-fast">✕ 本题答错</div>'+
+        '<div class="wrong-correct-answer">正确答案：'+esc(shown)+'</div>'+
+        '<div class="wrong-reading">'+esc(q.audioText)+'</div>'+
+        (q.feedbackHint?'<div class="stagec-tip error">'+esc(q.feedbackHint)+'</div>':'')+
+        (q.stageC?'<div class="stagec-tip">'+esc(q.meaning)+(q.acceptedAnswers?.length?' · 等价答案：'+esc(q.acceptedAnswers.join(' / ')):'')+(q.equivalentReadings?.length?' · 等价读法：'+esc(q.equivalentReadings.join(' / ')):'')+'</div>':'')+
+        '<div class="wrong-next-note">正在重播正确读音，随后自动进入下一题</div>';
+      $('answerDisplay').classList.add('hidden');
+      showRoundFlash(false);renderKeyboard();scheduleWrongAnswerReplay(q);
+    }else{
+      renderFeedback(q,correct,given,elapsed,early);renderKeyboard();showRoundFlash(false);
+    }
   }
 }
 function highlightDiff(expected,actual){
@@ -1700,43 +2353,86 @@ function renderFeedback(q,correct,given,elapsed,early){
   const comparison=twin?'<div class="feedback-line"><span class="k">⚡ 易混对比提示</span>'+esc('本题 '+q.answer+'（'+q.audioText+'），注意与 '+(q.confusableBase||twin)+' 区分；留意重音和数量级。')+'</div>':'';
   const accentReveal=session?.levelId==='num:19'?'<div class="feedback-line"><span class="k">本题目标口音</span>'+esc(accentLabel(q.practiceAccent))+(q.approximateAccent?' · 使用设备 '+esc(q.actualVoice||'英语语音')+' 近似播报':'')+'</div>':'';
   const environmentReveal=session?.levelId==='num:20'?'<div class="feedback-line"><span class="k">本题环境</span>'+esc(noiseLabel(q.practiceNoise))+'</div>':'';
-  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}</div>`;
+  $('listenCard').innerHTML=`<div class="feedback-card"><div class="feedback-verdict ${correct?'good':'bad'}">${correct?'✓':'✕'} ${verdict}</div><div class="feedback-sub">反应耗时 <strong>${timerLabel}</strong> · ${speed}</div><div class="feedback-line"><span class="k">${spelling?'标准英文拼写':'标准答案'}</span><span class="v">${esc(answerShown)}</span></div>${spelling&&q.kind==='numeric'?'<div class="feedback-line"><span class="k">对应数字</span>'+esc(q.answer)+'</div>':''}<div class="feedback-line"><span class="k">英文读法 / 播报原句</span><span class="v" style="font-size:13px;font-weight:600">${esc(reading)}</span></div><div class="feedback-line"><span class="k">音标拆解（已内置音标为主）</span><span class="ipa">${esc(ipa)}</span></div><div class="feedback-line"><span class="k">我的输入</span><span class="v">${highlightDiff(String(answerShown),String(given))}</span></div>${comparison}${accentReveal}${environmentReveal}${optional}${q.feedbackHint?'<div class="stagec-tip">'+esc(q.feedbackHint)+'</div>':''}${q.stageC?'<div class="feedback-line"><span class="k">中文解析</span>'+esc(q.meaning)+(q.acceptedAnswers?.length?' · 允许：'+esc(q.acceptedAnswers.join(' / ')):'')+(q.equivalentReadings?.length?' · 等价读法：'+esc(q.equivalentReadings.join(' / ')):'')+'</div>':''}</div>`;
   $('answerDisplay').classList.add('hidden');
 }
 function nextQuestion(){
-  clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();stopNoise();
+  clearFlowTimer();clearAutoSubmitTimer();stopSpeech();
+  if($('reflectionMode').value!=='speak')finishSpeechRecognition();stopNoise();
   if(!session)return;
   if(session.index===session.queue.length-1){finishSession();return;}
   session.index++;session.awaitingNext=false;session.lastFeedback=null;state.activeSession=session;persist();beginQuestion();
 }
 function finishSession(){
   if(!session)return;
-  stopSpeech();clearFlowTimer();finishSpeechRecognition();
+  stopSpeech();clearFlowTimer();finishSpeechRecognition();clockPause(session);
   const completed=session;
   const accuracy=Math.round(completed.correct/completed.queue.length*100);
   const validCount=Number.isFinite(completed.validLatencyCount)?completed.validLatencyCount:
     (Number(completed.sumMs)>0?completed.queue.length:0);
-  const avg=validCount?Math.round(completed.sumMs/validCount):null;
-  const passed=accuracy>=80;
-  const stars=!passed?0:accuracy===100 && avg!==null && avg<=1500?3:accuracy>=90 && avg!==null && avg<=2500?2:1;
+  const avg=validCount?completed.sumMs/validCount:null;
+  const {passed,stars}=roundGrade(accuracy,avg);
+  const at=Date.now();
   if(completed.mode==='lesson'){
     const current=state.levels[completed.levelId]||{attempts:0,stars:0,passed:false};
     current.attempts=(current.attempts||0)+1;
+    // Previous versions used a looser threshold. Recalculate historic qualification
+    // from available best/last round metrics; unknown legacy passes must not stay green.
     current.passed=Boolean(current.passed||passed);
     current.stars=Math.max(current.stars||0,stars);
-    current.last={accuracy,avgMs:avg,stars,at:Date.now()};
-    if(!current.best || accuracy>current.best.accuracy || (accuracy===current.best.accuracy&&avg<current.best.avgMs))current.best={accuracy,avgMs:avg,stars,at:Date.now()};
+    current.last={accuracy,avgMs:avg,stars,at};
+    current.gradeEvidence=[...(current.gradeEvidence||[]),{accuracy,avgMs:avg,stars,at}].slice(-10);
+    if(!current.best || accuracy>current.best.accuracy ||
+       (accuracy===current.best.accuracy&&(avg??Infinity)<(current.best.avgMs??Infinity))){
+      current.best={accuracy,avgMs:avg,stars,at};
+    }
     if(completed.fastestMs!==null)current.fastestMs=current.fastestMs==null?completed.fastestMs:Math.min(current.fastestMs,completed.fastestMs);
     state.levels[completed.levelId]=current;
   }
-  state.activeSession=null;persist();
-  session=null;
-  $('summaryPanel').innerHTML=`<div class="summary-title">${passed||completed.mode!=='lesson'?'练习完成':'本关尚未通关'}</div><div class="summary-stars">${completed.mode==='lesson'?('★'.repeat(stars)+'☆'.repeat(3-stars)):'✓'}</div><div class="micro">${completed.mode==='lesson'?(passed?'已达通关标准':'通关需要准确率至少 80%'):'自由/弱项练习不改变关卡通关状态'}</div><div class="summary-grid"><div><strong>${accuracy}%</strong><span>准确率</span></div><div><strong>${avg===null?'—':msText(avg)}</strong><span>有效平均反应</span></div><div><strong>${completed.correct}/${completed.queue.length}</strong><span>答对题数</span></div></div><div class="micro" style="margin-bottom:8px">有效计时 ${validCount}/${completed.queue.length} 题 · 提前作答 ${completed.earlyCount||0} 题 · 重听 ${completed.replayedQuestions||0} 题</div><p class="hint" style="text-align:left">三星：全对且均速 ≤1.5s；二星：准确率 ≥90% 且均速 ≤2.5s；一星：准确率 ≥80%。</p><div class="summary-actions"><button class="btn outline" id="summaryHome">返回课程</button><button class="btn primary" id="summaryAgain">再练一次</button></div>`;
+  if(!Array.isArray(state.trainingHistory))state.trainingHistory=[];
+  state.trainingHistory.push({at,date:localDateKey(at),levelId:completed.levelId,mode:completed.mode,
+    questionCount:completed.queue.length,correct:completed.correct,accuracy,avgMs:avg,validCount,
+    durationMs:Math.round(completed.activeMs||0),stars,passed});
+  state.trainingHistory=state.trainingHistory.slice(-300);
+  state.activeSession=null;persist();session=null;
+  const gaps=gradeGap(accuracy,avg,validCount);
+  const review=summaryReviewItems(completed);
+  const reviewMarkup=review.map((item,i)=>`<div class="review-item"><div class="review-detail"><strong>${i+1}. ${esc(item.answer)} · ${item.elapsed===null?'未计时':msText(item.elapsed)}${item.correct?' · 卡壳':' · 答错'}</strong><small>${esc(item.english)}${item.correct?'':' · 你的答案：'+esc(item.given)}</small></div><button class="btn ghost" data-review-index="${i}">🔊 重听</button></div>`).join('');
+  $('summaryPanel').innerHTML=`<div class="summary-title">${passed||completed.mode!=='lesson'?'练习完成':'本关尚未通关'}</div>
+    <div class="summary-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+    <div class="micro">${completed.mode==='lesson'?(passed?'本次已达通关标准':'正确率 ≥90% 且平均反应 &lt;1.5s 才能通关'):'自由/弱项训练不改变关卡通关记录；以下为本次表现'}</div>
+    <div class="summary-grid"><div><strong>${accuracy}%</strong><span>准确率</span></div>
+    <div><strong>${avg===null?'—':msText(avg)}</strong><span>平均反应时间</span></div>
+    <div><strong>${completed.correct}/${completed.queue.length}</strong><span>答对题数</span></div></div>
+    <div class="micro" style="margin-bottom:8px">有效计时 ${validCount}/${completed.queue.length} 题 · 提前作答 ${completed.earlyCount||0} 题 · 重听 ${completed.replayedQuestions||0} 题</div>
+    <div class="pass-gap ${passed?'passed':''}">${esc(gaps)}</div>
+    <div class="reaction-benchmark">反应时间目标：&lt;1s 优秀 · 1–1.5s 良好 · &gt;1.5s 需加强</div>
+    <p class="hint" style="text-align:left">1 星：正确率 ≥90% 且均速 &lt;1.5s；2 星：正确率 ≥95% 且均速 &lt;1.5s；3 星：正确率 ≥95% 且均速 &lt;1s。未计时的题不计入均速。</p>
+    <div class="review-title">⏱️ 本轮最慢 / 错题 Top 3 复盘</div>
+    ${reviewMarkup||'<div class="micro">本轮没有逐题复盘数据。</div>'}
+    <button class="btn ghost full" id="reviewPlayAll" style="margin-top:8px" ${review.length?'':'disabled'}>🔊 连播复盘这 ${review.length} 题</button>
+    <div class="summary-actions"><button class="btn outline" id="summaryHome">返回课程</button><button class="btn primary" id="summaryAgain">再练一次</button></div>`;
   $('summaryMask').classList.add('visible');
-  $('summaryHome').onclick=()=>{$('summaryMask').classList.remove('visible');refresh();showPage('home');};
-  $('summaryAgain').onclick=()=>{$('summaryMask').classList.remove('visible');if(completed.mode==='weak')startWeak(completed.queue.length);else startSession(completed.levelId,completed.mode,completed.queue.length);};
+  function stopReview(){runtime.reviewPlaybackToken++;try{window.speechSynthesis?.cancel();}catch(e){}}
+  function playReview(index,token){
+    if(token!==runtime.reviewPlaybackToken||!$('summaryMask').classList.contains('visible')||index>=review.length)return;
+    const item=review[index];
+    speakPlain(item.english,()=>{
+      if(token!==runtime.reviewPlaybackToken)return;
+      if(index+1<review.length)playReview(index+1,token);
+    },item.accent);
+  }
+  $('summaryPanel').querySelectorAll('[data-review-index]').forEach(btn=>btn.onclick=()=>{
+    stopReview();const item=review[Number(btn.dataset.reviewIndex)];
+    if(item)speakPlain(item.english,null,item.accent);
+  });
+  $('reviewPlayAll').onclick=()=>{stopReview();playReview(0,runtime.reviewPlaybackToken);};
+  $('summaryHome').onclick=()=>{stopReview();$('summaryMask').classList.remove('visible');refresh();showPage('home');};
+  $('summaryAgain').onclick=()=>{stopReview();$('summaryMask').classList.remove('visible');if(completed.mode==='weak')startWeak(completed.queue.length);else startSession(completed.levelId,completed.mode,completed.queue.length);};
 }
 function leavePractice(){
+  if(earState.active)stopEarMode();
+  clockPause(session);if(session){session.isStarted=false;state.activeSession=session;persist();}
   stopSpeech();clearFlowTimer();clearAutoSubmitTimer();finishSpeechRecognition();session=null;refresh();showPage('home');
   if(state.activeSession)toast('本次进度已自动保存，可从首页继续。');
 }
@@ -1749,9 +2445,11 @@ function renderLessons(){
   const active=state.activeSession;
   $('resumeArea').innerHTML=active&&active.queue?.length?`<div class="card" style="margin-top:13px"><div class="row between"><div><strong style="font-size:13px">继续上次练习</strong><div class="micro" style="margin-top:5px">${esc(active.title)} · 第 ${active.index+1}/${active.queue.length} 题</div></div><button class="btn primary" id="resumeBtn">继续</button></div></div>`:'';
   if($('resumeBtn'))$('resumeBtn').onclick=resumeSession;
-  const stageHtml=stages.map(stage=>renderGroup(stage.title,stage.ids.map(i=>lessons.find(x=>x.id==='num:'+i)))).join('');
+  const stageHtml=stages.map((stage,i)=>renderGroup(stage.title,stage.ids.map(id=>lessons.find(x=>x.id==='num:'+id)).concat(i===0?[stageCSpecialLessons[0]]:[]))).join('');
   const wordHtml=renderGroup('第五阶段 · 工业自动化与实战句型',wordGroups());
-  $('lessonList').innerHTML=stageHtml+wordHtml;
+  const specialHtml=renderGroup('第六阶段 · 真实场景听力专项',stageCSpecialLessons.slice(1,2));
+  const examHtml=renderGroup('第七阶段 · IELTS / TOEIC / BEC 考试专项',stageCSpecialLessons.slice(2));
+  $('lessonList').innerHTML=stageHtml+wordHtml+specialHtml+examHtml;
 }
 function renderGroup(title,items){
   return `<div class="section-title">${esc(title)}<small>${items.length} 关</small></div><div class="lesson-group">${items.map((l,i)=>{
@@ -1759,10 +2457,74 @@ function renderGroup(title,items){
     const active=state.activeSession?.levelId===l.id;
     const stateClass=passed?'passed':active||record.attempts?'started':'';
     const status=passed?'<span class="status passed">'+('★'.repeat(record.stars||1))+'</span>':active?'<span class="status going">进行中</span>':record.attempts?'<span class="status going">待通关</span>':'<span class="status">未开始</span>';
-    const best=record.best?`最佳: ${msText(record.best.avgMs)} | 准确率 ${record.best.accuracy}%`:'尚无历史成绩';
+    const best=record.best?`历史: ${record.best.avgMs==null?'未计时':msText(record.best.avgMs)} | 正确率 ${record.best.accuracy}%`:'尚无历史成绩';
+    const candidate=[...(record.gradeEvidence||[]),record.best,record.last].filter(Boolean)
+      .map(v=>({accuracy:Number(v.accuracy)||0,avg:Number.isFinite(v.avgMs)?v.avgMs:null}));
+    candidate.sort((a,b)=>Number(roundGrade(b.accuracy,b.avg).passed)-Number(roundGrade(a.accuracy,a.avg).passed)||
+      Math.max(0,90-a.accuracy)-Math.max(0,90-b.accuracy)|| (a.avg??Infinity)-(b.avg??Infinity));
+    const gap=passed?'已通关 · '+record.stars+' 星':record.attempts&&candidate.length?gradeGap(candidate[0].accuracy,candidate[0].avg,candidate[0].avg!=null?1:0):'目标：正确率 ≥90% · 均速 <1.5s';
     const index=String(l.number).padStart(2,'0');
-    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div></div>${status}</button>`;
+    return `<button class="lesson ${stateClass}" data-lesson="${esc(l.id)}"><div class="lesson-index">${index}</div><div class="lesson-main"><div class="lesson-name">${esc(l.title)}</div><div class="lesson-desc">${esc(l.kind==='word'?l.desc+' · '+l.words.length+' 词':l.desc)}</div><div class="lesson-score">${esc(best)}${record.fastestMs!=null?' · 极速 '+Math.round(record.fastestMs)+'ms':''}</div><div class="lesson-score" style="color:${passed?'#078D49':'#BA7850'}">${esc(gap)}</div></div>${status}</button>`;
   }).join('')}</div>`;
+}
+function trendSvg(rows,field,min,max,color,label){
+  const items=rows.slice(-30);
+  if(!items.length)return '<p class="micro">暂无完成的训练记录，完成一轮后显示趋势。</p>';
+  const width=320,height=124,left=34,right=10,top=12,bottom=22;
+  const px=i=>left+(items.length===1?.5:i/(items.length-1))*(width-left-right);
+  const py=v=>top+(max-v)/(max-min)*(height-top-bottom);
+  const segments=[];let current=[];
+  items.forEach((r,i)=>{
+    const val=r[field];
+    if(val===null||val===undefined||!Number.isFinite(Number(val))){if(current.length)segments.push(current);current=[];return;}
+    current.push([px(i),py(clamp(Number(val),min,max)),val]);
+  });if(current.length)segments.push(current);
+  const guides=[min,(min+max)/2,max].map(v=>`<line x1="${left}" x2="${width-right}" y1="${py(v)}" y2="${py(v)}" stroke="#E7EEE9" stroke-dasharray="3 4"/><text x="${left-5}" y="${py(v)+3}" text-anchor="end">${esc(field==='avgMs'?(v/1000).toFixed(1):Math.round(v)+'%')}</text>`).join('');
+  const lines=segments.map(points=>`<polyline fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" points="${points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}"/>`+points.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${color}"/>`).join('')).join('');
+  return `<svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(label)}，${items.length} 次训练">${guides}${lines}<text x="${left}" y="${height-5}">较早</text><text x="${width-right}" y="${height-5}" text-anchor="end">最近</text></svg><div class="chart-legend">${esc(label)} · 共 ${items.length} 次（无有效反应计时的轮次留空）</div>`;
+}
+function currentStreak(history){
+  const days=new Set(history.map(x=>x.date||localDateKey(x.at)).filter(Boolean));
+  for(const [day,value] of Object.entries(state.dailyStats||{}))if((Number(value.durationMs)||0)>0)days.add(day);
+  let base=days.has(offsetDateKey(0))?0:-1,streak=0;
+  while(days.has(offsetDateKey(base))){streak++;base--;if(streak>300)break;}
+  return streak;
+}
+function renderStatistics(){
+  const history=Array.isArray(state.trainingHistory)?state.trainingHistory:[];
+  const recent=history.slice(-30);
+  $('streakDays').textContent=String(currentStreak(history));
+  const ms=state.dailyStats?.[offsetDateKey(0)]?.durationMs??history.filter(x=>(x.date||localDateKey(x.at))===offsetDateKey(0)).reduce((sum,x)=>sum+(Number(x.durationMs)||0),0);
+  $('todayDuration').textContent=ms>=60000?(ms/60000).toFixed(1)+' 分钟':Math.round(ms/1000)+' 秒';
+  $('latencyChart').innerHTML=trendSvg(recent,'avgMs',0,3000,'#09A75A','平均反应时间（0–3 秒，超出按 3 秒显示）');
+  $('accuracyChart').innerHTML=trendSvg(recent,'accuracy',0,100,'#387DB7','正确率（0–100%）');
+  const pairs=Object.entries(state.confusionPairs||{}).filter(([key,v])=>
+    /^[-0-9.:+]+→[-0-9.:+]+$/.test(key)&&Number.isFinite(Number(v))&&Number(v)>0)
+    .sort((a,b)=>Number(b[1])-Number(a[1])).slice(0,10);
+  const max=pairs.length?Number(pairs[0][1]):1;
+  $('confusionTop').innerHTML=pairs.length?pairs.map(([key,count],i)=>`<div class="confusion-row"><div class="confusion-head"><span>${i+1}. ${esc(key.replace('→',' → '))}</span><span class="confusion-count">${Number(count)} 次</span></div><div class="confusion-track"><div class="confusion-fill" style="width:${clamp(Math.round(count/max*100),3,100)}%"></div></div></div>`).join(''):'<p class="micro">尚无数字误听记录。答错数字后将自动积累混淆对。</p>';
+}
+function exportProgress(){
+  try{downloadFile('声音反射训练_进度_'+todayStamp()+'.json',JSON.stringify({format:'voice-reflex-backup',exportedAt:new Date().toISOString(),state},null,2));toast('进度备份已导出');}
+  catch(e){toast('导出失败，请检查浏览器是否支持文件下载。');}
+}
+async function importProgressFile(file){
+  if(!file)return;
+  try{
+    if(file.size>5*1024*1024)throw Error('备份文件超过 5MB，已拒绝导入');
+    const content=typeof file.text==='function'?await file.text():await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('读取文件失败'));reader.readAsText(file);});
+    const data=JSON.parse(content),incoming=data?.format==='voice-reflex-backup'?data.state:data;
+    if(!incoming||incoming.version!==1||typeof incoming.levels!=='object'||!incoming.levels||typeof incoming.errorPool!=='object'||!incoming.errorPool)throw Error('文件不是可识别的学习进度 JSON');
+    if(!confirm('导入将用备份中的进度、设置、统计及错题替换当前数据。继续？'))return;
+    // Strict whitelist after parsing: retain compatibility with the original v1 progress schema.
+    const valid=normalizeStoredState(incoming);
+    const old=state;
+    state=valid;state.updatedAt=Date.now();
+    try{if(!persist())throw Error('无法写入本机存储');}catch(e){state=old;throw e;}
+    stopSpeech();finishSpeechRecognition();session=null;
+    if($('summaryMask'))$('summaryMask').classList.remove('visible');
+    refresh();showPage('lab');toast('进度导入成功');
+  }catch(e){toast('导入失败：'+(e.message||'文件格式错误'));}
 }
 function renderLab(){
   const weak=Object.values(state.errorPool).sort((a,b)=>(b.errors*3+b.slow)-(a.errors*3+a.slow));
@@ -1771,25 +2533,39 @@ function renderLab(){
   const selected=$('freeLevel').value;
   $('freeLevel').innerHTML=allLessons().map(x=>`<option value="${esc(x.id)}">${esc(x.title)}</option>`).join('');
   if(allLessons().some(x=>x.id===selected))$('freeLevel').value=selected;
-  $('statsText').textContent=`累计作答 ${state.totalAnswered||0} 题 · 累计正确 ${state.totalCorrect||0} 题`;
-  updateStorageStatus();
+  $('statsText').textContent=`累计作答 ${state.totalAnswered||0} 题 · 累计正确 ${state.totalCorrect||0} 题 · 已完成 ${state.trainingHistory?.length||0} 轮`;
+  $('randomVoices').checked=state.settings.randomVoices!==false;
+  $('defaultAccent').value=state.settings.locale||'en-US';
+  updateVoiceAvailability();renderStatistics();updateStorageStatus();
 }
 function refresh(){renderLessons();renderLab();}
-function selectTab(name){stopSpeech();refresh();showPage(name);}
+function selectTab(name){if(earState.active)stopEarMode();stopSpeech();refresh();showPage(name);}
 function setupEvents(){
   document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>selectTab(btn.dataset.tab)));
   $('lessonList').addEventListener('click',e=>{const b=e.target.closest('[data-lesson]');if(b)startSession(b.dataset.lesson);});
+  $('labPage').addEventListener('click',e=>{const b=e.target.closest('[data-exam]');if(b)startSession('exam:'+b.dataset.exam);});
   $('listenCard').addEventListener('click',e=>{
     const b=e.target.closest('[data-action]');if(!b)return;
     if(b.dataset.action==='start-training')startSelectedTraining();
+    else if(b.dataset.action==='start-ear')startEarMode();
+    else if(b.dataset.action==='resume-ear')resumeEarMode();
     else if(b.dataset.action==='play')speakCurrent();
     else keyboardAction(b.dataset.action);
+  });
+  $('keypadShell').addEventListener('click',e=>{
+    if(e.target.closest('[data-action=stop-ear]'))stopEarMode();
   });
   $('answerDisplay').addEventListener('click',e=>{
     if(e.target.closest('[data-action=insert-separator]'))insertNumericSeparator();
   });
   $('answerDisplay').addEventListener('input',e=>{
-    if(e.target.id!=='codeEntry'||!session||!session.isStarted||runtime.feedback)return;
+    if(!session||!session.isStarted||runtime.feedback)return;
+    if(e.target.id==='stageCEntry'){
+      runtime.input=e.target.value.replace(/[^a-zA-Z0-9 .:\-]/g,'').slice(0,40);
+      if(runtime.firstKeyAt===null)runtime.firstKeyAt=performance.now();
+      clearAutoSubmitTimer();return;
+    }
+    if(e.target.id!=='codeEntry')return;
     runtime.input=e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g,'').slice(0,32);
     if(inputLooksComplete(currentQuestion(),runtime.input))scheduleAutoSubmit();
     else clearAutoSubmitTimer();
@@ -1797,6 +2573,7 @@ function setupEvents(){
   const held={timer:null,button:null,consumed:null};
   function clearHold(){if(held.timer!==null){clearTimeout(held.timer);held.timer=null;}held.button=null;}
   $('keypadShell').addEventListener('pointerdown',e=>{
+    if(earState.active)return;
     const btn=e.target.closest('button');
     if(!btn)return;
     const isBackspace=btn.dataset.action==='backspace';
@@ -1817,6 +2594,7 @@ function setupEvents(){
   ['pointerup','pointercancel','pointerleave'].forEach(type=>$('keypadShell').addEventListener(type,clearHold));
   $('keypadShell').addEventListener('contextmenu',e=>{if(e.target.closest('[data-action=backspace],[data-action=space],[data-key="0"]'))e.preventDefault();});
   $('keypadShell').addEventListener('click',e=>{
+    if(earState.active)return;
     const clicked=e.target.closest('button');
     if(clicked&&clicked===held.consumed){held.consumed=null;return;}
     held.consumed=null;
@@ -1833,12 +2611,21 @@ function setupEvents(){
   $('freeStart').addEventListener('click',()=>startSession($('freeLevel').value,'free',Number($('freeCount').value)));
   $('weakList').addEventListener('click',e=>{const b=e.target.closest('[data-drop]');if(!b)return;delete state.errorPool[b.dataset.drop];persist();renderLab();});
   $('clearWeak').addEventListener('click',()=>{if(!Object.keys(state.errorPool).length)return;if(confirm('确定清空全部错题与超时记录？')){state.errorPool={};persist();renderLab();}});
+  $('randomVoices').addEventListener('change',e=>{state.settings.randomVoices=!!e.target.checked;persist();});
+  $('defaultAccent').addEventListener('change',e=>{if(!ACCENT_CODES.includes(e.target.value))return;state.settings.locale=e.target.value;persist();});
+  $('exportProgress').addEventListener('click',exportProgress);
+  $('importProgress').addEventListener('click',()=>$('importProgressFile').click());
+  $('importProgressFile').addEventListener('change',async e=>{
+    const file=e.target.files?.[0];try{await importProgressFile(file);}finally{e.target.value='';}
+  });
   $('clearHistory').addEventListener('click',()=>{
+    if(earState.active)stopEarMode();
     if(!confirm('确定重置全部练习进度、错题与设置？此操作不可撤销。'))return;
     const old=state;stopSpeech();state=emptyState();
     if(!persist()){state=old;return;}session=null;$('reflectionMode').value='listen';document.querySelectorAll('input[name="reflectionModeChoice"]').forEach(r=>{r.checked=r.value==='listen';r.closest('.mode-pill').classList.toggle('active',r.checked);});refresh();toast('已重置全部数据');
   });
   window.addEventListener('keydown',e=>{
+    if(earState.active){if(e.key==='Escape'){e.preventDefault();stopEarMode();}return;}
     if(!session || !$('practicePage').classList.contains('active'))return;
     if(!session.isStarted){if(e.key==='Enter'){e.preventDefault();startSelectedTraining();}return;}
     if(['SELECT','INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
@@ -1860,17 +2647,33 @@ function setupEvents(){
     else if(session.queue[session.index].kind==='word' && /^[1-4]$/.test(e.key)){runtime.selected=Number(e.key)-1;submitAnswer(false);}
   });
   const restoreAudio=()=>{
+    if(earState.active){if(!document.hidden&&earState.paused)resumeEarMode();return;}
     if(document.hidden)return;
     try{if(window.speechSynthesis?.paused)window.speechSynthesis.resume();}catch(e){}
     try{if(runtime.audioContext?.state==='suspended')runtime.audioContext.resume().catch(()=>{});}catch(e){}
     if(!session||!session.isStarted||runtime.feedback||!$('practicePage').classList.contains('active'))return;
-    if($('reflectionMode').value!=='speak'&&runtime.readyAt===null&&!runtime.speaking){speakCurrent();}
+    if($('reflectionMode').value==='speak'){if(!runtime.recognitionActive&&!runtime.recognitionUnavailable)restartSpeechRecognition();}
+    else if(runtime.readyAt===null&&!runtime.speaking){speakCurrent();}
   };
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden && session && !runtime.feedback){stopSpeech();finishSpeechRecognition();runtime.readyAt=null;}
-    else restoreAudio();
+    if(earState.active){
+      if(document.hidden)earPause('页面进入后台，播放已暂停');
+      else resumeEarMode();
+      return;
+    }
+    if(document.hidden && session){
+      clockPause(session);persist();
+      if(!runtime.feedback){stopSpeech();runtime.readyAt=null;
+      if($('reflectionMode').value!=='speak')finishSpeechRecognition();
+      else {try{runtime.recognition?.stop();}catch(e){}runtime.recognitionActive=false;}
+      }
+    }
+    else {if(session?.isStarted)clockBegin(session);restoreAudio();}
   });
-  window.addEventListener('pageshow',restoreAudio);
+  window.addEventListener('pageshow',()=>{if(earState.active){resumeEarMode();return;}if(session?.isStarted)clockBegin(session);restoreAudio();});
+  window.addEventListener('pagehide',()=>{if(earState.active){earPause('页面暂时离开，播放已暂停');return;}if(session){clockPause(session);persist();}});
+  window.addEventListener('blur',()=>{if(earState.active)earPause('系统中断或来电，播放已暂停');});
+  window.addEventListener('focus',()=>{if(earState.active)resumeEarMode();});
 
 }
 function installManifest(){
@@ -1897,11 +2700,11 @@ function boot(){
       const engine=window.speechSynthesis;
       engine.getVoices();
       const voiceReady=()=>{
-        if(session&&session.isStarted&&!runtime.feedback&&runtime.readyAt===null&&!runtime.speaking&&
+        if(!earState.active&&session&&session.isStarted&&!runtime.feedback&&runtime.readyAt===null&&!runtime.speaking&&
           $('practicePage').classList.contains('active')&&$('reflectionMode').value!=='speak'&&
           voiceForAccent(questionAccent()))speakCurrent();
       };
-      if(engine.addEventListener)engine.addEventListener('voiceschanged',voiceReady);
+      if(engine.addEventListener)engine.addEventListener('voiceschanged',()=>{updateVoiceAvailability();voiceReady();});
       else engine.onvoiceschanged=voiceReady;
     }catch(e){}
   }

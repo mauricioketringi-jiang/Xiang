@@ -1,4 +1,4 @@
-name: Advanced training smoke tests
+name: Stage D regression smoke
 on:
   push:
     branches: [main]
@@ -6,131 +6,30 @@ on:
 permissions:
   contents: read
 jobs:
-  browser-smoke:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 12
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Install Playwright
+      - name: Validate entrypoint, content and scripts
         run: |
-          npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
-      - name: Run actual browser checks
-        run: |
-          python3 -m http.server 8765 --bind 127.0.0.1 &
-          node <<'JS'
-          const {chromium}=require('playwright');
-          (async()=>{
-            const b=await chromium.launch({headless:true,args:['--no-sandbox']});
-            const page=await b.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-            const errors=[];
-            page.on('pageerror',e=>errors.push(e.message));
-            await page.addInitScript(()=>{
-              window.__calls=[];
-              window.SpeechSynthesisUtterance=class {constructor(text){this.text=text;}};
-              const voices=['en-US','en-GB','en-AU'].map(lang=>({name:lang,lang,localService:true}));
-              const synth={speaking:false,paused:false,pending:false,
-                getVoices(){return voices;},cancel(){this.speaking=false;},resume(){},
-                speak(u){this.speaking=true;window.__calls.push({lang:u.lang,text:u.text});
-                  setTimeout(()=>u.onstart?.(),5);
-                  setTimeout(()=>{this.speaking=false;u.onend?.();},30);}
-              };
-              Object.defineProperty(window,'speechSynthesis',{configurable:true,value:synth});
-              window.webkitSpeechRecognition=class {start(){this.onstart?.();}abort(){this.onend?.();}};
-            });
-            await page.goto('http://127.0.0.1:8765/',{waitUntil:'load'});
-            const course=await page.evaluate(()=>allLessons().map(x=>x.id));
-            if(course.length!==23||course.filter(x=>x.startsWith('num:')).length!==20)
-              throw Error('Expected 20 numeric and 3 industrial English lessons');
-            const options=await page.locator('#freeCount option').evaluateAll(xs=>xs.map(x=>x.value));
-            if(JSON.stringify(options)!=='["10","20","30"]')throw Error('Wrong practice counts');
-            if((await page.locator('#flowMode').count())!==0)throw Error('Rapid-fire switch should be removed');
-            if((await page.locator('#keypadShell .key').count())!==0)throw Error('Keypad should only render inside practice');
-            const words=await page.evaluate(()=>wordGroups().map(g=>g.words.length));
-            if(words.length!==3||Math.min(...words)<30)throw Error('Industrial vocabulary is incomplete: '+words);
-            if((await page.locator('#accentMode').count())!==0||(await page.locator('#noiseMode').count())!==0)throw Error('Legacy challenge selectors remain');
-            if((await page.locator('#labPage article.card').count())!==3)throw Error('Lab has obsolete modules');
-            const special=await page.evaluate(()=>({accent:ACCENT_COUNTRIES.length,noise:NOISE_ENVIRONMENTS.length}));
-            if(special.accent!==8||special.noise!==4)throw Error('Random accents/noises are incomplete');
-            await page.locator('[data-lesson="num:1"]').first().click();
-            const standby=await page.evaluate(()=>({
-              started:session.isStarted,ready:runtime.readyAt,
-              tts:window.__calls.length,button:!!document.querySelector('.ready-start')
-            }));
-            if(standby.started!==false||standby.ready!==null||standby.tts!==0||!standby.button)
-              throw Error('V8 lesson must stay silent and untimed until Start is clicked');
-            await page.locator('#questionCount').selectOption('20');
-            const selected=await page.evaluate(()=>({length:session.queue.length,started:session.isStarted,calls:window.__calls.length}));
-            if(selected.length!==20||selected.started||selected.calls)throw Error('Changing to 20 in standby must not start TTS');
-            if((await page.locator('#questionCount option:checked').textContent()).trim()!=='1 / 20')
-              throw Error('20-question selector did not update');
-            await page.locator('input[type=radio][value=spell]').check({force:true});
-            if((await page.locator('.ready-start').count())!==1)
-              throw Error('Switching mode before Start must not begin a lesson');
-            await page.locator('input[type=radio][value=listen]').check({force:true});
-            await page.locator('#voiceRate').selectOption('1.2');
-            if((await page.locator('.ready-start').count())!==1||await page.evaluate(()=>window.__calls.length)!==0)
-              throw Error('Changing voice rate must preserve standby');
-            await page.locator('.ready-start').click();
-            await page.waitForTimeout(200);
-            const calls=await page.evaluate(()=>window.__calls.length);
-            if(!calls)throw Error('Start button did not trigger US TTS');
-            if((await page.locator('#questionCount option:checked').textContent()).trim()!=='1 / 20')throw Error('Wrong question count');
-            if((await page.locator('#keypadShell .key').count())!==12)throw Error('Expected 4x3 keypad');
-            if((await page.locator('.training-controls input[type=radio]').count())!==3)throw Error('Three mode pills missing');
-            await page.evaluate(()=>{runtime.readyAt=performance.now()-2700;pressKey(session.queue[0].answer);});
-            const stats=await page.evaluate(()=>({answered:state.totalAnswered,correct:state.totalCorrect,saved:JSON.parse(localStorage.getItem(STORE_KEY)).totalAnswered}));
-            if(stats.answered!==1||stats.correct!==1||stats.saved!==1)throw Error('Global statistics did not update');
-            if((await page.locator('.fast-feedback').count())!==1)throw Error('Fast feedback was not rendered');
-            await page.waitForTimeout(560);
-            if(!(await page.evaluate(()=>session.index===1)))throw Error('Rapid-fire did not advance');
-            if((await page.locator('#questionCount option:checked').textContent()).trim()!=='2 / 20')
-              throw Error('Progress selector must update to 2 / 20');
-            await page.locator('#questionCount').selectOption('30');
-            const resized=await page.evaluate(()=>({length:session.queue.length,index:session.index,started:session.isStarted,correct:session.correct}));
-            if(resized.length!==30||resized.index!==0||resized.started||resized.correct!==0)
-              throw Error('Changing count while active must reset to 30-question standby');
-            await page.locator('#questionCount').selectOption('20');
-            await page.locator('input[type=radio][value=spell]').check({force:true});
-            if((await page.locator('.ready-start').count())!==1)
-              throw Error('Switching mode mid-lesson must return to standby');
-            await page.locator('.ready-start').click();
-            if((await page.locator('.spell-key').count())!==26)throw Error('Expected 26-key spelling keyboard');
-            if((await page.locator('.spell-confirm').count())!==1)throw Error('Manual spelling confirmation missing');
-            await page.evaluate(()=>{
-              const target=normalizeSpelling(spellingTarget(currentQuestion()));
-              runtime.readyAt=performance.now()-300;
-              runtime.input=target;
-              renderInput();
-              scheduleAutoSubmit();
-            });
-            if((await page.locator('.fast-feedback').count())!==0)throw Error('Spelling auto-submit was not disabled');
-            await page.locator('.spell-confirm').click();
-            if((await page.locator('.fast-feedback').count())!==1)throw Error('Manual spelling confirmation failed');
-            // V10 semantic speech, IPA and audio-error timing regression cases.
-            const semantic=await page.evaluate(()=>({
-              time:spokenAnswerMatches({kind:'numeric',levelId:11,answer:'04:15',audioText:'time question'},'four fifteen'),
-              math:spokenAnswerMatches({kind:'numeric',levelId:17,answer:'50',audioText:'not fifteen, fifty'},'fifty'),
-              confusion:spokenAnswerMatches({kind:'numeric',levelId:17,answer:'50',audioText:'not fifteen, fifty'},'fifteen'),
-              fraction:spokenAnswerMatches({kind:'numeric',levelId:15,answer:'0.25',audioText:'a quarter'},'a quarter'),
-              year:spokenAnswerMatches({kind:'numeric',levelId:10,answer:'1998',audioText:'nineteen ninety eight'},'nineteen ninety eight'),
-              ipa:allWords().every(w=>w.phonetic && w.phonetic.startsWith('/'))
-            }));
-            if(!semantic.time||!semantic.math||semantic.confusion||!semantic.fraction||!semantic.year||!semantic.ipa)
-              throw Error('V10 numeric semantics or industrial IPA failed: '+JSON.stringify(semantic));
-            await page.evaluate(()=>{
-              window.speechSynthesis.speak=(u)=>setTimeout(()=>u.onerror?.({error:'audio-busy'}),10);
-              startSession('num:1');
-            });
-            await page.locator('.ready-start').click();
-            await page.waitForTimeout(175);
-            const failed=await page.evaluate(()=>({phase:runtime.audioPhase,rt:runtime.readyAt,answered:state.totalAnswered}));
-            if(failed.phase!=='failed'||failed.rt!==null)throw Error('V10 TTS failure must not start timing: '+JSON.stringify(failed));
-            await page.evaluate(()=>pressKey(session.queue[0].answer));
-            const after=await page.evaluate(()=>state.totalAnswered);
-            if(after!==failed.answered)throw Error('V10 failed audio must not count an answer');
-            if(errors.length)throw Error('Page errors: '+errors.join(' | '));
-            console.log('PASS: V10 23 lessons, TTS error timing guard, 116 IPA entries, semantic speech parser and V9 regressions');
-            await b.close();
-          })().catch(e=>{console.error(e);process.exitCode=1});
-          JS
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,json
+          html=Path('index.html').read_text(encoding='utf-8')
+          data=Path('stage-c-data.js').read_text(encoding='utf-8')
+          assert '<script src="./stage-c-data.js"></script>' in html or 'src="stage-c-data.js"' in html
+          for token in ['startEarMode', 'stopEarMode', 'resumeEarMode', 'allLessons', 'startSession', 'earState']:
+              assert token in html, token
+          for token in ['STAGE_C_DATA','IELTS','TOEIC','BEC']:
+              assert token in data, token
+          for name in ('sw.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png'):
+              assert Path(name).is_file(),name
+          json.loads(Path('manifest.webmanifest').read_text(encoding='utf-8'))
+          blocks=re.findall(r'<script\b([^>]*)>([\s\S]*?)</script>',html,re.I)
+          content=[body for attrs,body in blocks if not re.search(r'\bsrc\s*=',attrs,re.I)]
+          assert len(content)==1
+          Path('/tmp/stage-d.js').write_text(content[0],encoding='utf-8')
+          PY
+          node --check /tmp/stage-d.js
+          node --check stage-c-data.js

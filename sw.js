@@ -1,13 +1,27 @@
-const CACHE='voice-reflex-advanced-v10';
-const SHELL=['./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.svg'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('voice-reflex-advanced-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET'||e.request.mode!=='navigate')return;
-  const url=new URL(e.request.url),scope=new URL(self.registration.scope);
-  if(url.origin!==scope.origin||!(url.pathname===scope.pathname||url.pathname===scope.pathname+'index.html'))return;
-  e.respondWith(caches.open(CACHE).then(async cache=>{
-    try{const response=await fetch(e.request);if(response.ok)cache.put('./index.html',response.clone()).catch(()=>{});return response;}
-    catch(error){return await cache.match('./index.html')||Response.error();}
-  }));
+const CACHE='voice-reflex-advanced-stage-d-v1';
+const SHELL=['./','./index.html','./stage-c-data.js','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png'];
+self.addEventListener('install',event=>event.waitUntil(
+  caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())
+));
+self.addEventListener('activate',event=>event.waitUntil(
+  caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('voice-reflex-advanced-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())
+));
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET')return;
+  const url=new URL(event.request.url),scope=new URL(self.registration.scope);
+  if(url.origin!==scope.origin)return;
+  const relative=url.pathname.slice(scope.pathname.length);
+  if(event.request.mode==='navigate'&&(relative===''||relative==='index.html')){
+    event.respondWith(caches.open(CACHE).then(async cache=>{
+      try{const response=await fetch(event.request);if(response.ok)cache.put('./index.html',response.clone()).catch(()=>{});return response;}
+      catch(error){return (await cache.match('./index.html'))||Response.error();}
+    }));
+  } else if(relative==='stage-c-data.js'){
+    event.respondWith(caches.open(CACHE).then(async cache=>{
+      const cached=await cache.match('./stage-c-data.js');
+      if(cached)return cached;
+      try{const response=await fetch(event.request);if(response.ok)cache.put('./stage-c-data.js',response.clone()).catch(()=>{});return response;}
+      catch(error){return Response.error();}
+    }));
+  }
 });
