@@ -1,4 +1,4 @@
-name: VF Source Smoke Check
+name: Voice Reflex VF V3 regression
 on:
   push:
     branches: [main]
@@ -6,21 +6,26 @@ on:
 permissions:
   contents: read
 jobs:
-  verify:
+  smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify original training source
+      - name: Validate original 23 lessons and no exams
         run: |
           python3 - <<'PY'
-          import re
           from pathlib import Path
-          h=Path('index.html').read_text(encoding='utf-8')
-          assert len(re.findall(r'\{id:\d+,title:',h))>=20
-          assert len(re.findall(r'"id":"industrial-2[123]-\d{2}"',h))==116
-          assert 'exam:' not in h
-          assert 'pairedStart' in h
-          assert 'function renderLearn(' in Path('learn-ui.js').read_text(encoding='utf-8')
+          import re,json
+          html=Path('index.html').read_text(encoding='utf-8')
+          learn=Path('learn-ui.js').read_text(encoding='utf-8')
+          stage=Path('stage-c-data.js').read_text(encoding='utf-8')
+          assert len(re.findall(r'\{id:\d+,title:',html))>=20
+          assert len(re.findall(r'"id":"industrial-2[123]-\d{2}"',html))==116
+          assert 'pairedStart' in html
+          assert 'exam:' not in html
+          assert not any(term in learn for term in ('水平测试','能力测评','等级测试'))
+          assert 'exams' not in json.loads(re.search(r'window.STAGE_C_DATA\s*=\s*(\{[\s\S]*\});\s*',stage).group(1))
+          assert Path('独立单文件网页版.html').is_file()
           PY
           node --check learn-ui.js
           node --check learn-data.js
+          node --check stage-c-data.js

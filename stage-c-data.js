@@ -782,5 +782,3 @@ window.STAGE_C_DATA = {
     }
   ]
 };
-
-
