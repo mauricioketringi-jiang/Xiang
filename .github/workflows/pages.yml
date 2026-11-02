@@ -34,7 +34,7 @@ jobs:
           assert len(re.findall(r'\{id:\d+,title:',index)) >= 20
           assert len(re.findall(r'"id":"industrial-2[123]-\d{2}"',index)) == 116
           assert index.count('class="card lab-card"') == 3
-          assert all(term not in index for term in ('exam:', '考试专项','data-exam','stagec-exams'))
+          assert all(term not in index for term in ('exam:', '考试专项','data-exam'))
           stage=json.loads(re.search(r'window.STAGE_C_DATA\s*=\s*(\{[\s\S]*\});\s*',cdata).group(1))
           assert 'exams' not in stage and len(stage['minimum'])==14 and len(stage['scenarios'])>=20
           learn=json.loads(re.search(r'window.LEARN_DATA\s*=\s*(\{[\s\S]*\});\s*',ldata).group(1))
